@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="pageTitle" data-i18n="pageTitle">คะแนนของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            /* ค่าสีเริ่มต้น (Default Theme) */
+            --primary: #0f172a; /* Default to a premium dark slate */
+            --primary-text: #ffffff;
+            --secondary: #f59e0b;
+        }
+
+        html, body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            scrollbar-width: none;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* */
+        /* Premium Digital Card Styling */
+        .vip-card {
+            background: linear-gradient(135deg, var(--primary) 0%, rgba(0,0,0,0.6) 100%);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            color: var(--primary-text);
+        }
+
+        /* Glass Reflection Effect on Card */
+        .vip-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        /* Ambient Glow Behind Card */
+        .card-glow {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: var(--primary);
+            filter: blur(40px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* */
+        /* Clean List View for Items */
+        .list-item-clean {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .list-item-clean:active {
+            transform: scale(0.98);
+        }
+
+        /* App-like Animations */
+        .fade-in-slide {
+            animation: fadeInSlide 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        @keyframes fadeInSlide {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Image Mask for seamless blending */
+        .header-mask {
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-10 relative">
+
+    <!-- Seamless Header Background -->
+    <div class="absolute top-0 left-0 w-full h-80 z-0">
+        <div class="w-full h-full relative">
+            <img id="headerImage" src="res/header/dummy.png" alt="Header" class="w-full h-full object-cover header-mask opacity-80 mix-blend-multiply">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#f4f4f9]/80 to-[#f4f4f9]"></div>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="max-w-md mx-auto px-5 pt-8 relative z-10">
+        
+        <!-- Header Title -->
+        <div class="mb-6 fade-in-slide">
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight" data-i18n="pageTitle">คะแนนของฉัน</h1>
+        </div>
+
+        <!-- Digital VIP Card -->
+        <div class="relative mb-8 fade-in-slide" style="animation-delay: 0.1s;">
+            <div class="card-glow"></div>
+            <div class="vip-card rounded-3xl p-7 flex flex-col justify-between min-h-[200px] z-10 relative">
+                
+                <!-- Card Header -->
+                <div class="flex items-center space-x-2 mb-4">
+                    <!-- Icon จะสลับเป็นรูปภาพ custom อัตโนมัติหากมีการดึงค่า pointIconUrl มาได้ -->
+                    <img id="customPointIcon" src="" alt="Point" class="w-6 h-6 object-contain hidden drop-shadow-md">
+                    <svg id="defaultPointSvg" class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    <span class="text-sm font-medium tracking-wide opacity-80 uppercase" data-i18n="availablePointsTitle">Available Points</span>
+                </div>
+
+                <!-- Points Value -->
+                <div class="flex items-baseline space-x-2 my-2">
+                    <h2 id="point_remainAvailable" class="text-5xl font-black tracking-tight drop-shadow-md">0</h2>
+                    <span class="text-xl font-medium opacity-80" data-i18n="pts">pts</span>
+                </div>
+
+                <!-- Divider -->
+                <div class="w-full h-px bg-white/20 my-4"></div>
+
+                <!-- Card Footer Stats -->
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] opacity-70 uppercase tracking-wider mb-1" data-i18n="totalEarnedTitle">ได้รับทั้งหมด</p>
+                        <p id="point_totalEarned" class="font-semibold text-lg drop-shadow-sm">0</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] opacity-70 uppercase tracking-wider mb-1" data-i18n="redeemedTitle">แลกไปแล้ว</p>
+                        <p id="point_redeemed" class="font-semibold text-lg drop-shadow-sm">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Action Cards (Minimalist) -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-8 fade-in-slide" style="animation-delay: 0.2s;">
+            <!-- Pending Card -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col justify-between h-full relative overflow-hidden">
+                <div class="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="w-full text-left">
+                    <p class="text-[10px] sm:text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-1 line-clamp-1" data-i18n="pendingTitle">รอดำเนินการ</p>
+                    <p id="point_pending" class="text-base sm:text-lg font-bold text-gray-800 leading-tight break-words">0</p>
+                </div>
+            </div>
+            
+            <!-- Total Spending Card -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col justify-between h-full relative overflow-hidden">
+                <div class="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-500 mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                </div>
+                <div class="w-full text-left">
+                    <p class="text-[10px] sm:text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-1 line-clamp-1" data-i18n="totalSpendingTitle">ยอดใช้จ่ายรวม</p>
+                    <p id="point_totalSpending" class="text-base sm:text-lg font-bold text-gray-800 leading-tight break-words">฿0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiring Soon Banner (Modern Notification Style) -->
+        <div id="expiringSoonSection" class="hidden mb-8 fade-in-slide" style="animation-delay: 0.3s;">
+            <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-5 border border-red-100/50 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-red-100/50 to-transparent"></div>
+                <div class="relative z-10 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1">
+                            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                            <span class="text-xs font-bold text-red-600 uppercase tracking-wider" data-i18n="expiringSoonTitle">กำลังจะหมดอายุ</span>
+                        </div>
+                        <p class="text-2xl font-black text-red-700">
+                            <span id="point_expiringSoon_point">0</span> <span class="text-sm" data-i18n="pts">pts</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <div class="inline-block bg-white rounded-lg px-3 py-1.5 shadow-sm border border-red-50 text-center">
+                            <p class="text-[10px] text-gray-400 font-medium" data-i18n="expiresIn">หมดอายุใน</p>
+                            <p class="text-sm font-bold text-red-600"><span id="point_expiringSoon_daysLeft">-</span> <span data-i18n="days">วัน</span></p>
+                        </div>
+                        <p id="point_expiringSoon_expiresAt" class="text-[10px] text-gray-500 mt-2">--/--/----</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiring List (App-style List) -->
+        <div id="expiringTableSection" class="hidden fade-in-slide" style="animation-delay: 0.4s;">
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h3 class="font-bold text-gray-800 text-lg" data-i18n="expiringListTitle">รายการที่จะหมดอายุ</h3>
+            </div>
+            
+            <div id="expiringSoonListBody" class="space-y-3">
+                <!-- List items will be injected here via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. Language Data Dictionary ---
+        const translations = {
+            th: {
+                pageTitle: "คะแนนของฉัน",
+                availablePointsTitle: "คะแนนที่ใช้ได้ปัจจุบัน",
+                points: "Points",
+                pts: "pts",
+                totalEarnedTitle: "ได้รับทั้งหมด",
+                redeemedTitle: "แลกไปแล้ว",
+                pendingTitle: "รอดำเนินการ",
+                totalSpendingTitle: "ยอดใช้จ่ายรวม",
+                expiringSoonTitle: "กำลังจะหมดอายุ",
+                expiresIn: "หมดอายุใน",
+                days: "วัน",
+                expireDateTitle: "หมดอายุวันที่",
+                expiringListTitle: "ประวัติคะแนนใกล้หมดอายุ",
+                tablePoints: "คะแนน",
+                tableExpireDate: "หมดอายุ"
+            },
+            en: {
+                pageTitle: "My Points",
+                availablePointsTitle: "Available Balance",
+                points: "Points",
+                pts: "pts",
+                totalEarnedTitle: "Total Earned",
+                redeemedTitle: "Redeemed",
+                pendingTitle: "Pending",
+                totalSpendingTitle: "Total Spending",
+                expiringSoonTitle: "Expiring Soon",
+                expiresIn: "Expires in",
+                days: "days",
+                expireDateTitle: "Expiry Date",
+                expiringListTitle: "Expiring Points History",
+                tablePoints: "Points",
+                tableExpireDate: "Expiry"
+            }
+        };
+
+        // --- Global State ---
+        let currentLang = 'th';
+        let currentResPath = 'res';
+
+        let pointData = {
+            point_totalEarned: 0,
+            point_remainAvailable: 0,
+            point_pending: 0,
+            point_redeemed: 0,
+            point_totalSpending: 0,
+            point_expiringSoon_point: 0,
+            point_expiringSoon_daysLeft: 0,
+            point_expiringSoon_expiresAt: '',
+            point_expiringSoon_list: []
+        };
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            if (!t) return;
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.documentElement.lang = currentLang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+        }
+
+        // --- STREAMING_CHUNK:Theme color calculation logic... ---
+        function getContrastColorHex(hexColor) {
+            hexColor = hexColor.replace('#', '');
+            if (hexColor.length === 3) hexColor = hexColor.split('').map(char => char + char).join('');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#0f172a' : '#ffffff'; // Dark text for light bg, White text for dark bg
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data && (event.data.type === 'initialData' || event.data.type === 'updateData')) {
+                const data = event.data.data;
+                const appData = window.parent.appData || {}; 
+                const htmlCacheVersion = window.parent.htmlCacheVersion || '1';
+
+                // จัดการ Themes อย่างชาญฉลาด
+                if (appData.primaryColor) {
+                    const textColor = getContrastColorHex(appData.primaryColor);
+                    document.documentElement.style.setProperty('--primary', appData.primaryColor);
+                    document.documentElement.style.setProperty('--primary-text', textColor);
+                }
+
+                if (appData.language && translations[appData.language.toLowerCase()]) {
+                    currentLang = appData.language.toLowerCase();
+                }
+
+                if (appData.resPath) currentResPath = appData.resPath;
+                document.getElementById('headerImage').src = window.parent.getAssets("topcolorHeader")
+ 
+
+                // จัดการ Custom Point Icon
+                try {
+                    const defaultPointIcon = ""; // ค่าเริ่มต้นว่างไว้เพื่อใช้ SVG หากไม่พบ
+                    const pointIconUrl = (window.parent && typeof window.parent.getAssets === 'function') 
+                        ? window.parent.getAssets("pointIcon", defaultPointIcon) 
+                        : defaultPointIcon;
+                    
+                    if (pointIconUrl) {
+                        const iconImg = document.getElementById('customPointIcon');
+                        iconImg.src = pointIconUrl;
+                        iconImg.classList.remove('hidden'); // แสดงภาพ custom
+                        document.getElementById('defaultPointSvg').classList.add('hidden'); // ซ่อน SVG เดิม
+                    }
+                } catch(e) {
+                    console.log("Error loading point icon:", e);
+                }
+
+                applyTranslations();
+                pointData = { ...pointData, ...data };
+                console.log(JSON.stringify(pointData));
+                updateUI();
+            }
+        }, false);
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function formatDisplayDate(dateStr, lang) {
+            if (!dateStr) return '--/--/----';
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+                const day = date.getDate().toString().padStart(2, '0');
+                if (lang === 'en') {
+                    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    return `${day} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                } else {
+                    const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                    return `${day} ${monthNames[date.getMonth()]} ${date.getFullYear() + 543}`;
+                }
+            } catch (e) { return dateStr; }
+        }
+
+        // --- STREAMING_CHUNK:Updating UI with animations... ---
+        function updateUI() {
+            const t = translations[currentLang];    
+
+
+
+
+            animateValue('point_remainAvailable', pointData.point_remainAvailable);
+            document.getElementById('point_totalEarned').textContent = formatNumber(pointData.point_totalEarned);
+            document.getElementById('point_redeemed').textContent = formatNumber(pointData.point_redeemed);
+            document.getElementById('point_pending').textContent = formatNumber(pointData.point_pending);
+            document.getElementById('point_totalSpending').textContent = '฿' + formatNumber(pointData.point_totalSpending);
+
+            // Expiring Banner
+            if (pointData.point_expiringSoon_point > 0) {
+                document.getElementById('expiringSoonSection').classList.remove('hidden');
+                document.getElementById('point_expiringSoon_point').textContent = formatNumber(pointData.point_expiringSoon_point);
+                document.getElementById('point_expiringSoon_daysLeft').textContent = pointData.point_expiringSoon_daysLeft;
+                document.getElementById('point_expiringSoon_expiresAt').textContent = formatDisplayDate(pointData.point_expiringSoon_expiresAt, currentLang);
+            } else {
+                document.getElementById('expiringSoonSection').classList.add('hidden');
+            }
+
+            // Expiring List View (App Style)
+            const listBody = document.getElementById('expiringSoonListBody');
+            if (pointData.point_expiringSoon_list && pointData.point_expiringSoon_list.length > 0) {
+                document.getElementById('expiringTableSection').classList.remove('hidden');
+                listBody.innerHTML = pointData.point_expiringSoon_list.map((item, index) => {
+                    const points = item.points || item[0] || 0;
+                    const expiry = item.expiresAt || item[1] || '';
+                    // Generate list item cards instead of table rows
+                    return `
+                        <div class="list-item-clean rounded-2xl p-4 flex justify-between items-center" style="animation: fadeInSlide 0.5s ease forwards; animation-delay: ${0.1 * index}s; opacity: 0;">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-base leading-none">${formatNumber(points)} <span class="text-xs font-medium text-gray-400">${t.pts}</span></p>
+                                    <p class="text-xs text-gray-400 mt-1">${t.tableExpireDate}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="inline-flex items-center rounded-md bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                                    ${formatDisplayDate(expiry, currentLang)}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                document.getElementById('expiringTableSection').classList.add('hidden');
+            }
+        }
+
+        // Custom easing number counter
+        function animateValue(id, endValue) {
+            const obj = document.getElementById(id);
+            let startValue = parseInt(obj.innerHTML.replace(/,/g, '')) || 0;
+            let duration = 1200; 
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // EaseOutExpo function for premium snappy feel
+                const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                const currentVal = Math.floor(easeOutExpo * (endValue - startValue) + startValue);
+                obj.innerHTML = formatNumber(currentVal);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function sendResponse(resultData) {
+            window.parent.postMessage({ type: "formData", data: resultData, closeIframe: true }, "*");
+        }
+
+        // Mock data for previewing without Iframe parent
+        // setTimeout(() => {
+        //     window.dispatchEvent(new MessageEvent('message', {
+        //         data: {
+        //             type: 'updateData',
+        //             data: {
+        //                 point_remainAvailable: 28540,
+        //                 point_totalEarned: 45000,
+        //                 point_redeemed: 16460,
+        //                 point_pending: 1200,
+        //                 point_totalSpending: 25500,
+        //                 point_expiringSoon_point: 3500,
+        //                 point_expiringSoon_daysLeft: 5,
+        //                 point_expiringSoon_expiresAt: '2024-12-31',
+        //                 point_expiringSoon_list: [{points: 2000, expiresAt: '2024-12-31'}, {points: 1500, expiresAt: '2025-01-15'}]
+        //             }
+        //         }
+        //     }));
+        // }, 300);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Display</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Library QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            /* พื้นหลังไล่สี Gradient บน-ล่าง */
+            background: linear-gradient(180deg, #eff6ff 0%, #f1f5f9 100%);
+            /* (สีฟ้าอ่อน -> สีเทาอ่อน) */
+        }
+        
+        /* Style เฉพาะสำหรับ QR Code */
+        #qrcode img {
+            margin: auto;
+            display: block;
+            border-radius: 8px; /* มุมโค้งเล็กน้อยที่ตัว QR */
+        }
+
+        /* Animation ตอนโหลด */
+        .fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container หลัก -->
+    <div class="w-full max-w-sm text-center fade-in-up relative">
+        
+        <!-- 1. Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-800 tracking-tight drop-shadow-sm">My QR Code</h1>
+            <p class="text-slate-500 text-base mt-2 font-light">สแกนเพื่อดำเนินการต่อ</p>
+        </div>
+        
+        <!-- 2. พื้นที่แสดง QR Code (กรอบโดดเด่น) -->
+        <div class="flex justify-center mb-10">
+            <div class="relative group">
+                <!-- Effect แสงด้านหลัง (Glow) -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-300 to-indigo-300 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                
+                <!-- กรอบ QR Code สีขาว -->
+                <div class="relative bg-white p-4 rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-slate-100 transform transition duration-300 hover:scale-[1.02]">
+                    <div id="qrcode" class="overflow-hidden"></div>
+                    
+                    <!-- โลโก้หรือไอคอนตกแต่งเล็กๆ ตรงกลางด้านล่างกรอบ (Optional) -->
+                    <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                        <i class="fa-solid fa-qrcode text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Label & Code Section -->
+        <div class="space-y-3">
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-widest">( รหัสสมาชิก )</p>
+
+            <!-- Box แสดงรหัส + ปุ่ม Copy -->
+            <div class="group relative flex items-center bg-white border-2 border-slate-200 hover:border-blue-400 rounded-2xl p-2 pr-2 transition-all duration-300 shadow-sm hover:shadow-md max-w-[280px] mx-auto">
+                
+                <!-- Text Code -->
+                <div class="flex-grow text-center overflow-hidden">
+                    <p id="display-text" class="text-2xl font-bold text-slate-700 font-mono tracking-wider truncate px-2 selection:bg-blue-100 selection:text-blue-700">
+                        AAAAAA
+                    </p>
+                </div>
+
+                <!-- Divider -->
+                <div class="w-px h-8 bg-slate-200 mx-1"></div>
+
+                <!-- Copy Button -->
+                <button onclick="copyToClipboard()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 active:scale-95" title="คัดลอกรหัส">
+                    <i class="fa-regular fa-copy text-lg"></i>
+                    
+                    <!-- Tooltip Feedback -->
+                    <span id="copy-feedback" class="absolute -top-10 right-0 bg-slate-800 text-white text-xs py-1.5 px-3 rounded-lg opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-lg font-medium z-20">
+                        คัดลอกแล้ว!
+                        <div class="absolute top-full right-4 -mt-1 border-4 border-transparent border-t-slate-800"></div>
+                    </span>
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        const qrContainer = document.getElementById('qrcode');
+        const textDisplay = document.getElementById('display-text');
+        const feedbackTooltip = document.getElementById('copy-feedback');
+
+        // ตัวแปรเก็บข้อความปัจจุบัน
+        let currentMessage = "";
+
+        window.onload = function() {
+            // 1. ดึงค่าจาก Query Parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            // ถ้าไม่มีค่า ให้ Default เป็น "AAAAAA"
+            currentMessage = urlParams.get('text') || urlParams.get('message') || "AAAAAA";
+
+            // 2. เคลียร์ container
+            qrContainer.innerHTML = "";
+
+            // 3. แสดงข้อความ
+            textDisplay.textContent = currentMessage;
+
+            // 4. สร้าง QR Code
+            new QRCode(qrContainer, {
+                text: currentMessage,
+                width: 220, // ปรับขนาดให้พอดีกับกรอบใหม่
+                height: 220,
+                colorDark : "#1e293b", // Slate-800
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        };
+
+        // ฟังก์ชันคัดลอกข้อความ
+        function copyToClipboard() {
+            const el = document.createElement('textarea');
+            el.value = currentMessage;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            // แสดง Feedback
+            feedbackTooltip.classList.remove('opacity-0');
+            // เปลี่ยน icon ชั่วคราว
+            const icon = document.querySelector('.fa-copy');
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+
+            setTimeout(() => {
+                feedbackTooltip.classList.add('opacity-0');
+                icon.classList.add('fa-regular');
+                icon.classList.remove('fa-solid');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

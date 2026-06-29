@@ -1,0 +1,39 @@
+{
+    "ok": true,
+    "userId": "U725afddef5ad6a779ac46fba4f314cb4",
+    "displayName": "Benz. 🏀",
+    "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+    "idToken": "eyJraWQiOiI5YjExMTJiMDk4ZjMxODRjNmU4M2ZjM2QxYmU4ZmMyMTdkYjFlYjIwNzU2YTE1NmNiNjNjZThjZTllMjdkZmQyIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVTcyNWFmZGRlZjVhZDZhNzc5YWM0NmZiYTRmMzE0Y2I0IiwiYXVkIjoiMjAwOTkzMzM4MSIsImV4cCI6MTc4MjE5MzQwNCwiaWF0IjoxNzgyMTg5ODA0LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoiQmVuei4g8J-PgCIsInBpY3R1cmUiOiJodHRwczovL3Byb2ZpbGUubGluZS1zY2RuLm5ldC8waHRzWGZqSDNySzF4bEh6Y3FkSUpVQ3hoYUpURVNNUzBVSFNzeE9oSWRjamhPZkdrTURpNWphRUlYSVd3YmZ6Z0REbkJoT1JjZGREdE5NQkZDS3dJRFIwZE5DemtXVndoT1Bub0dlQWthSnh3MVRqWURHZzBFT1JKdGNBc0FlM0I2TUhBVFhpWkhkREkxVjIxWExud3lXRVpBSFNzeVh4dFNYQkUifQ.2m8T7pNPQ8r-exShXiS0NSevG3uQXgTx09WRFrLA351UF0oGwqLELavRvsQS-H2nGHGYp3BXARLuv4COZZU7Dg",
+    "inClient": false,
+    "os": "web",
+    "language": "th",
+    "liffId": "2009933381-17z8Xb7a",
+    "appid": "9f15d0aa-b793-4fcc-935b-fdf0b72515cc",
+    "storeInfo": {
+        "storeName": "Reflexstudio",
+        "conditionURL": null,
+        "logoURL": null,
+        "storeCoverURL": "https://assets.mookept.com/store_covers/1777536006933-c5bf7acd426cf1984ab4e67d61aba2ef.png",
+        "primaryColor": "#b6d1fb",
+        "secondaryColor": "#f59e0b",
+        "themeId": null
+    },
+    "initializeData": {
+        "appMode": {
+            "mode": "FLATAPP",
+            "path": "app"
+        },
+        "defaultLanguage": "Th",
+        "skipIframeThemeColor": false,
+        "loadingBgColor": "#FFFFFF",
+        "loadingImg_width": 220,
+        "loadingImg_height": 220,
+        "consoleBtn_width": 220,
+        "consoleBtn_height": 220,
+        "primaryColor": "#F80D6B",
+        "secondaryColor": "#f59e0b",
+        "bgColor": "#ffffff",
+        "themeId": "theme_classic1",
+        "skipInappThemeColor": false
+    }
+}

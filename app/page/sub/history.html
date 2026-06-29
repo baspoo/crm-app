@@ -1,0 +1,45 @@
+<!-- 
+  Subpage Demo: หน้านี้จะถูก Cache ไว้ เปิดครั้งต่อไปจะไม่โหลดใหม่
+-->
+<div class="p-4 h-full flex flex-col">
+    <h2 class="font-bold text-gray-800 text-xl mb-4">Transaction History</h2>
+    
+    <!-- พื้นที่ทดสอบ Scroll ยาวๆ -->
+    <div class="flex-grow space-y-3" id="history-list">
+        <!-- JS จะยัด Template ลงตรงนี้ -->
+    </div>
+</div>
+
+<template id="tpl-history-item">
+    <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+        <div>
+            <p class="text-sm font-bold text-gray-700 action-slot">Action</p>
+            <p class="text-[10px] text-gray-400 date-slot">Date</p>
+        </div>
+        <span class="text-sm font-bold point-slot">0</span>
+    </div>
+</template>
+
+<script>
+    (() => {
+        const container = document.getElementById('history-list');
+        const template = document.getElementById('tpl-history-item');
+
+        // สร้างข้อมูล Mock 20 รายการเพื่อทดสอบ Scrollbar
+        for (let i = 1; i <= 20; i++) {
+            const clone = template.content.cloneNode(true);
+            const isEarn = Math.random() > 0.5;
+            
+            clone.querySelector('.action-slot').textContent = isEarn ? "Earned Points" : "Redeemed Reward";
+            clone.querySelector('.date-slot').textContent = `2026-06-${Math.floor(Math.random() * 30 + 1)}`;
+            
+            const pointEl = clone.querySelector('.point-slot');
+            pointEl.textContent = (isEarn ? "+" : "-") + Math.floor(Math.random() * 500);
+            pointEl.classList.add(isEarn ? 'text-green-600' : 'text-red-600');
+
+            container.appendChild(clone);
+        }
+        
+        console.log("[History] Rendered. This will be cached by PageManager!");
+    })();
+</script>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Referral Program</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Custom Scrollbar --- */
+        html, .scrollable-area {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+
+        /* --- Animations --- */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- Toast Notification --- */
+        #toast {
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: bottom 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+        }
+        #toast.show { bottom: 24px; }
+
+        /* Dynamic Theme Classes */
+        .bg-primary-theme { background-color: var(--primary-color, #3b82f6); }
+        .text-primary-theme { color: var(--primary-color, #3b82f6); }
+        .border-primary-theme { border-color: var(--primary-color, #3b82f6); }
+        
+        .bg-secondary-theme { background-color: var(--secondary-color, #f59e0b); }
+        .text-secondary-theme { color: var(--secondary-color, #f59e0b); }
+        .border-secondary-theme { border-color: var(--secondary-color, #f59e0b); }
+
+        /* Classes สำหรับจัดการสี Text ที่อยู่บนพื้นหลัง Theme */
+        .text-on-primary { color: var(--text-on-primary, #ffffff); }
+        .text-on-secondary { color: var(--text-on-secondary, #ffffff); }
+    </style>
+</head>
+<body class="relative min-h-screen pb-10">
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white">
+        <img id="headerImage" src="res/header/dummy.png" alt="Campaign Banner" class="w-full h-auto block">
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-md mx-auto px-4 pt-5 relative z-10 slide-up">
+        
+        <!-- Loading Spinner (แสดงระหว่างดึงข้อมูลเริ่มต้น) -->
+        <div id="mainLoading" class="bg-white rounded-3xl shadow-lg p-8 text-center flex flex-col items-center justify-center">
+            <i class="fas fa-circle-notch fa-spin text-3xl text-primary-theme mb-3"></i>
+            <p class="text-gray-500 text-sm" data-i18n="loading">กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- ========================================================= -->
+        <!--                   [ MODE : ME ]                           -->
+        <!-- ========================================================= -->
+        <div id="modeMeContainer" class="hidden space-y-5">
+            
+            <!-- Section 1: Referral Code ของฉัน -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-primary-theme opacity-5 rounded-bl-[100px] z-0"></div>
+                
+                <h2 class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2 relative z-10" data-i18n="yourCodeTitle">รหัสแนะนำของคุณ</h2>
+                
+                <div class="flex items-center justify-between bg-gray-50 border border-gray-100 rounded-2xl p-4 relative z-10">
+                    <span id="myReferCodeTxt" class="text-3xl font-bold text-gray-800 tracking-widest">------</span>
+                    <button id="copyBtn" onclick="copyReferCode()" class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-theme text-on-primary shadow-md hover:opacity-90 active:scale-95 transition-all">
+                        <i class="fas fa-copy text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Point Info -->
+                <div class="mt-4 grid grid-cols-2 gap-3 relative z-10">
+                    <div class="bg-blue-50 rounded-xl p-3 text-center">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="friendGets">เพื่อนได้รับ</p>
+                        <p class="font-bold text-primary-theme flex items-center justify-center gap-1"><span id="inviteePoint">0</span> <img src="" alt="point" class="point-icon w-4 h-4 object-contain"></p>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-3 text-center">
+                        <p class="text-xs text-gray-500 mb-1" data-i18n="youGet">คุณได้รับ</p>
+                        <p class="font-bold text-primary-theme flex items-center justify-center gap-1"><span id="ownerPoint">0</span> <img src="" alt="point" class="point-icon w-4 h-4 object-contain"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: กรอก Code (แสดงเฉพาะเมื่อ remainingTime > 0) -->
+            <div id="enterCodePanel" class="bg-white rounded-3xl shadow-lg p-6 hidden">
+                <h3 class="text-gray-800 font-semibold mb-2 flex items-center gap-2">
+                    <i class="fas fa-gift text-secondary-theme"></i>
+                    <span data-i18n="enterCodeTitle">รับแต้มพิเศษ</span>
+                </h3>
+                
+                <div class="text-center py-2">
+                    <p class="text-sm text-gray-500 mb-4" data-i18n="enterCodeDesc">กรอกรหัสแนะนำจากเพื่อนตอนนี้เพื่อรับแต้มฟรี! รีบหน่อยก่อนเวลาจะหมด</p>
+                    
+                    <!-- Countdown Timer -->
+                    <div class="inline-flex items-center justify-center gap-2 bg-red-50 text-red-500 px-4 py-2 rounded-xl mb-4 border border-red-100 w-full">
+                        <i class="far fa-clock text-lg"></i>
+                        <span class="text-xs" data-i18n="timeLeft">เวลาคงเหลือ:</span>
+                        <span id="countdownTimer" class="font-bold text-lg tracking-wider">--:--:--</span>
+                    </div>
+
+                    <button onclick="switchToInviteMode()" class="w-full py-3.5 rounded-xl bg-secondary-theme text-on-secondary font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-keyboard"></i>
+                        <span data-i18n="enterCodeBtn">กรอกรหัสแนะนำ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: จำนวนคนที่ใช้ Code ของเรา (แทนประวัติรายชื่อ) -->
+            <div class="bg-white rounded-3xl shadow-lg p-6">
+                <h3 class="text-gray-800 font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-users text-primary-theme"></i>
+                    <span data-i18n="inviteCountTitle">เพื่อนที่ใช้รหัสของคุณ</span>
+                </h3>
+                
+                <div class="flex items-center justify-between bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                    <span class="text-gray-500 text-sm font-medium" data-i18n="totalInvited">จำนวนที่เชิญสำเร็จ</span>
+                    <div class="text-3xl font-bold text-primary-theme flex items-baseline gap-1">
+                        <span id="inviteCountTxt">0</span>
+                        <span class="text-sm font-normal text-gray-500" data-i18n="peopleUnit">คน</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!--               [ MODE : INVITE CODE ]                      -->
+        <!-- ========================================================= -->
+        <div id="modeInviteContainer" class="hidden">
+            <div class="bg-white rounded-3xl shadow-lg p-6 relative overflow-hidden">
+                <!-- ตกแต่งพื้นหลังเล็กน้อย -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary-theme opacity-5 rounded-full z-0"></div>
+
+                <!-- 1) Step Input: กรอกรหัส -->
+                <div id="inviteStepInput" class="relative z-10 fade-in">
+                    <h3 class="text-gray-800 font-semibold text-lg flex items-center gap-2 mb-2">
+                        <i class="fas fa-user-plus text-secondary-theme"></i>
+                        <span data-i18n="inputCodeTitle">กรอกรหัสแนะนำ</span>
+                    </h3>
+                    <p class="text-sm text-gray-500 mb-5" data-i18n="inputCodeDesc">กรุณากรอกรหัสแนะนำที่คุณได้รับจากเพื่อน เพื่อรับแต้มพิเศษ</p>
+                    
+                    <div class="relative">
+                        <input type="text" id="referralInput" placeholder="Ex. BGC2325C" class="w-full bg-gray-50 border-2 border-gray-200 text-gray-800 font-bold text-lg rounded-xl px-4 py-3.5 uppercase tracking-wider outline-none focus:border-secondary-theme transition-colors">
+                    </div>
+                    
+                    <p id="inviteErrorMsg" class="text-red-500 text-sm mt-2 hidden flex items-center gap-1">
+                        <i class="fas fa-exclamation-circle"></i> <span data-i18n="invalidCode">ไม่พบข้อมูล หรือรหัสไม่ถูกต้อง</span>
+                    </p>
+
+                    <button id="btnCheckCode" onclick="checkReferralCode()" class="w-full mt-6 py-3.5 rounded-xl bg-secondary-theme text-on-secondary font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <span id="btnCheckTxt" data-i18n="btnCheckCode">ตรวจสอบรหัส</span>
+                        <i id="btnCheckLoader" class="fas fa-circle-notch fa-spin hidden"></i>
+                    </button>
+                </div>
+
+                <!-- 2) Step Verify: เจอเพื่อน ยืนยัน -->
+                <div id="inviteStepVerify" class="relative z-10 hidden fade-in">
+                    <h3 class="text-gray-800 font-semibold text-lg flex items-center justify-center gap-2 mb-4">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span data-i18n="verifyTitle">พบข้อมูลเพื่อนของคุณ</span>
+                    </h3>
+                    
+                    <!-- Profile Card -->
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center gap-4 mb-4 shadow-sm">
+                        <img id="verifyProfileImg" src="" alt="Friend Profile" class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm bg-white" onerror="this.onerror=null; this.src=DEFAULT_AVATAR">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-0.5" data-i18n="invitedByLabel">ผู้แนะนำของคุณ</p>
+                            <p id="verifyProfileName" class="font-bold text-gray-800 text-lg leading-tight">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Points Details -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-blue-50 rounded-xl p-3 text-center">
+                            <p class="text-xs text-gray-500 mb-1" data-i18n="youWillGet">คุณจะได้รับ</p>
+                            <p class="font-bold text-primary-theme flex items-center justify-center gap-1 text-lg">
+                                +<span id="verifyInviteePoint">0</span> <img src="" alt="point" class="point-icon w-4 h-4 object-contain">
+                            </p>
+                        </div>
+                        <div class="bg-blue-50 rounded-xl p-3 text-center">
+                            <p class="text-xs text-gray-500 mb-1" data-i18n="friendWillGet">เพื่อนจะได้รับ</p>
+                            <p class="font-bold text-primary-theme flex items-center justify-center gap-1 text-lg">
+                                +<span id="verifyOwnerPoint">0</span> <img src="" alt="point" class="point-icon w-4 h-4 object-contain">
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="space-y-3">
+                        <button id="btnConfirmCode" onclick="confirmReferralCode()" class="w-full py-3.5 rounded-xl bg-primary-theme text-on-primary font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <span id="btnConfirmTxt" data-i18n="btnConfirm">ยืนยันรับสิทธิ์</span>
+                            <i id="btnConfirmLoader" class="fas fa-circle-notch fa-spin hidden"></i>
+                        </button>
+                        <button onclick="backToInputStep()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors" data-i18n="btnCancel">
+                            ยกเลิก / กรอกใหม่
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3) Step Success: สำเร็จ -->
+                <div id="inviteStepSuccess" class="relative z-10 hidden fade-in text-center py-4">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-4xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-gray-800 font-bold text-xl mb-2" data-i18n="successTitle">ยินดีด้วย! รับสิทธิ์สำเร็จ</h3>
+                    <p class="text-gray-500 text-sm mb-6 flex items-center justify-center gap-1">
+                        <span data-i18n="youEarned">คุณได้รับคะแนน</span> 
+                        <span id="successEarnedPoint" class="font-bold text-primary-theme">0</span>
+                        <img src="" alt="point" class="point-icon w-4 h-4 object-contain">
+                    </p>
+                    
+                    <button onclick="finishAndClose()" class="w-full py-3.5 rounded-xl bg-primary-theme text-on-primary font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all">
+                        <span data-i18n="btnClose">ปิดหน้าต่าง</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" data-i18n="copySuccess">คัดลอกรหัสเรียบร้อยแล้ว!</div>
+
+    <script>
+        // --- 1. การตั้งค่า Language Dictionary (i18n) ---
+        const translations = {
+            th: {
+                loading: "กำลังโหลดข้อมูล...",
+                // Mode Me
+                yourCodeTitle: "รหัสแนะนำของคุณ",
+                friendGets: "เพื่อนได้รับ",
+                youGet: "คุณได้รับ",
+                enterCodeTitle: "รับแต้มพิเศษ",
+                enterCodeDesc: "กรอกรหัสแนะนำจากเพื่อนตอนนี้เพื่อรับแต้มฟรี! รีบหน่อยก่อนเวลาจะหมด",
+                timeLeft: "เวลาคงเหลือ:",
+                days: "วัน",
+                enterCodeBtn: "กรอกรหัสแนะนำ",
+                inviteCountTitle: "เพื่อนที่ใช้รหัสของคุณ",
+                totalInvited: "จำนวนที่เชิญสำเร็จ",
+                peopleUnit: "คน",
+                copySuccess: "คัดลอกรหัสเรียบร้อยแล้ว!",
+                datePrefix: "เมื่อ",
+                // Mode Invite
+                inputCodeTitle: "กรอกรหัสแนะนำ",
+                inputCodeDesc: "กรุณากรอกรหัสแนะนำที่คุณได้รับจากเพื่อน เพื่อรับแต้มพิเศษ",
+                btnCheckCode: "ตรวจสอบรหัส",
+                invalidCode: "ไม่พบข้อมูล หรือรหัสไม่ถูกต้อง",
+                verifyTitle: "พบข้อมูลเพื่อนของคุณ",
+                invitedByLabel: "ผู้แนะนำของคุณ",
+                youWillGet: "คุณจะได้รับ",
+                friendWillGet: "เพื่อนจะได้รับ",
+                btnConfirm: "ยืนยันรับสิทธิ์",
+                btnCancel: "ยกเลิก / กลับ",
+                successTitle: "ยินดีด้วย! รับสิทธิ์สำเร็จ",
+                youEarned: "คุณได้รับคะแนน",
+                btnClose: "ปิดหน้าต่าง"
+            },
+            en: {
+                loading: "Loading data...",
+                // Mode Me
+                yourCodeTitle: "Your Referral Code",
+                friendGets: "Friend gets",
+                youGet: "You get",
+                enterCodeTitle: "Get Special Points",
+                enterCodeDesc: "Enter a friend's code now to get free points! Hurry before time runs out.",
+                timeLeft: "Time left:",
+                days: "d",
+                enterCodeBtn: "Enter Referral Code",
+                inviteCountTitle: "Friends Invited",
+                totalInvited: "Total successful invites",
+                peopleUnit: "people",
+                copySuccess: "Code copied successfully!",
+                datePrefix: "On",
+                // Mode Invite
+                inputCodeTitle: "Enter Referral Code",
+                inputCodeDesc: "Please enter the referral code from your friend to earn points.",
+                btnCheckCode: "Check Code",
+                invalidCode: "Invalid code or not found.",
+                verifyTitle: "Friend Found!",
+                invitedByLabel: "Invited by",
+                youWillGet: "You will get",
+                friendWillGet: "Friend will get",
+                btnConfirm: "Confirm",
+                btnCancel: "Cancel / Back",
+                successTitle: "Success! Points claimed.",
+                youEarned: "You earned",
+                btnClose: "Close Window"
+            }
+        };
+
+        // --- Global Variables ---
+        let currentMode = 'me'; // Default mode
+        let currentLang = 'th';
+        let currentResPath = 'res';
+        let currentReferCode = ''; // Code ของตัวเอง
+        let inputFriendCode = '';  // Code ของเพื่อนที่กำลังพิมพ์
+        let appData = {};
+        let countdownInterval;
+
+        // ภาพ Default Profile (Base64 SVG)
+        const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NiZDVlMSI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
+
+        // --- 2. Utility Functions ---
+        function getContrastColor(hexColor) {
+            if(!hexColor) return '#ffffff';
+            hexColor = hexColor.replace('#', '');
+            if (hexColor.length === 3) hexColor = hexColor.split('').map(c => c + c).join('');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1f2937' : '#ffffff'; 
+        }
+
+        function applyLanguage() {
+            const dict = translations[currentLang] || translations['en'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    if (el.tagName.toLowerCase() === 'input' && el.type === 'text') {
+                        // Handle placeholders if needed (currently hardcoded placeholder, can update if required)
+                    } else {
+                        el.innerText = dict[key];
+                    }
+                }
+            });
+        }
+
+        function startCountdown(seconds) {
+            clearInterval(countdownInterval);
+            let remaining = seconds;
+            const timerEl = document.getElementById('countdownTimer');
+            const panel = document.getElementById('enterCodePanel');
+            const dict = translations[currentLang] || translations['en'];
+            
+            function updateTimer() {
+                if (remaining <= 0) {
+                    clearInterval(countdownInterval);
+                    panel.classList.add('hidden');
+                    return;
+                }
+                const d = Math.floor(remaining / (3600 * 24));
+                const h = Math.floor((remaining % (3600 * 24)) / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                const s = Math.floor(remaining % 60);
+                
+                let timeStr = "";
+                if (d > 0) timeStr += `${d} ${dict.days} `;
+                timeStr += `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                timerEl.innerText = timeStr;
+                remaining--;
+            }
+            updateTimer();
+            countdownInterval = setInterval(updateTimer, 1000);
+        }
+
+        // --- 3. การรับส่งข้อมูลกับ Parent Window ---
+        const safeParent = {
+            callExternalApi: (apiName, payload, callback) => {
+                if(window.parent && typeof window.parent.callExternalApi === 'function'){
+                    window.parent.callExternalApi(apiName, payload, callback);
+                } else {
+                    console.warn("Mocking API Call for:", apiName);
+                    // Mock Responses สำหรับเทส UI
+                    setTimeout(() => {
+                        if(apiName === "crm_getMyReferCode"){
+                            callback({ result: { data: { referCode: "BGC2325C", invitee: 10, owner: 10, remainingTime: 259200, inviteCount: 12 } } });
+                        } else if(apiName === "crm_getFriendByReferCode") {
+                            if(payload.referCode === "ERROR"){ // เทสกรณีไม่เจอ
+                                callback({ result: { code: 404, message: "Not found", data: null } });
+                            } else {
+                                callback({ result: { data: { 
+                                    referCode: payload.referCode, 
+                                    profile: { displayName: "Ice T.", pictureUrl: "https://via.placeholder.com/150/e2e8f0/94a3b8?text=Ice" },
+                                    invitee: 10, owner: 10
+                                } } });
+                            }
+                        } else if(apiName === "crm_claimReferCode") {
+                            callback({ result: { data: { reward: { earnPoint: 10, points: 1568 } } } });
+                        }
+                    }, 600);
+                }
+            },
+            onUpdateApp: () => {
+                if(window.parent && typeof window.parent.onUpdateApp === 'function') window.parent.onUpdateApp();
+                else console.log("Mocking window.parent.onUpdateApp()");
+            },
+            closeIframe: () => {
+                if(window.parent && typeof window.parent.closeIframe === 'function') window.parent.closeIframe();
+                else console.log("Mocking window.parent.closeIframe()");
+            }
+        };
+
+        // รับ Initial Data
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'initialData') {
+                const data = event.data.data;
+                // ดึง Mode ที่ระบุมา (ถ้าไม่ส่งถือว่าเป็น me)
+                currentMode = data.mode || "me"; 
+                
+                
+                if (window.parent && window.parent.appData) {
+                    appData = window.parent.appData;
+                }
+                initApp();
+            }
+        }, false);
+
+        // ฟังก์ชันเริ่มต้น (Setup UI Themes/Mode)
+        function initApp() {
+            // Setup Themes
+            const root = document.documentElement;
+            if (appData.primaryColor) {
+                root.style.setProperty('--primary-color', appData.primaryColor);
+                root.style.setProperty('--text-on-primary', getContrastColor(appData.primaryColor));
+            }
+            if (appData.secondaryColor) {
+                root.style.setProperty('--secondary-color', appData.secondaryColor);
+                root.style.setProperty('--text-on-secondary', getContrastColor(appData.secondaryColor));
+            }
+
+            // Setup Language
+            if (appData.language && translations[appData.language.toLowerCase()]) {
+                currentLang = appData.language.toLowerCase();
+            }
+            applyLanguage();
+
+            // Setup Images
+            currentResPath = appData.resPath || `res`;
+            const headerImg = document.getElementById('headerImage');
+            if(window.parent && typeof window.parent.getAssets === 'function') {
+                headerImg.src = window.parent.getAssets("referralHeader") || `${currentResPath}/header/dummy.png`;
+            } else if (appData.customAssets && appData.customAssets.referHeader) {
+                headerImg.src = appData.customAssets.referHeader;
+            }
+
+            // Setup Point Icon
+            let defaultPointIcon = "https://cdn-icons-png.flaticon.com/512/2583/2583133.png";
+            let pointIconUrl = defaultPointIcon;
+            if(window.parent && typeof window.parent.getAssets === 'function') {
+                pointIconUrl = window.parent.getAssets("pointIcon", defaultPointIcon) || defaultPointIcon;
+            }
+            document.querySelectorAll('.point-icon').forEach(img => img.src = pointIconUrl);
+
+            // ------------------------------------------
+            // Switch Rendering ตามโหมด (ME หรือ INVITE)
+            // ------------------------------------------
+            if (currentMode === "inviteCode") {
+                // โหมดกรอก Code ไม่ต้องโหลดข้อมูลตัวเอง ซ่อน Loading แล้วเปิด Panel ได้เลย
+                document.getElementById('mainLoading').classList.add('hidden');
+                document.getElementById('modeInviteContainer').classList.remove('hidden');
+                document.getElementById('modeInviteContainer').classList.add('fade-in');
+            } else {
+                // โหมดหลัก (ME) เรียก API เพื่อดึงข้อมูลตัวเองก่อน
+                fetchMainData();
+            }
+        }
+
+
+        // =========================================================================
+        //                         [ MODE : ME ]
+        // =========================================================================
+
+        function fetchMainData() {
+            const apiName = "crm_getMyReferCode";
+            safeParent.callExternalApi(apiName, {}, (res) => {
+                document.getElementById('mainLoading').classList.add('hidden');
+                document.getElementById('modeMeContainer').classList.remove('hidden');
+                document.getElementById('modeMeContainer').classList.add('fade-in');
+
+                if (res && res.result && res.result.data) {
+                    const data = res.result.data;
+                    
+                    currentReferCode = data.referCode || "-";
+                    document.getElementById('myReferCodeTxt').innerText = currentReferCode;
+                    document.getElementById('inviteePoint').innerText = data.invitee || 0;
+                    document.getElementById('ownerPoint').innerText = data.owner || 0;
+                    document.getElementById('inviteCountTxt').innerText = data.inviteCount || 0;
+
+                    const remainingTime = data.remainingTime || 0;
+                    const enterCodePanel = document.getElementById('enterCodePanel');
+                    
+                    if (remainingTime > 0) {
+                        enterCodePanel.classList.remove('hidden');
+                        startCountdown(remainingTime);
+                    } else {
+                        enterCodePanel.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        function copyReferCode() {
+            if (!currentReferCode || currentReferCode === "-") return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(currentReferCode).then(showToast);
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = currentReferCode;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try { document.execCommand('copy'); showToast(); } catch (err) {}
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // อนุญาตให้กดปุ่ม "กรอกรหัสแนะนำ" จาก Mode ME แล้วสลับ UI เป็นโหมด Invite ได้เลย (หรือจะให้ปิดเปิดใหม่ก็แล้วแต่ระบบหลัก)
+        function switchToInviteMode() {
+            document.getElementById('modeMeContainer').classList.add('hidden');
+            document.getElementById('modeInviteContainer').classList.remove('hidden');
+            document.getElementById('modeInviteContainer').classList.add('fade-in');
+            currentMode = "inviteCode";
+        }
+
+
+        // =========================================================================
+        //                     [ MODE : INVITE CODE ]
+        // =========================================================================
+
+        function checkReferralCode() {
+            const inputEl = document.getElementById('referralInput');
+            const code = inputEl.value.trim().toUpperCase();
+            const errorMsg = document.getElementById('inviteErrorMsg');
+            const btnTxt = document.getElementById('btnCheckTxt');
+            const btnLoader = document.getElementById('btnCheckLoader');
+
+            if(!code) return;
+
+            // Loading state
+            errorMsg.classList.add('hidden');
+            btnTxt.innerText = translations[currentLang].loading;
+            btnLoader.classList.remove('hidden');
+
+            inputFriendCode = code;
+            
+            safeParent.callExternalApi("crm_getFriendByReferCode", { referCode: code }, (res) => {
+                // Reset loading state
+                btnTxt.innerText = translations[currentLang].btnCheckCode;
+                btnLoader.classList.add('hidden');
+
+                if(res && res.result && res.result.data && res.result.data.profile) {
+                    const data = res.result.data;
+                    const profile = data.profile;
+                    
+                    // Populate Profile & Points
+                    document.getElementById('verifyProfileName').innerText = profile.displayName || "Unknown";
+                    document.getElementById('verifyProfileImg').src = profile.pictureUrl || DEFAULT_AVATAR;
+                    document.getElementById('verifyInviteePoint').innerText = data.invitee || 0;
+                    document.getElementById('verifyOwnerPoint').innerText = data.owner || 0;
+
+                    // Swap views
+                    document.getElementById('inviteStepInput').classList.add('hidden');
+                    document.getElementById('inviteStepVerify').classList.remove('hidden');
+                } else {
+                    // Not found or error
+                    errorMsg.classList.remove('hidden');
+                }
+            });
+        }
+
+        function backToInputStep() {
+            document.getElementById('inviteStepVerify').classList.add('hidden');
+            document.getElementById('inviteStepInput').classList.remove('hidden');
+            document.getElementById('referralInput').value = '';
+            document.getElementById('referralInput').focus();
+        }
+
+        function confirmReferralCode() {
+            const btnTxt = document.getElementById('btnConfirmTxt');
+            const btnLoader = document.getElementById('btnConfirmLoader');
+
+            // Loading state
+            btnTxt.innerText = translations[currentLang].loading;
+            btnLoader.classList.remove('hidden');
+
+            safeParent.callExternalApi("crm_claimReferCode", { referCode: inputFriendCode }, (res) => {
+                // Swap views to Success
+                document.getElementById('inviteStepVerify').classList.add('hidden');
+                document.getElementById('inviteStepSuccess').classList.remove('hidden');
+
+                if(res && res.result && res.result.data && res.result.data.reward) {
+                    const reward = res.result.data.reward;
+                    document.getElementById('successEarnedPoint').innerText = reward.earnPoint || 0;
+                }
+            });
+        }
+
+        function finishAndClose() {
+            // อัพเดทแอปแม่ แล้วปิดหน้าจอ Iframe
+            safeParent.onUpdateApp();
+            safeParent.closeIframe();
+        }
+
+
+        // --- Development Only: จำลองการรันเพื่อทดสอบโดยไม่มี iframe ---
+        if (window.self === window.top) {
+            console.log("Running standalone. Simulating data...");
+            appData = { primaryColor: "#4f46e5", secondaryColor: "#ec4899", language: "Th" };
+            // เปลี่ยนค่านี้เป็น "inviteCode" หากต้องการทดสอบโหมดกรอกรหัสตรงๆ
+            currentMode = "me"; 
+            setTimeout(initApp, 100);
+        }
+
+    </script>
+</body>
+</html>

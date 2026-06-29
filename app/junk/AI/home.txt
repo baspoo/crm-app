@@ -1,0 +1,184 @@
+
+
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+
+==================================================================================================
+
+
+[## Requirement ##]
+
+
+ทำหน้า Home สำหรับต้นรับ user ให้สวยงามเป็นมืออาชีพ
+ให้แสดงเป็น layout ไถ่จากบนลงล่าง
+ส่วนหัวให้นำ Header ไปใส่ crmData.marketData.storeInfo.storeCoverURL เป็นภาพ Cover app
+หากไม่มี url ให้ข้ามส่วนหัวไป
+
+ต่อด้วย mini profile นำข้อมูลจาก crmData.crmUser.user มาแสดงผลเป็น panel miniprofile
+
+และนำ crmData.marketData.banners มาแสดงเป็น การ์ดเรียงลงไป 
+พยายามเรียงตาม displayOrder ที่สวยงามสำหรับนำไปใช้งานจริง
+ตัว banner data type = [promotion,ads,banner]
+เฉพาะที่เป็น type === "banner"
+ให้เก็บรวมรวมมาเป็น list และนำไปแสดงเป็น slide เลือนจากขวาไปซ้าย auto move ไถ่เองโชว์แต่ละอัน
+หากเอาเมาส์ไป hover จะหยุด
+
+
+หากมีส่ง crmData.marketData.highlightRewards มามันคือ list ของรางวัง high light ให้นำรางวัลนั้น ไปแสดงผล
+ให้สวยงามด้านล่างสุด
+
+
+
+
+crmData
+{
+    "crmUser": {
+        "user": {
+            "id": 1746,
+            "lineUserId": "U725afddef5ad6a779ac46fba4f314cb4",
+            "displayName": "Benz. 🏀",
+            "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+            "email": "",
+            "phone": "092****966",
+            "phoneVerified": 1,
+            "points": 20,
+            "storeName": "Reflexstudio",
+            "memberSince": "2026-06-23T14:50:48.000Z",
+            "logoUrl": null
+        }
+    },
+    "marketData": {
+        "storeInfo": {
+            "storeName": "Reflexstudio",
+            "conditionURL": null,
+            "logoURL": null,
+            "storeCoverURL": "https://assets.mookept.com/store_covers/1777536006933-c5bf7acd426cf1984ab4e67d61aba2ef.png",
+            "primaryColor": "#b6d1fb",
+            "secondaryColor": "#f59e0b",
+            "themeId": null
+        },
+        "highlightRewards":[ 90,91 ],
+        "rewards": [
+            {
+                "id": 90,
+                "name": "Gacha - 1Moby Sticker",
+                "description": "Sticker สุดพิเศษ Limited Edition หาที่ไหนไม่ได้เเล้ว!",
+                "termsConditions": "-",
+                "image": "https://assets.mookept.com/rewards/1778838967460-b38aaa9976fe30280df51e65cdb74d62.png",
+                "points": 0,
+                "quantity": 45,
+                "rewardType": "digital",
+                "oneTimeRedemption": false,
+                "tierRestricted": false,
+                "tierEligible": true,
+                "requiredTiers": null,
+                "attributeEligible": true,
+                "requiredAttributes": null,
+                "tags": [],
+                "startDate": "2026-05-10T17:00:00.000Z",
+                "endDate": "2026-06-25T17:00:00.000Z",
+                "status": "active",
+                "alreadyRedeemed": false,
+                "canRedeem": true,
+                "displayAtShop": false,
+                "stateTags": [
+                    "ZERO_POINT_CAN_NOT_REDEEM",
+                    "NOTDISPLAY_WITH_ZERO_POINT"
+                ]
+            },
+            {
+                "id": 91,
+                "name": "Gacha - Candy (ลูกอม)",
+                "description": "ลูกอมเเสนอร่อย!",
+                "termsConditions": "-",
+                "image": "https://assets.mookept.com/rewards/1778812984359-952f2f436ee9a5ab2105bb92b8f40bba.jpeg",
+                "points": 0,
+                "quantity": 42,
+                "rewardType": "digital",
+                "oneTimeRedemption": false,
+                "tierRestricted": false,
+                "tierEligible": true,
+                "requiredTiers": null,
+                "attributeEligible": true,
+                "requiredAttributes": null,
+                "tags": [],
+                "startDate": "2026-05-10T17:00:00.000Z",
+                "endDate": "2026-06-25T17:00:00.000Z",
+                "status": "active",
+                "alreadyRedeemed": false,
+                "canRedeem": true,
+                "displayAtShop": false,
+                "stateTags": [
+                    "ZERO_POINT_CAN_NOT_REDEEM",
+                    "NOTDISPLAY_WITH_ZERO_POINT"
+                ]
+            }
+        ],
+        "banners": {
+            "marketBanners": [
+                {
+                    "id": 30,
+                    "name": "QR Hunt",
+                    "description": "สเเกนล่าเเต้ม เก็บให้ครบ 4 จุด รับคะเเนนพิเศษไปเลย! ",
+                    "type": "promotion",
+                    "imageUrl": "https://assets.mookept.com/banners/1779426057883-19e39c93a0bd436b9a837c938a412cb0.png",
+                    "bannerUrl": "action:@iframe=StreamingAssets/form/QRhunt.html|100|100|%",
+                    "displayOrder": 0,
+                    "startDate": "2026-05-15T07:12:00.000Z",
+                    "endDate": "2026-06-29T07:12:00.000Z",
+                    "createdAt": "2026-05-15T07:14:06.000Z",
+                    "updatedAt": "2026-05-27T04:57:54.000Z"
+                },
+                {
+                    "id": 29,
+                    "name": "Gacha Box",
+                    "description": "เปิดปุ๊บ ลุ้นปั๊บ! เกมกล่องสุ่มสุดมันส์ ลุ้นรับรางวัลพิเศษ!",
+                    "type": "promotion",
+                    "imageUrl": "https://assets.mookept.com/banners/1778583364791-6242d4a7e923ef32b7c8036e495c2921.png",
+                    "bannerUrl": "action:@game=game_gacha_crm_wtf",
+                    "displayOrder": 2,
+                    "startDate": "2026-05-07T08:31:00.000Z",
+                    "endDate": "2026-06-30T08:31:00.000Z",
+                    "createdAt": "2026-05-07T08:34:47.000Z",
+                    "updatedAt": "2026-05-27T04:58:05.000Z"
+                }
+            ]
+        }
+    }
+}
+
+

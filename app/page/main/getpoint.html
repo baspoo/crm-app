@@ -1,0 +1,277 @@
+<style>
+    .page-container {
+        padding: 1rem;
+        padding-bottom: 5rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background-color: #f9fafb;
+    }
+
+    .page-header {
+        text-align: center;
+        padding: 0.5rem 0;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-subtitle {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .mission-box {
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mission-box-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #1f2937;
+    }
+
+    .mission-input-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .mission-input {
+        flex-grow: 1;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        outline: none;
+        text-transform: uppercase;
+        transition: border-color 0.2s;
+    }
+
+    .mission-input:focus {
+        border-color: var(--color-primary);
+    }
+
+    .mission-btn {
+        background: #111827;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        transition: transform 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .mission-btn:active {
+        transform: scale(0.95);
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #1f2937;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+        padding: 0 0.25rem;
+    }
+
+    .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .task-item {
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .task-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    .task-item .icon-slot {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .task-text {
+        min-width: 0;
+    }
+
+    .task-item .title-slot {
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .task-item .desc-slot {
+        font-size: 0.625rem;
+        color: #6b7280;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .task-item .btn-action {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        font-weight: 700;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+        margin-left: 0.5rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .task-item .btn-action:active {
+        transform: scale(0.95);
+    }
+
+    .task-item .btn-action.done {
+        background: #f3f4f6;
+        color: #9ca3af;
+        pointer-events: none;
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <h2 class="page-title">Earn Points</h2>
+        <p class="page-subtitle">Complete tasks to get more rewards</p>
+    </div>
+
+    <!-- Code Redemption -->
+    <div class="mission-box">
+        <div class="mission-box-title">
+            <span style="font-size: 1.25rem;">🎟️</span>
+            <h3>Enter Promo Code</h3>
+        </div>
+        <div class="mission-input-group">
+            <input type="text" id="gp-input-code" class="mission-input" placeholder="ENTER CODE HERE">
+            <button id="gp-btn-submit" class="mission-btn">Submit</button>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div>
+        <h3 class="section-title">Daily Missions</h3>
+        <div id="task-list-container" class="task-list">
+            <!-- JS จะยัด Template ลงตรงนี้ -->
+        </div>
+    </div>
+</div>
+
+<!-- ================= TEMPLATES ================= -->
+<template id="tpl-task-item">
+    <div class="task-item">
+        <div class="task-info">
+            <div class="icon-slot">📱</div>
+            <div class="task-text">
+                <h4 class="title-slot">Task Title</h4>
+                <p class="desc-slot">Description goes here</p>
+            </div>
+        </div>
+        <button class="btn-action">+ <span class="point-slot">50</span></button>
+    </div>
+</template>
+
+<script>
+    (() => {
+        const listContainer = document.getElementById('task-list-container');
+        const tplTask = document.getElementById('tpl-task-item');
+        const btnSubmit = document.getElementById('gp-btn-submit');
+        const inputCode = document.getElementById('gp-input-code');
+
+        function loadMissions() {
+            const mockTasks = [
+                { id: 't1', title: 'Daily Check-in', desc: 'Login to the app today', points: 10, icon: '📅', status: 'ready' },
+                { id: 't2', title: 'Connect Social', desc: 'Link your Facebook account', points: 100, icon: '🔗', status: 'ready' },
+                { id: 't3', title: 'First Purchase', desc: 'Buy any item from store', points: 500, icon: '🛍️', status: 'done' }
+            ];
+
+            listContainer.innerHTML = '';
+
+            mockTasks.forEach(task => {
+                const clone = tplTask.content.cloneNode(true);
+                clone.querySelector('.title-slot').textContent = task.title;
+                clone.querySelector('.desc-slot').textContent = task.desc;
+                clone.querySelector('.point-slot').textContent = task.points;
+                clone.querySelector('.icon-slot').textContent = task.icon;
+
+                const btn = clone.querySelector('.btn-action');
+                if (task.status === 'done') {
+                    btn.classList.add('done');
+                    btn.textContent = "Done";
+                } else {
+                    btn.onclick = () => {
+                        PageManager.showComplete("Task Completed!", `You earned ${task.points} points.`);
+                        btn.classList.add('done');
+                        btn.textContent = "Done";
+                    };
+                }
+
+                listContainer.appendChild(clone);
+            });
+        }
+
+        btnSubmit.onclick = () => {
+            const code = inputCode.value.trim();
+            if (!code) return PageManager.showToast("Please enter a code", "⚠️");
+
+            PageManager.showPopup({
+                type: 'ok',
+                header: 'Processing...',
+                message: `Checking code: ${code}`,
+                image: '⏳'
+            });
+
+            setTimeout(() => {
+                inputCode.value = '';
+                PageManager.showComplete("Code Accepted", "You received 100 points from this promo code!");
+            }, 1000);
+        };
+
+        loadMissions();
+    })();
+</script>

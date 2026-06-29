@@ -1,0 +1,311 @@
+<style>
+    .page-container {
+        padding: 1rem;
+        padding-bottom: 5rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background-color: #f8fafc;
+    }
+
+    .page-header {
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-subtitle {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .podium-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        height: 10rem;
+    }
+
+    .podium-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 6rem;
+        position: relative;
+        transition: transform 0.2s;
+    }
+
+    .podium-item .rank-badge {
+        position: absolute;
+        top: -0.75rem;
+        right: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    .podium-item .rank-badge.rank-1 {
+        background-color: #facc15;
+    }
+
+    .podium-item .rank-badge.rank-2 {
+        background-color: #9ca3af;
+    }
+
+    .podium-item .rank-badge.rank-3 {
+        background-color: #d97706;
+    }
+
+    .podium-item .avatar-slot {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 9999px;
+        border: 4px solid #ffffff;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+        margin-bottom: 0.5rem;
+        background-color: #e5e7eb;
+    }
+
+    .podium-item .avatar-slot.border-1 {
+        border-color: #facc15;
+    }
+
+    .podium-item .name-slot {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .podium-item .point-slot {
+        font-size: 0.625rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        background-color: var(--color-primary-light);
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        margin-top: 0.25rem;
+    }
+
+    .podium-item .podium-base {
+        width: 100%;
+        background: linear-gradient(to top, #e5e7eb, #f3f4f6);
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        margin-top: 0.5rem;
+        height: 0;
+        transition: height 0.5s ease-out;
+    }
+
+    .rank-list-container {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .rank-list-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        transition: background 0.2s;
+    }
+
+    .rank-list-item:hover {
+        background: #f9fafb;
+    }
+
+    .rank-list-item .rank-slot {
+        width: 1.5rem;
+        text-align: center;
+        color: #9ca3af;
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-right: 0.75rem;
+    }
+
+    .rank-list-item .avatar-slot {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        object-fit: cover;
+        margin-right: 0.75rem;
+        background-color: #e5e7eb;
+    }
+
+    .rank-list-item .info-col {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .rank-list-item .name-slot {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rank-list-item .tier-slot {
+        font-size: 0.625rem;
+        color: #6b7280;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 0.125rem;
+        display: block;
+    }
+
+    .rank-list-item .point-slot {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #374151;
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <h2 class="page-title">Top Spenders</h2>
+        <p class="page-subtitle">Hall of fame for our best customers</p>
+    </div>
+
+    <!-- Top 3 Podium Container -->
+    <div id="podium-container" class="podium-container">
+        <!-- JS จะยัด Rank 2, 1, 3 ลงที่นี่ -->
+    </div>
+
+    <!-- Rank List Container (Rank 4+) -->
+    <div id="rank-list-container" class="rank-list-container">
+        <!-- JS จะยัด Template ลงตรงนี้ -->
+    </div>
+</div>
+
+<!-- ================= TEMPLATES ================= -->
+
+<!-- Template สำหรับ Top 3 (Podium) -->
+<template id="tpl-podium-item">
+    <div class="podium-item">
+        <div class="rank-badge">1</div>
+        <img class="avatar-slot" src="" />
+        <div class="name-slot">Name</div>
+        <div class="point-slot">0</div>
+        <div class="podium-base"></div>
+    </div>
+</template>
+
+<!-- Template สำหรับ Rank 4 เป็นต้นไป -->
+<template id="tpl-rank-list-item">
+    <div class="rank-list-item">
+        <div class="rank-slot">4</div>
+        <img class="avatar-slot" src="" />
+        <div class="info-col">
+            <div class="name-slot">Name</div>
+            <span class="tier-slot">Tier</span>
+        </div>
+        <div class="point-slot">0</div>
+    </div>
+</template>
+
+<script>
+    (() => {
+        const podiumContainer = document.getElementById('podium-container');
+        const listContainer = document.getElementById('rank-list-container');
+        const tplPodium = document.getElementById('tpl-podium-item');
+        const tplList = document.getElementById('tpl-rank-list-item');
+
+        async function loadLeaderboard() {
+            let data = window.crmData?.leaderboard?.topspending;
+            if (!data) {
+                try {
+                    const lbRes = await CrmApi.getLeaderboard('topspending');
+                    data = lbRes?.topspending;
+                } catch (e) {
+                    listContainer.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 1rem 0; font-size: 0.75rem;">Failed to load ranking</div>';
+                    return;
+                }
+            }
+
+            if (!Array.isArray(data)) {
+                data = Array.from({ length: 10 }, (_, i) => ({
+                    rank: i + 1,
+                    displayName: `Player ${i + 1}`,
+                    totalSpending: Math.floor(Math.random() * 50000),
+                    tier: { name: 'Gold' }
+                })).sort((a, b) => b.totalSpending - a.totalSpending);
+                data.forEach((d, i) => d.rank = i + 1);
+            }
+
+            renderLeaderboard(data);
+        }
+
+        function renderLeaderboard(list) {
+            podiumContainer.innerHTML = '';
+            listContainer.innerHTML = '';
+
+            // --- จัดการ Top 3 ---
+            const top3 = [list[1], list[0], list[2]].filter(Boolean);
+
+            top3.forEach(item => {
+                const clone = tplPodium.content.cloneNode(true);
+                clone.querySelector('.name-slot').textContent = item.displayName;
+                clone.querySelector('.point-slot').textContent = (item.totalSpending || 0).toLocaleString();
+                clone.querySelector('.rank-badge').textContent = item.rank;
+                if (item.pictureUrl) clone.querySelector('.avatar-slot').src = item.pictureUrl;
+
+                const badge = clone.querySelector('.rank-badge');
+                const base = clone.querySelector('.podium-base');
+                const avatar = clone.querySelector('.avatar-slot');
+
+                if (item.rank === 1) { badge.classList.add('rank-1'); avatar.classList.add('border-1'); setTimeout(() => base.style.height = '60px', 50); }
+                if (item.rank === 2) { badge.classList.add('rank-2'); setTimeout(() => base.style.height = '40px', 50); }
+                if (item.rank === 3) { badge.classList.add('rank-3'); setTimeout(() => base.style.height = '20px', 50); }
+
+                podiumContainer.appendChild(clone);
+            });
+
+            // --- จัดการ Rank 4+ ---
+            const others = list.slice(3);
+            others.forEach(item => {
+                const clone = tplList.content.cloneNode(true);
+                clone.querySelector('.rank-slot').textContent = item.rank;
+                clone.querySelector('.name-slot').textContent = item.displayName;
+                clone.querySelector('.tier-slot').textContent = item.tier?.name || 'Member';
+                clone.querySelector('.point-slot').textContent = (item.totalSpending || 0).toLocaleString();
+                if (item.pictureUrl) clone.querySelector('.avatar-slot').src = item.pictureUrl;
+
+                listContainer.appendChild(clone);
+            });
+        }
+
+        loadLeaderboard();
+    })();
+</script>

@@ -1,0 +1,914 @@
+{
+    "result": {
+        "code": 200,
+        "message": "OK",
+        "data": {
+            "initializeData": {
+                "defaultLanguage": "Th",
+                "appMode": {
+                    "mode": "FLATAPPX",
+                    "path": "app"
+                },
+                "customAssets": {
+                    "game_gacha_crm_gacha_icon": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/game/game_gacha_crm_gacha_icon_dd9caf997a81e80fa50e21481a277ac2f75e0abeb2e74ae980edd8c73f6cf0da14a9d74b03e4e6d54aea32b52f1a9ce77075b4be4b3904fdf0708174895304dc.png",
+                    "topspenderHeaderImg": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/topspenderHeaderImg_f460334d2c4d1a9d810af08f971ed6acd838baf80398ee1b1f71d6c92ec174f2fe92a85eb5321c367391cc20160505d3567a9b7be565a09bb946c46f51c55b7a.png",
+                    "profileBtns": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/profileBtns_4acfe83b8cfa3523a0fb58eb916046dbb62d1ecc7776ca8b405bfc4171da3f509f690cb88b2327e976b82f523b5101c10ecdb718e5a1f6ac39d4d7d97cdb2272.png",
+                    "consoleBtns": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/consoleBtns_8f9ce62a971b5f286025ae39b965aa9c3c91ad0df0f4067cadc3e8e4e4bd8e1fcc5ce078e269df159c2ac6c774b9b3d743548daf635feefb73eb470ca746d9a6.png",
+                    "topspenderRankImg": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/topspenderRankImg_9ad076b6c08fa769672eb113a6b7baaa3f0b15c481b9fc6e648ab0b1aa4f80b5c159c6e6b3a28324260cf69d3e13f86d4bbc876a8b038a5b16fa1fac042c86bc.png",
+                    "bgImg": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/bgImg_c51473e7f11262429273f8b52cd9a875048f7c664351c3320ba66c32b2bbefe7ea693f25caacee83f77eec7a9615270534530ee341a0a94238b79a309651f971.png",
+                    "game_mobirun_game_leaderboardCoverImage": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/game/game_mobirun_game_leaderboardCoverImage_7e48ec11b3c6a880ddbc68a2f29a5a628cb463512cee592a7e06fae7d152aa4b08dd97b31ac1778d0b95a8e83053e986adda5884962b5ce4ee109095a06506ec.png",
+                    "uploadHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/uploadHeader_3615f4f4d6b2a5b34811998e07040eb176db233417fc5299420e736eace52e78b1dba225918b22e1ca8be981ed31caa492a9b9b6d9fe391b2846d22e4f0fadf5.png",
+                    "rankHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/rankHeader_331f8c6c99eeb7dcda1fde8d8b06a25c782857449c1e5359f773e97b325352e9638ed9e27c3abcadf969b58a1a7bf3561020d6fdb46b293a57817e0139ee8ab2.png",
+                    "rewardHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/rewardHeader_7ce43ca68b38f8d7f9083aacdd83897519202ce22edb1e5017bce16cff5b18af6b4342f3a383c45c38e90596a9e3cf0657be2c9ab45b95f6399f5ec42358aa6c.png",
+                    "pointHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/pointHeader_b2b8e35f53adcd37923a2a11a36bdfe94f2d29753d4f210996be3dc91a4c12d0129c552810676cb362f422dd41c997076ffb5ec4489abdb9c5ee8002dd4f39d6.png",
+                    "tiktokHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/tiktokHeader_2f21a65fafe03ea37151829e8f3fc9010dfbc147b651f023d9458385039dee793fcf0d4ace3f549ae09fd9f8e7011c6a29f0c4b389ea2b5a14adcc3d525894ac.png",
+                    "shopeeHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/shopeeHeader_27baed3d3b69a9453288031ae0ef5ecce2c59411cb0651caf26290b8779e8e7f9248beacdc461dea106b6d454cdbf51783388b59fcd181742abe64649d5269cd.png",
+                    "lazadaHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/lazadaHeader_6ecc2ab41fe7afcca4c038da3545293e1f4961acd62e19dee0c4c4b71d5b7078aee4e030f65573977dd3738f7d564bfb4fbb19a2908647fda54f08e311ba8bc1.png",
+                    "addressHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/addressHeader_e39110060296d9a36340f1126e8a759e6f3b9a6a6f95b41956775a101915dda6dffcb19f6590e4a547fe277ce5723e18bdf85c1e7ac04bad2c586bd9d3e02329.png",
+                    "referralHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/referralHeader_e7f8b1cd941a52569e00396598e538bf83b67b16dc41cc56f8d12f32370b23d2247043791cf9888ec444ed922beef89260495602bc0438e13d013f1496417124.png",
+                    "qrhuntHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/qrhuntHeader_3527373356727e793159f6cd60b67a6cc132af384808988b8d1d1e2f0cfb2afe799ce5290038bfd8237b0e7f65848720bcb88631b5f275bc98a1b87e94d60682.png",
+                    "dailycheckinHeader": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/dailycheckinHeader_e7350688368e21fc3c10dafb43826efb23b45b9c83590b13699ef5e420542de1a5a41bd42252b595f1c33c2286faa8d9fa6e2a9f1b9a4a5d63b8ff5dbac9eef4.png"
+                },
+                "loadingBgColor": "#FFFFFF",
+                "primaryColor": "#386AFF",
+                "secondaryColor": "#FFC800",
+                "themeId": "theme_onedrink",
+                "skipIframeThemeColor": true,
+                "bgColor": "#ffffff",
+                "skipInappThemeColor": false,
+                "loadingImg_width": 220,
+                "loadingImg_height": 220
+            },
+            "setting": {},
+            "storeInfo": {
+                "storeName": "Mookept.shop (demo)",
+                "conditionURL": null,
+                "logoURL": "https://assets.mookept.com/store_logos/1772527140564-a16834c478e05f88e1d3ed14acc72462.jpg",
+                "storeCoverURL": null,
+                "primaryColor": "#3b82f6",
+                "secondaryColor": "#f59e0b",
+                "themeId": "theme_onedrink"
+            },
+            "rewards": [
+                {
+                    "id": 77,
+                    "name": "Lucky Mobi Coinx20",
+                    "description": "20 unit Currency in MobiRun",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1774350895595-8b4354e8e18023d02b72bbff66dd2aa2.png",
+                    "points": 0,
+                    "quantity": 982,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-03-09T17:00:00.000Z",
+                    "endDate": "2029-02-23T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "currency",
+                        "amount": 20,
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": false,
+                    "stateTags": [
+                        "ZERO_POINT_CAN_NOT_REDEEM",
+                        "NOTDISPLAY_WITH_ZERO_POINT"
+                    ]
+                },
+                {
+                    "id": 78,
+                    "name": "Lucky 20% Discount",
+                    "description": "Available today-31/12/2026",
+                    "termsConditions": "การส่งมอบ: เมื่อกดแลกสำเร็จ ระบบจะแสดงรหัสหรือส่งรหัสไปที่อีเมล/เมนู \"รางวัลของฉัน\" ทันที\r\n\r\nนโยบายการคืน: ไม่รับคืนหรือเปลี่ยนเป็นเงินสดทุกกรณี เนื่องจากเป็นสินค้าดิจิทัลที่เข้าถึงได้ทันที\r\n\r\nอายุการใช้งาน: ผู้ใช้ต้องใช้รหัสภายในระยะเวลาที่กำหนด หากหมดอายุบริษัทจะไม่ชดเชยคะแนนคืน\r\n\r\nความรับผิดชอบ: บริษัทไม่รับผิดชอบกรณีผู้ใช้ทำรหัสหาย หรือถูกผู้อื่นนำรหัสไปใช้จากการรักษาความปลอดภัยบัญชีที่ไม่ดี",
+                    "image": "https://assets.mookept.com/rewards/1774350969252-357c2d1e59af4e309f4ddb6119319d5a.png",
+                    "points": 0,
+                    "quantity": 991,
+                    "rewardType": "digital",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-03-22T17:00:00.000Z",
+                    "endDate": "2030-10-23T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "displayAtShop": false,
+                    "gameMetadata": {
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "stateTags": [
+                        "ZERO_POINT_CAN_NOT_REDEEM",
+                        "NOTDISPLAY_WITH_ZERO_POINT"
+                    ]
+                },
+                {
+                    "id": 79,
+                    "name": "Lucky Mobi Coinx50",
+                    "description": "50 unit Currency in MobiRun",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1774425031970-f5712821e99456e75104895f8ae312c2.png",
+                    "points": 0,
+                    "quantity": 992,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-03-22T17:00:00.000Z",
+                    "endDate": "2031-07-24T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "currency",
+                        "amount": 50,
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": false,
+                    "stateTags": [
+                        "ZERO_POINT_CAN_NOT_REDEEM",
+                        "NOTDISPLAY_WITH_ZERO_POINT"
+                    ]
+                },
+                {
+                    "id": 62,
+                    "name": "Mobirun : Coin Package1",
+                    "description": "20 unit Currency in MobiRun",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1770024407233-cf2843b597ef2cd28fe287007f1f8a17.png",
+                    "points": 1,
+                    "quantity": 90,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "currency",
+                        "amount": 20,
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 67,
+                    "name": "Event 1",
+                    "description": "description xxxxx",
+                    "termsConditions": "system reward",
+                    "image": "https://assets.mookept.com/rewards/1770025085919-be788b7af7aad7a6a626e555eeaac03e.png",
+                    "points": 1,
+                    "quantity": 100,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "event",
+                        "itemId": "unlock_level_hp",
+                        "hideAtShop": true,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": false,
+                    "stateTags": [
+                        "NOTDISPLAY_WITH_HIDECONFIG"
+                    ]
+                },
+                {
+                    "id": 64,
+                    "name": "Mobirun : Item x2Score",
+                    "description": "Booster can be used in MobiRun. Use it to double your score.",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1770024626013-2c69b32ba0edff085f66fc53f6c10511.png",
+                    "points": 2,
+                    "quantity": 100,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": true,
+                    "tierEligible": false,
+                    "requiredTiers": [
+                        {
+                            "id": 2,
+                            "name": "Sliver"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Gold"
+                        }
+                    ],
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": false,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "item",
+                        "amount": 1,
+                        "itemId": "up_x2Score",
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 65,
+                    "name": "Mobirun : Item Turbo",
+                    "description": "Booster can be used in MobiRun. Use it to go Turbo mode.",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1770024712409-c5b5aa5a6524efa506c5d5c3b671562d.png",
+                    "points": 2,
+                    "quantity": 100,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "item",
+                        "amount": 1,
+                        "itemId": "up_turbo",
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 66,
+                    "name": "Lucky Draw Ticket",
+                    "description": "Get 1 chance to draw a Lucky Fruit.",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1770024867384-b061da9b996a1898c2bd326d147696c4.png",
+                    "points": 3,
+                    "quantity": 62,
+                    "rewardType": "game",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_gacha_crm",
+                        "type": "gacha",
+                        "amount": 1,
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 63,
+                    "name": "Mobirun : Coin Package2",
+                    "description": "50 unit Currency in MobiRun",
+                    "termsConditions": "การใช้งาน: ไอเทมที่แลกมาจะผูกกับบัญชีผู้ใช้เท่านั้น ห้ามซื้อขายเป็นเงินจริง (RMT) นอกระบบ\r\n\r\nการปรับเปลี่ยน: บริษัทขอสงวนสิทธิ์ในการปรับค่าสถานะ (Balance) ของไอเทมในเกมตามความเหมาะสมเพื่อความสมดุลของระบบ โดยไม่ต้องแจ้งให้ทราบล่วงหน้า\r\n\r\nการทุจริต: หากตรวจสอบพบว่าคะแนนที่นำมาแลกได้มาจากการใช้โปรแกรมโกง หรือช่องโหว่ (Bug) บริษัทมีสิทธิ์ดึงไอเทมคืนหรือระงับบัญชีทันที\r\n\r\nความล้มเหลวของระบบ: หากเกิดข้อผิดพลาดทางเทคนิคทำให้ไม่ได้รับไอเทม บริษัทจะดำเนินการตรวจสอบและชดเชยให้ภายใน [ระบุเวลา]",
+                    "image": "https://assets.mookept.com/rewards/1770024512610-9b0ccdc04d89b331bc37c506ca3beac1.png",
+                    "points": 5,
+                    "quantity": 50,
+                    "rewardType": "game",
+                    "oneTimeRedemption": true,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2026-01-31T17:00:00.000Z",
+                    "endDate": "2030-01-01T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "gameMetadata": {
+                        "gameId": "game_mobirun",
+                        "type": "currency",
+                        "amount": 50,
+                        "hideAtShop": false,
+                        "allowZeroPointsRedeem": false
+                    },
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "ONETIME",
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 60,
+                    "name": "20% Discount Coupon",
+                    "description": "Available today-31/12/2026",
+                    "termsConditions": "การส่งมอบ: เมื่อกดแลกสำเร็จ ระบบจะแสดงรหัสหรือส่งรหัสไปที่อีเมล/เมนู \"รางวัลของฉัน\" ทันที\r\n\r\nนโยบายการคืน: ไม่รับคืนหรือเปลี่ยนเป็นเงินสดทุกกรณี เนื่องจากเป็นสินค้าดิจิทัลที่เข้าถึงได้ทันที\r\n\r\nอายุการใช้งาน: ผู้ใช้ต้องใช้รหัสภายในระยะเวลาที่กำหนด หากหมดอายุบริษัทจะไม่ชดเชยคะแนนคืน\r\n\r\nความรับผิดชอบ: บริษัทไม่รับผิดชอบกรณีผู้ใช้ทำรหัสหาย หรือถูกผู้อื่นนำรหัสไปใช้จากการรักษาความปลอดภัยบัญชีที่ไม่ดี",
+                    "image": "https://assets.mookept.com/rewards/1769678167707-b32d4caea6cde71e0a946cbd17d24e21.png",
+                    "points": 10,
+                    "quantity": 83,
+                    "rewardType": "digital",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2026-12-30T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 58,
+                    "name": "Onedrink! S Pack",
+                    "description": "Onedrink!  fruit soda. 6 cans, various flavor. ",
+                    "termsConditions": "ที่อยู่จัดส่ง: ผู้ใช้ต้องตรวจสอบความถูกต้องของที่อยู่และเบอร์โทรศัพท์ก่อนยืนยัน หากสินค้าถูกตีกลับเนื่องจากที่อยู่ผิด ผู้ใช้ต้องเป็นผู้รับผิดชอบค่าใช้จ่ายในการส่งใหม่\r\n\r\nระยะเวลาจัดส่ง: สินค้าจะถูกจัดส่งภายใน [ระบุจำนวนวัน เช่น 7-14 วันทำการ]\r\n\r\nการเคลมสินค้า: หากสินค้าชำรุดจากการขนส่ง ต้องแจ้งภายใน [เช่น 48 ชั่วโมง] หลังได้รับสินค้า พร้อมหลักฐานวิดีโอตอนแกะกล่อง\r\n\r\nสินค้าหมด: ในกรณีสินค้าหมดสต็อกกะทันหัน บริษัทขอสงวนสิทธิ์ในการคืนคะแนน หรือเปลี่ยนเป็นสินค้าที่มีมูลค่าใกล้เคียงกัน (โดยจะแจ้งให้ทราบล่วงหน้า)",
+                    "image": "https://assets.mookept.com/rewards/1769678186311-e11f690002c19543dccb15669c219697.png",
+                    "points": 20,
+                    "quantity": 94,
+                    "rewardType": "physical",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2030-12-15T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 59,
+                    "name": "Onedrink! L Pack",
+                    "description": "Onedrink! fruit soda. 15 cans, various flavor.",
+                    "termsConditions": "ที่อยู่จัดส่ง: ผู้ใช้ต้องตรวจสอบความถูกต้องของที่อยู่และเบอร์โทรศัพท์ก่อนยืนยัน หากสินค้าถูกตีกลับเนื่องจากที่อยู่ผิด ผู้ใช้ต้องเป็นผู้รับผิดชอบค่าใช้จ่ายในการส่งใหม่\r\n\r\nระยะเวลาจัดส่ง: สินค้าจะถูกจัดส่งภายใน [ระบุจำนวนวัน เช่น 7-14 วันทำการ]\r\n\r\nการเคลมสินค้า: หากสินค้าชำรุดจากการขนส่ง ต้องแจ้งภายใน [เช่น 48 ชั่วโมง] หลังได้รับสินค้า พร้อมหลักฐานวิดีโอตอนแกะกล่อง\r\n\r\nสินค้าหมด: ในกรณีสินค้าหมดสต็อกกะทันหัน บริษัทขอสงวนสิทธิ์ในการคืนคะแนน หรือเปลี่ยนเป็นสินค้าที่มีมูลค่าใกล้เคียงกัน (โดยจะแจ้งให้ทราบล่วงหน้า)",
+                    "image": "https://assets.mookept.com/rewards/1769678177423-b7e94ad4279baba6e8bc45ae54a819c5.png",
+                    "points": 50,
+                    "quantity": 100,
+                    "rewardType": "physical",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2030-12-15T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 61,
+                    "name": "Lotus Gift Card",
+                    "description": "100 Bath gift card",
+                    "termsConditions": "การส่งมอบ: เมื่อกดแลกสำเร็จ ระบบจะแสดงรหัสหรือส่งรหัสไปที่อีเมล/เมนู \"รางวัลของฉัน\" ทันที\r\n\r\nนโยบายการคืน: ไม่รับคืนหรือเปลี่ยนเป็นเงินสดทุกกรณี เนื่องจากเป็นสินค้าดิจิทัลที่เข้าถึงได้ทันที\r\n\r\nอายุการใช้งาน: ผู้ใช้ต้องใช้รหัสภายในระยะเวลาที่กำหนด หากหมดอายุบริษัทจะไม่ชดเชยคะแนนคืน\r\n\r\nความรับผิดชอบ: บริษัทไม่รับผิดชอบกรณีผู้ใช้ทำรหัสหาย หรือถูกผู้อื่นนำรหัสไปใช้จากการรักษาความปลอดภัยบัญชีที่ไม่ดี",
+                    "image": "https://assets.mookept.com/rewards/1769678158204-5a76edcbbc55795528c1ea2430d65e28.png",
+                    "points": 50,
+                    "quantity": 42,
+                    "rewardType": "digital",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2030-12-15T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 56,
+                    "name": "Onedrink! Bag",
+                    "description": "Multi purpose fabric bag",
+                    "termsConditions": "ที่อยู่จัดส่ง: ผู้ใช้ต้องตรวจสอบความถูกต้องของที่อยู่และเบอร์โทรศัพท์ก่อนยืนยัน หากสินค้าถูกตีกลับเนื่องจากที่อยู่ผิด ผู้ใช้ต้องเป็นผู้รับผิดชอบค่าใช้จ่ายในการส่งใหม่\r\n\r\nระยะเวลาจัดส่ง: สินค้าจะถูกจัดส่งภายใน [ระบุจำนวนวัน เช่น 7-14 วันทำการ]\r\n\r\nการเคลมสินค้า: หากสินค้าชำรุดจากการขนส่ง ต้องแจ้งภายใน [เช่น 48 ชั่วโมง] หลังได้รับสินค้า พร้อมหลักฐานวิดีโอตอนแกะกล่อง\r\n\r\nสินค้าหมด: ในกรณีสินค้าหมดสต็อกกะทันหัน บริษัทขอสงวนสิทธิ์ในการคืนคะแนน หรือเปลี่ยนเป็นสินค้าที่มีมูลค่าใกล้เคียงกัน (โดยจะแจ้งให้ทราบล่วงหน้า)",
+                    "image": "https://assets.mookept.com/rewards/1769678205599-39e90cb5715993e19c573f5fc7dab2fa.png",
+                    "points": 100,
+                    "quantity": 48,
+                    "rewardType": "physical",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2030-12-15T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": true,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                },
+                {
+                    "id": 57,
+                    "name": "Onedrink! Bottle",
+                    "description": "Cooler bottle. 700 ml.",
+                    "termsConditions": "ที่อยู่จัดส่ง: ผู้ใช้ต้องตรวจสอบความถูกต้องของที่อยู่และเบอร์โทรศัพท์ก่อนยืนยัน หากสินค้าถูกตีกลับเนื่องจากที่อยู่ผิด ผู้ใช้ต้องเป็นผู้รับผิดชอบค่าใช้จ่ายในการส่งใหม่\r\n\r\nระยะเวลาจัดส่ง: สินค้าจะถูกจัดส่งภายใน [ระบุจำนวนวัน เช่น 7-14 วันทำการ]\r\n\r\nการเคลมสินค้า: หากสินค้าชำรุดจากการขนส่ง ต้องแจ้งภายใน [เช่น 48 ชั่วโมง] หลังได้รับสินค้า พร้อมหลักฐานวิดีโอตอนแกะกล่อง\r\n\r\nสินค้าหมด: ในกรณีสินค้าหมดสต็อกกะทันหัน บริษัทขอสงวนสิทธิ์ในการคืนคะแนน หรือเปลี่ยนเป็นสินค้าที่มีมูลค่าใกล้เคียงกัน (โดยจะแจ้งให้ทราบล่วงหน้า)",
+                    "image": "https://assets.mookept.com/rewards/1769678195297-75b431827eb232da078c926e80476204.png",
+                    "points": 200,
+                    "quantity": 50,
+                    "rewardType": "physical",
+                    "oneTimeRedemption": false,
+                    "tierRestricted": false,
+                    "tierEligible": true,
+                    "requiredTiers": null,
+                    "attributeEligible": true,
+                    "requiredAttributes": null,
+                    "tags": [],
+                    "startDate": "2025-12-15T17:00:00.000Z",
+                    "endDate": "2030-12-15T17:00:00.000Z",
+                    "status": "active",
+                    "alreadyRedeemed": false,
+                    "canRedeem": true,
+                    "displayAtShop": true,
+                    "stateTags": [
+                        "DISPLAY"
+                    ]
+                }
+            ],
+            "banners": {
+                "marketBanners": [
+                    {
+                        "id": 12,
+                        "name": "Let's run together!",
+                        "description": "Join MobiRun event, race to the top and get the prize!",
+                        "type": "banner",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677561560-c159f866d4270c3df37e4e8c3af9f913.png",
+                        "bannerUrl": "https://www.1moby.com/?lang=th",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:25:00.000Z",
+                        "endDate": "2027-01-16T06:27:00.000Z",
+                        "createdAt": "2025-12-16T06:29:11.000Z",
+                        "updatedAt": "2026-04-27T02:18:06.000Z"
+                    },
+                    {
+                        "id": 11,
+                        "name": "Onedrink! Lichee Flavor",
+                        "description": "One sip. Whole vibe.",
+                        "type": "banner",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677456294-ce82c4b0a1d537aab6d19dd2421cbb6b.png",
+                        "bannerUrl": null,
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:25:00.000Z",
+                        "endDate": "2027-01-16T06:25:00.000Z",
+                        "createdAt": "2025-12-16T06:25:50.000Z",
+                        "updatedAt": "2026-01-29T09:04:16.000Z"
+                    },
+                    {
+                        "id": 10,
+                        "name": "Onedrink! Grape Flavor",
+                        "description": "One sip. Whole vibe.",
+                        "type": "banner",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677466739-9da5abbd1985ba6c6154c45c49db4321.png",
+                        "bannerUrl": null,
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:24:00.000Z",
+                        "endDate": "2027-01-16T06:24:00.000Z",
+                        "createdAt": "2025-12-16T06:25:11.000Z",
+                        "updatedAt": "2026-01-29T09:04:27.000Z"
+                    },
+                    {
+                        "id": 9,
+                        "name": "Onedrink! Orange Flavor",
+                        "description": "One sip. Whole vibe.",
+                        "type": "banner",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677476951-0128601b0d48f6fdaa3d0265ac1008f3.png",
+                        "bannerUrl": null,
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:23:00.000Z",
+                        "endDate": "2027-01-16T06:23:00.000Z",
+                        "createdAt": "2025-12-16T06:24:45.000Z",
+                        "updatedAt": "2026-01-29T09:04:37.000Z"
+                    },
+                    {
+                        "id": 8,
+                        "name": "Onedrink! x LISA",
+                        "description": "To celebrate new single album 'LALISA' from talented rapper Lisa, we launch a limited edition packaging.",
+                        "type": "ads",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677083016-9a045d95254e054ccfa44bed40d309ae.png",
+                        "bannerUrl": "action:@iframe=StreamingAssets/form/QRhunt.html|100|100|%",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:20:00.000Z",
+                        "endDate": "2027-01-16T06:20:00.000Z",
+                        "createdAt": "2025-12-16T06:23:27.000Z",
+                        "updatedAt": "2026-05-20T11:43:06.000Z",
+                        "action": {
+                            "type": "iframe",
+                            "url": "StreamingAssets/form/QRhunt.html",
+                            "x": "100",
+                            "y": "100",
+                            "unit": "%"
+                        }
+                    },
+                    {
+                        "id": 7,
+                        "name": "New Flavor: Onedrink! Watermelon ",
+                        "description": "Ready to meet and greet our latest Onedrink! member: Onedrink! Watermelon flavor. Coming soon in this summer!",
+                        "type": "ads",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677095692-23632422d0127e7c3ef8ca1913a9877b.png",
+                        "bannerUrl": "action:@detail=",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:19:00.000Z",
+                        "endDate": "2027-01-16T06:19:00.000Z",
+                        "createdAt": "2025-12-16T06:20:37.000Z",
+                        "updatedAt": "2026-03-17T04:08:56.000Z",
+                        "action": {
+                            "type": "detail"
+                        }
+                    },
+                    {
+                        "id": 6,
+                        "name": "Lucky Fruit",
+                        "description": "Try your luck in 'Lucky Fruit', a lucky draw game for lucky person like you. There's a lot of special rewards waiting for you!",
+                        "type": "promotion",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677771589-a277a375dd1cdf29ed166bfa72e64b48.png",
+                        "bannerUrl": "action:@game=game_gacha_crm",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:18:00.000Z",
+                        "endDate": "2027-01-16T06:18:00.000Z",
+                        "createdAt": "2025-12-16T06:19:17.000Z",
+                        "updatedAt": "2026-01-29T09:09:31.000Z",
+                        "action": {
+                            "type": "game",
+                            "gameId": "game_gacha_crm"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "name": "MobiRun Event",
+                        "description": "Run together in 'MobiRun' Minigame event. Joint the race, win the prize! This event is available due 1/12/2025-1/1/2025.",
+                        "type": "promotion",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677781940-2c6936ee4a7a3fc7446abd980163c2a2.png",
+                        "bannerUrl": "action:@game=game_mobirun",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:15:00.000Z",
+                        "endDate": "2027-01-16T06:15:00.000Z",
+                        "createdAt": "2025-12-16T06:18:01.000Z",
+                        "updatedAt": "2026-01-29T09:09:42.000Z",
+                        "action": {
+                            "type": "game",
+                            "gameId": "game_mobirun"
+                        }
+                    },
+                    {
+                        "id": 4,
+                        "name": "Summer Sale 50%",
+                        "description": "A refreshing promotion for this upcoming summer! With this 50% summer sale, Onedrink! will easily cool-down your scorching summertime.",
+                        "type": "promotion",
+                        "imageUrl": "https://assets.mookept.com/banners/1769677791876-2aa8a01b66fc74d56783bd2d1c526fb7.png",
+                        "bannerUrl": "action:@detail=https://www.1moby.com/?lang=th",
+                        "displayOrder": 0,
+                        "startDate": "2025-12-16T06:12:00.000Z",
+                        "endDate": "2027-01-16T06:12:00.000Z",
+                        "createdAt": "2025-12-16T06:13:59.000Z",
+                        "updatedAt": "2026-03-17T04:08:12.000Z",
+                        "action": {
+                            "type": "detail",
+                            "moreUrl": "https://www.1moby.com/?lang=th"
+                        }
+                    }
+                ],
+                "gameBanners": []
+            },
+            "marketplaces": [
+                {
+                    "name": "shopee",
+                    "shopId": "144557078",
+                    "shopLabel": null,
+                    "status": "connected",
+                    "connectedAt": "2025-01-15T10:11:23.000Z",
+                    "updatedAt": "2026-06-22T05:00:01.000Z"
+                }
+            ],
+            "tiers": [
+                {
+                    "id": 1,
+                    "name": "Rank - 1",
+                    "level": 1,
+                    "color": "#e6e6e6",
+                    "icon": "https://assets.mookept.com/tiers/1770966753394-944d85ac751b7c1725bd0e961f119e9a.png",
+                    "iconEmoji": null,
+                    "iconImage": "https://assets.mookept.com/tiers/1770966753394-944d85ac751b7c1725bd0e961f119e9a.png",
+                    "description": "Your entry point to the Onedrink! community,",
+                    "benefits": [
+                        "Welcome digital sticker pack and phone wallpapers.",
+                        "Free birthday drink code. ",
+                        "Access to the exclusive Onedrink community forum/Discord"
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779783354869-72a34d65f3644cae998147eafa46c3bb.png",
+                    "createdAt": "2025-11-28T11:06:51.000Z",
+                    "updatedAt": "2026-05-26T08:15:55.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "total_spending",
+                            "operator": ">=",
+                            "value": "1000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        },
+                        {
+                            "ruleType": "order_count",
+                            "operator": ">=",
+                            "value": "10000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Sliver",
+                    "level": 2,
+                    "color": "#4ec686",
+                    "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png",
+                    "iconEmoji": null,
+                    "iconImage": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png",
+                    "description": "Discounts & Digital Exclusives",
+                    "benefits": [
+                        "10% off all online merch and bulk orders.",
+                        "Curated monthly \"Street Vibe\" Spotify playlists, updated by Onedrink! collaborators.",
+                        "Entry into weekly sweepstakes for free product boxes."
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779784252324-60e1b21a1b268ccc961e253524c9bd23.png",
+                    "createdAt": "2025-11-28T11:07:17.000Z",
+                    "updatedAt": "2026-05-26T08:31:09.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "total_spending",
+                            "operator": ">=",
+                            "value": "2000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "Gold",
+                    "level": 3,
+                    "color": "#f59f3d",
+                    "icon": "https://assets.mookept.com/tiers/1770608817110-b2ece432fe456bbeb6e51083d181e312.png",
+                    "iconEmoji": null,
+                    "iconImage": "https://assets.mookept.com/tiers/1770608817110-b2ece432fe456bbeb6e51083d181e312.png",
+                    "description": "Early Access & Physical Swag",
+                    "benefits": [
+                        "48-Hour Early Access to all new flavor and limited-edition can drops.",
+                        "A complimentary, exclusive piece of Onedrink! swag (e.g., custom beanie, high-quality water bottle) upon reaching the rank.",
+                        " Quarterly free shipping codes."
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779783533956-fa27e3ebd6eaca828ada0ea25959267e.png",
+                    "createdAt": "2025-12-16T07:34:16.000Z",
+                    "updatedAt": "2026-05-26T08:22:24.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "total_spending",
+                            "operator": ">=",
+                            "value": "5000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "name": "Platinum",
+                    "level": 4,
+                    "color": "#154cef",
+                    "icon": "https://assets.mookept.com/tiers/1770608842158-f5b28e2d464d0c2af18e6b176417425b.png",
+                    "iconEmoji": null,
+                    "iconImage": "https://assets.mookept.com/tiers/1770608842158-f5b28e2d464d0c2af18e6b176417425b.png",
+                    "description": "Ultimate Access & Creative Input",
+                    "benefits": [
+                        "A free case of every new flavor, delivered automatically on launch day. ",
+                        "Invitation to an annual, all-expenses-paid \"Icon Summit\" event. ",
+                        "Direct Input: Opportunity to vote on/consult on new flavor profiles, merchandise designs, or campaign themes."
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779783726141-adb081f2e1f2b92f8a93e414504fc439.png",
+                    "createdAt": "2025-12-16T07:41:48.000Z",
+                    "updatedAt": "2026-05-26T08:22:06.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "total_spending",
+                            "operator": ">=",
+                            "value": "20000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "name": "Diamond",
+                    "level": 5,
+                    "color": "#d45cf5",
+                    "icon": "https://assets.mookept.com/tiers/1770608829809-b87992339ae26dc987a8ded8ae68c074.png",
+                    "iconEmoji": null,
+                    "iconImage": "https://assets.mookept.com/tiers/1770608829809-b87992339ae26dc987a8ded8ae68c074.png",
+                    "description": "Event Perks & VIP Treatment",
+                    "benefits": [
+                        "Free VIP Upgrades at Onedrink!-sponsored local events (music festivals, skate jams).",
+                        "Meet-and-Greet priority passes for brand ambassador/artist appearances.",
+                        "A permanent 15% discount on all apparel"
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779783555664-f9861502bcd52b32f836567fda146ea2.png",
+                    "createdAt": "2025-12-16T07:35:13.000Z",
+                    "updatedAt": "2026-05-26T08:21:25.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "total_spending",
+                            "operator": ">=",
+                            "value": "10000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 7,
+                    "name": "Elegance",
+                    "level": 6,
+                    "color": "#ff7b00",
+                    "icon": null,
+                    "iconEmoji": null,
+                    "iconImage": null,
+                    "description": "Elegance SVIP Customer & Highest Benefit",
+                    "benefits": [
+                        "คูปอง Grab 100 บาท"
+                    ],
+                    "benefitCard": "https://assets.mookept.com/tiers/1779783613636-26268b3ba4eb986d5983241ad1e32cc5.png",
+                    "createdAt": "2026-02-09T04:05:48.000Z",
+                    "updatedAt": "2026-05-26T08:32:26.000Z",
+                    "rules": [
+                        {
+                            "ruleType": "order_count",
+                            "operator": ">",
+                            "value": "50000.00",
+                            "periodMonths": null,
+                            "includeChannels": "all",
+                            "isUpgradeRule": 1
+                        }
+                    ]
+                }
+            ],
+            "gameCampaigns": [
+                {
+                    "gameId": "game_mobirun",
+                    "url": "https://gamestore.1mobystudio.com/game_mobirun/",
+                    "icon": "https://gamestore-gg.1mobystudio.com/crm_resource/crm_1drink/campaign/game_mobirun.png",
+                    "image": "https://gamestore-gg.1mobystudio.com/crm_resource/crm_1drink/campaign/game_mobirun_banner.png",
+                    "type": "game",
+                    "name": "Mobi Run!",
+                    "description": "Run together in 'MobiRun' Minigame event! Compete with other players around the world by running across the virtual world, collecting stars as much as possible, and get to the top of leaderboard.",
+                    "endgameReward": {
+                        "activityEvent": "SCORE_MILESTONE",
+                        "milestone": [
+                            {
+                                "unique": "reward_1",
+                                "score": 1000,
+                                "pointItemId": 13,
+                                "onectime": false
+                            },
+                            {
+                                "unique": "reward_2",
+                                "score": 2000,
+                                "pointItemId": 14,
+                                "onectime": true
+                            },
+                            {
+                                "unique": "reward_3",
+                                "score": 3000,
+                                "pointItemId": 15,
+                                "onectime": true
+                            },
+                            {
+                                "unique": "reward_4",
+                                "score": 4000,
+                                "pointItemId": 15,
+                                "onectime": false
+                            }
+                        ]
+                    },
+                    "startAt": 1764658440,
+                    "endAt": 1797306780,
+                    "leaderboard": true,
+                    "enable": true,
+                    "leaderboardCoverImage": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/game/game_mobirun_game_leaderboardCoverImage_7e48ec11b3c6a880ddbc68a2f29a5a628cb463512cee592a7e06fae7d152aa4b08dd97b31ac1778d0b95a8e83053e986adda5884962b5ce4ee109095a06506ec.png"
+                },
+                {
+                    "gameId": "game_gacha_crm",
+                    "url": "https://gamestore-gg.1mobystudio.com/crm_platform/games/gacha/gacha-v-wtfevent/index.html",
+                    "icon": "https://gamestore-gg.1mobystudio.com/crm_platform/ThemeAssets/crm_platform/game/game_gacha_crm_gacha_icon_dd9caf997a81e80fa50e21481a277ac2f75e0abeb2e74ae980edd8c73f6cf0da14a9d74b03e4e6d54aea32b52f1a9ce77075b4be4b3904fdf0708174895304dc.png",
+                    "image": "https://gamestore-gg.1mobystudio.com/crm_resource/crm_1drink/campaign/game_gacha_crm_banner.png",
+                    "leaderboardCoverImage": "https://gamestore-gg.1mobystudio.com/crm_resource/crm_1drink/campaign/game_mobirun_leaderboard.png",
+                    "type": "gacha",
+                    "name": "Lucky Fruit!22",
+                    "source": "webmodal",
+                    "description": "Try your luck in 'Lucky Fruit', a lucky draw game for lucky person like you. Turn your point into Lucky Draw Ticket, and turn it into various type of rewards , from privileges to physical gadget, depending on your luck.",
+                    "redeemRewardId": "66",
+                    "startAt": 1764658440,
+                    "endAt": 1797306780,
+                    "leaderboard": false,
+                    "enable": true
+                }
+            ],
+            "enableDailyCheckIn": true,
+            "enableReferralCode": true
+        }
+    }
+}

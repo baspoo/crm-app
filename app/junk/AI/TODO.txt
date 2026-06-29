@@ -1,0 +1,68 @@
+
+##### MY TASK TODO LIST #####
+
+- ระบบพื้นหลัง index.html ต้องรับผิดชอบ BG และ จัด style ได้
+- home banner กดได้
+- ระบบ Custom Global Style CSS ผ่าน CMS
+- crop หน้าทั้งหมด ให้แสดงผลเป็นแนวตั้ง หากเป็นจอ desktop แนวนอน เพราะหน้าจอมันจะ layout พัง ป้องกันด้วย
+- home cover รองรับ .svg .png animation / ทำ รูป cover default
+- animation state list 
+fide-in / fide-out / zoom-in / zoom-out / slide-right / slide-left / popup / popdown
+
+
+
+
+window.onModalInit = function(payload, response) {
+    console.log("ได้รับ Payload:", payload);
+    // เซ็ตข้อมูลกลับได้ผ่าน response
+    response.status = "ok";
+};
+
+
+
+📘 สรุปแนวทางการทำงาน (White-label Theme Workflow)
+คัมภีร์เล่มนี้คือข้อตกลงร่วมกันระหว่าง Developer (คุณ) และ AI (ผม) ในการสร้างและจัดการหน้าตาแอปพลิเคชัน CRM เพื่อให้ทำงานได้รวดเร็ว เป็นระบบ และรองรับการเปลี่ยน Theme ได้อย่างสมบูรณ์แบบ
+
+🎯 1. หน้าที่ของ Developer (Focus on Logic)
+สร้างไฟล์ HTML พื้นฐาน: โฟกัสไปที่การดึงข้อมูลจาก API (crmData), การทำ Logic, การทำงานของปุ่ม, และโครงสร้าง DOM พื้นฐาน
+ไม่ต้องห่วงเรื่องความสวยงาม: ไม่ต้องเขียน CSS หรือ <style> ในไฟล์ HTML ปล่อยให้หน้าตามันดิบๆ ไปก่อนได้เลย
+ส่งงานให้ AI: โยนโค้ด HTML/JS ดิบๆ นั้นมาให้ AI พร้อมบอกว่า "ช่วยจัดหน้าตาหน้านี้ให้หน่อย"
+
+🎨 2. หน้าที่ของ AI (Focus on UI/UX & CSS)
+สร้าง CSS แยกส่วน: AI จะเขียนโค้ด CSS สำหรับความสวยงามแยกมาให้ต่างหาก
+ยึดหลัก CSS Variables: AI จะใช้ตัวแปรเช่น var(--theme-primary), var(--theme-bg-card) เสมอ ห้ามใส่รหัสสีลงไปตรงๆ (Hardcode)
+คลีนโค้ด HTML: AI จะส่งโค้ด HTML ที่ใส่ Class Name เรียบร้อยแล้วกลับไปให้ เพื่อให้เข้ากับ CSS ที่สร้างขึ้น
+อ้างอิง Blueprint เดิม: AI จะดูสไตล์จากไฟล์เก่าๆ (เช่น home.html) เป็นตัวอย่างเพื่อให้ Mood & Tone ไปในทิศทางเดียวกัน
+
+🏗️ 3. การจัดการไฟล์ CSS (Global Styles)
+รวมไว้ที่เดียว: นำ CSS ที่ AI สร้างให้ ไปแปะรวมกันไว้ในไฟล์หลัก เช่น style1.css (Theme 1), style2.css (Theme 2)
+ประโยชน์: Admin สามารถเลือก Theme หลักก้อนใหญ่ๆ ได้เลยว่าลูกค้าคนนี้จะใช้โครงสร้างและสไตล์แบบไหน
+
+⚙️ 4. การเปลี่ยนสีแบบ Dynamic (Server Override)
+ไม่ต้องสร้างไฟล์ CSS ใหม่ทุกครั้ง: เมื่อ Admin เลือก Theme หลักแล้ว (เช่น เลือก style1.css) ระบบจะดึงค่าสีย่อยๆ จาก Server (เช่น สี Primary, Secondary ของแบรนด์ลูกค้า)
+Override ด้วย JS: ใช้ Javascript ดึงค่าจาก crmData ไปทับตัวแปร :root ในระดับหน้าแอปพลิเคชัน (ทำที่ index.html หรือ app.js แค่จุดเดียว)
+// ตัวอย่างโค้ด Override สี
+document.documentElement.style.setProperty('--theme-primary', crmData.marketData.storeInfo.primaryColor);
+document.documentElement.style.setProperty('--theme-secondary', crmData.marketData.storeInfo.secondaryColor);
+
+
+🚀 สรุปขั้นตอนการลุยงานหน้าใหม่:
+คุณเขียน HTML + Javascript (Logic/API) ให้ทำงานได้
+โยนโค้ดมาให้ AI
+AI ส่ง HTML ที่ใส่ Class แล้ว + โค้ด CSS กลับไปให้
+คุณเอา HTML ไปวางที่เดิม และเอา CSS ไปต่อท้ายไฟล์ style.css
+จบปิ๊ง! หน้าเว็บสวยงามและพร้อมเปลี่ยนสีตามแบรนด์ลูกค้าทันที
+
+
+### ME TEXT ###
+เรื่อง css แยกไฟล์แต่บะหน้า
+
+ถ้ามันยากลำบากจริงๆ ฉันเอา css ทั้งหมดกองไว้ไฟล์เดียวกัน แล้วให้ ai แก้ทีเดียวทั้งหมดเลย 
+ได้ไหม หมายถึงแต่ละหน้าก็ยังติด css default นั้นไว้อยู่ แต่ ก็มีใน global ด้วยทับเข้าไปเลย
+1. ให้ ai ดู css ทั้งโปรเจ็คมาเก็บไว้ที่ไฟล์หนัก เวลามีการเพิ่มหน้า
+2. ให้ ai แก้ css หลักนั้นทีเดียวทั้งหมดรวดเดียว 
+แล้วค่อย เอา server + js เปลี่ยนแค่ไม่กี่ค่าใน root
+สรุปก็คือ ฉันจะทำแบบที่บอกมา เก็บไว้ style1.css / style2.css / style3.css
+เป็นไฟล์ใหญ่ๆ ก้อนเดียวสะใจ AI ช่วยสร้าง จากนั้นให้ admin เลือกว่าจะเอา theme ไหน จากนั้นค่อยมาเลือก custom ค่าย่อยๆใน root ไม่กี่ค่าก็พอ จบ แบบนี้เป็นไง
+ส่วน css ที่ติดอยู่ในแต่ละหน้าก็ปล่อยไปตามนั้น ครั้งหน้าเวลาให้ ai ดูไปสร้างไฟล์รวม จะได้มีเค้าโครงให้ดูเป็นตัวอย่าง 
+

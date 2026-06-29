@@ -1,0 +1,1048 @@
+<style>
+    /* ==========================================
+      Home Page Styles (Ultra Premium UI)
+      ==========================================
+    */
+    .page-container {
+        padding: 0;
+        padding-bottom: 6rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        background-color: transparent;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .page-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Cover Section */
+    .cover-wrapper {
+        width: 100%;
+        height: 240px;
+        /* ล็อกความสูงและป้องกันการหดตัว */
+        flex-shrink: 0;
+        background: var(--theme-primary, linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%));
+        position: relative;
+        overflow: hidden;
+        border-bottom-left-radius: 2rem;
+        border-bottom-right-radius: 2rem;
+        box-shadow: var(--theme-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.1));
+        z-index: 1;
+    }
+
+    .cover-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .cover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.5s ease;
+    }
+
+    /* ==========================================
+       Premium Mini Profile Panel 
+       ========================================== */
+    .profile-panel {
+        margin: -4rem 1.25rem 1.5rem 1.25rem;
+        /* ดึงขึ้นไปทับส่วน Cover */
+        position: relative;
+        z-index: 10;
+
+        /* Glassmorphism Effect ผูกกับตัวแปร Global */
+        background: var(--theme-bg-card, rgba(255, 255, 255, 0.85));
+        backdrop-filter: var(--theme-backdrop-blur, blur(24px));
+        -webkit-backdrop-filter: var(--theme-backdrop-blur, blur(24px));
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, rgba(255, 255, 255, 0.8));
+        border-radius: var(--theme-radius, 1.5rem);
+        box-shadow: var(--theme-shadow, 0 15px 35px -5px rgba(0, 0, 0, 0.1));
+
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .avatar-glow {
+        position: absolute;
+        inset: -4px;
+        background: linear-gradient(135deg, var(--theme-primary, #3b82f6), var(--theme-secondary, #f59e0b));
+        border-radius: 9999px;
+        filter: blur(10px);
+        opacity: 0.65;
+        z-index: -1;
+    }
+
+    .profile-avatar {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 9999px;
+        object-fit: cover;
+        border: 3px solid var(--theme-bg-card, #ffffff);
+        background-color: var(--theme-bg-app, #f3f4f6);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .profile-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    .profile-tier {
+        font-size: 0.625rem;
+        font-weight: 800;
+        color: var(--theme-primary, #3b82f6);
+        background-color: var(--theme-primary-light, #eff6ff);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+        border: 1px solid var(--theme-border-color, rgba(59, 130, 246, 0.15));
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .tier-icon-img {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    /* กล่องแสดงคะแนนด้านขวา */
+    .profile-points-box {
+        text-align: right;
+        flex-shrink: 0;
+        padding: 0.65rem 0.85rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .profile-points-label {
+        font-size: 0.625rem;
+        color: var(--theme-text-muted, #6b7280);
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.125rem;
+    }
+
+    .profile-points-value-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.35rem;
+        margin-top: 0.25rem;
+    }
+
+    .profile-points-value {
+        font-size: 1.6rem;
+        font-weight: 900;
+        line-height: 1;
+        /* ไล่สีตัวอักษรให้ดูพรีเมียม */
+        background: linear-gradient(to right, var(--theme-primary, #3b82f6), var(--theme-secondary, #f59e0b));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .home-point-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+    }
+
+    /* ==========================================
+       Section Container 
+       ========================================== */
+    .section-container {
+        margin: 0 1.25rem 1.75rem 1.25rem;
+        opacity: 0;
+        transform: translateY(15px);
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.1s;
+    }
+
+    .section-container:nth-child(4) {
+        animation-delay: 0.2s;
+    }
+
+    .section-container:nth-child(5) {
+        animation-delay: 0.3s;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+    }
+
+    .section-icon-wrap {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--theme-radius-btn, 0.75rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #3b82f6);
+        font-size: 1.1rem;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+    }
+
+    /* Promo & Ads Card */
+    .promo-card {
+        background: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        box-shadow: var(--theme-shadow, 0 6px 15px -3px rgba(0, 0, 0, 0.05));
+        overflow: hidden;
+        margin-bottom: 1.25rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .promo-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .promo-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--theme-shadow-hover, 0 15px 25px -5px rgba(0, 0, 0, 0.1));
+        border-color: var(--theme-primary, #3b82f6);
+    }
+
+    .promo-card:active {
+        transform: scale(0.97);
+    }
+
+    .promo-img-wrapper {
+        width: 100%;
+        height: auto;
+        background-color: var(--theme-bg-app, #f8fafc);
+        display: flex;
+    }
+
+    .promo-img-wrapper img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+
+    .promo-content {
+        padding: 1.25rem;
+    }
+
+    .promo-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin-bottom: 0.375rem;
+    }
+
+    .promo-desc {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
+    }
+
+    /* Banner Slider */
+    .banner-slider-wrapper {
+        width: calc(100% + 2.5rem);
+        margin: 0 -1.25rem;
+        overflow: hidden;
+    }
+
+    .banner-slider {
+        position: relative;
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        gap: 1rem;
+        height: 200px;
+        scroll-behavior: smooth;
+        align-items: stretch;
+        padding-top: 0.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .banner-slider::-webkit-scrollbar {
+        display: none;
+    }
+
+    .banner-item {
+        flex: 0 0 auto;
+        height: 100%;
+        width: auto;
+        aspect-ratio: var(--banner-aspect-ratio, 16/9);
+        scroll-snap-align: center;
+        border-radius: var(--theme-radius, 1.25rem);
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--theme-shadow, 0 6px 12px rgba(0, 0, 0, 0.08));
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        background-color: var(--theme-bg-app, #f8fafc);
+        opacity: 0.5;
+        transform: scale(0.88);
+    }
+
+    .banner-item.is-active {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: var(--theme-shadow-hover, 0 15px 25px -5px rgba(0, 0, 0, 0.15));
+        border-color: var(--theme-primary, rgba(59, 130, 246, 0.3));
+    }
+
+    .banner-item:active {
+        transform: scale(0.95);
+    }
+
+    .banner-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .banner-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.375rem;
+        margin-top: 0;
+    }
+
+    .banner-dot {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 9999px;
+        background-color: var(--theme-border-color, #d1d5db);
+        transition: all 0.3s ease;
+    }
+
+    .banner-dot.active {
+        background-color: var(--theme-primary, #3b82f6);
+        width: 1.5rem;
+    }
+
+    /* Highlight Rewards Grid */
+    .reward-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.875rem;
+    }
+
+    .reward-card {
+        background: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.25rem);
+        padding: 0.75rem;
+        box-shadow: var(--theme-shadow, 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+        backdrop-filter: var(--theme-backdrop-blur, none);
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .reward-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--theme-shadow-hover, 0 15px 25px -5px rgba(0, 0, 0, 0.1));
+        border-color: var(--theme-primary, #3b82f6);
+    }
+
+    .reward-card:active {
+        transform: scale(0.96);
+    }
+
+    .reward-img-wrapper {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: calc(var(--theme-radius, 1.25rem) - 0.25rem);
+        overflow: hidden;
+        margin-bottom: 0.875rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        position: relative;
+    }
+
+    .reward-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .reward-card:hover .reward-img-wrapper img {
+        transform: scale(1.08);
+    }
+
+    .reward-name {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #1f2937);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        flex-grow: 1;
+    }
+
+    .reward-points {
+        font-size: 0.875rem;
+        font-weight: 900;
+        color: var(--theme-primary, #3b82f6);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background-color: var(--theme-primary-light, #eff6ff);
+        padding: 0.25rem 0.625rem;
+        border-radius: 0.5rem;
+        width: fit-content;
+    }
+
+    /* Animation Keyframes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="page-container" id="home-page-container">
+
+    <!-- 1. Cover Section -->
+    <div id="home-cover-section" class="cover-wrapper">
+        <img id="home-cover-img" src="" alt="Store Cover" class="cover-img">
+    </div>
+
+    <!-- 2. Premium Mini Profile Section -->
+    <div id="home-profile-section" class="profile-panel" style="display: none;">
+        <div class="avatar-wrapper">
+            <div class="avatar-glow"></div>
+            <img id="ui-prof-avatar" src="" alt="Profile" class="profile-avatar"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+        </div>
+        <div class="profile-info">
+            <h2 id="ui-prof-name" class="profile-name">Loading...</h2>
+
+            <!-- Tier / Rank Badge -->
+            <div id="ui-prof-tier" class="profile-tier">
+                <!-- Icon Image (ซ่อนไว้ก่อนถ้าไม่มี) -->
+                <img id="ui-tier-icon" src="" class="tier-icon-img" style="display:none;" alt="Rank">
+                <!-- Icon Font (เป็น Default) -->
+                <i id="ui-tier-fa" class="fa-solid fa-crown text-amber-500"></i>
+                <span id="ui-tier-text">Member</span>
+            </div>
+        </div>
+
+        <div class="profile-points-box">
+            <div class="profile-points-label" data-i18n="ptsLabel">Points</div>
+            <div class="profile-points-value-wrap">
+                <!-- Point Icon -->
+                <img id="ui-home-point-icon" class="home-point-icon"
+                    src="https://cdn-icons-png.flaticon.com/512/2583/2583133.png" alt="pt">
+                <div id="ui-prof-points" class="profile-points-value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Promos & Ads Section (Card แบบปกติ) -->
+    <div id="home-promo-section" class="section-container" style="display: none;">
+        <h3 class="section-title">
+            <div class="section-icon-wrap" id="icon-wrap-promo">
+                <!-- Icon will be injected via JS -->
+            </div>
+            <span data-i18n="promoTitle">กิจกรรมที่น่าสนใจ</span>
+        </h3>
+        <div id="promo-list">
+            <!-- Promo Cards Injected Here -->
+        </div>
+    </div>
+
+    <!-- 4. Banner Slider Section -->
+    <div id="home-banner-section" class="section-container" style="display: none;">
+        <h3 class="section-title">
+            <div class="section-icon-wrap" id="icon-wrap-banner">
+                <!-- Icon will be injected via JS -->
+            </div>
+            <span data-i18n="bannerTitle">โปรโมชั่นพิเศษ</span>
+        </h3>
+        <div class="banner-slider-wrapper">
+            <div class="banner-slider" id="banner-slider-track">
+                <!-- Banner Items Injected Here -->
+            </div>
+            <div class="banner-dots" id="banner-dots-container">
+                <!-- Dots Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Highlight Rewards Section -->
+    <div id="home-highlight-section" class="section-container" style="display: none;">
+        <h3 class="section-title">
+            <div class="section-icon-wrap" id="icon-wrap-highlight">
+                <!-- Icon will be injected via JS -->
+            </div>
+            <span data-i18n="highlightTitle">ของรางวัลแนะนำ</span>
+        </h3>
+        <div class="reward-grid" id="highlight-grid">
+            <!-- Reward Items Injected Here -->
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= TEMPLATES ================= -->
+
+<!-- Template: Promo Card -->
+<template id="tpl-promo-card">
+    <div class="promo-card">
+        <div class="promo-img-wrapper">
+            <img class="promo-img-slot" src="" alt="Promotion">
+        </div>
+        <div class="promo-content">
+            <h4 class="promo-title"></h4>
+            <p class="promo-desc"></p>
+        </div>
+    </div>
+</template>
+
+<!-- Template: Banner Item -->
+<template id="tpl-banner-item">
+    <div class="banner-item">
+        <img class="banner-img-slot" src="" alt="Banner">
+    </div>
+</template>
+
+<!-- Template: Reward Item -->
+<template id="tpl-reward-item">
+    <div class="reward-card">
+        <div class="reward-img-wrapper">
+            <img class="reward-img-slot" src="" alt="Reward"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+        </div>
+        <div class="reward-name">Name</div>
+        <div class="reward-points">
+            <i class="fa-solid fa-coins"></i>
+            <span class="reward-points-val">0</span>
+        </div>
+    </div>
+</template>
+
+<script>
+    (() => {
+        // ==========================================
+        // 1. PAGE SETTINGS (สามารถตั้งค่าได้)
+        // ==========================================
+        const pageSetting = {
+            // เวลาในการเลื่อนสไลด์อัตโนมัติ (มิลลิวินาที)
+            bannerSlideInterval: 4000,
+            // เปิดใช้งานสไลด์อัตโนมัติหรือไม่
+            enableAutoSlide: true,
+            // ความสูงของกล่อง Slider (สามารถปรับย่อ-ขยายได้ การ์ดจะหดตาม Aspect Ratio ອัตโนมัติ)
+            sliderHeight: "280px",
+            // รูป Cover Default กรณีไม่ได้ตั้งค่ามา
+            defaultCoverUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
+            // ข้อความ/ป้ายกำกับ Default กรณีไม่พบข้อมูล Tier
+            defaultTierName: "Member",
+
+            // ตั้งค่าไอคอนสำหรับ Section ต่างๆ (รองรับ type: 'icon' หรือ 'image')
+            icons: {
+                rankDefault: { type: 'icon', value: 'fa-solid fa-crown text-amber-500' },
+                promo: { type: 'icon', value: 'fa-solid fa-fire', color: '#ef4444', bg: '#fef2f2' },
+                banner: { type: 'icon', value: 'fa-solid fa-bullhorn', color: '#f59e0b', bg: '#fffbeb' },
+                highlight: { type: 'icon', value: 'fa-solid fa-gift', color: '#3b82f6', bg: '#eff6ff' }
+                // 💡 ตัวอย่างการใช้รูปภาพ:
+                // promo: { type: 'image', value: 'res/example/icon_promo.png', bg: 'transparent' }
+            }
+        };
+
+        // ==========================================
+        // 2. LANGUAGE DICTIONARY
+        // ==========================================
+        const i18nDict = {
+            Th: {
+                ptsLabel: "คะแนนสะสม",
+                promoTitle: "กิจกรรมที่น่าสนใจ",
+                bannerTitle: "โปรโมชั่นพิเศษ",
+                highlightTitle: "ของรางวัลแนะนำ",
+                ptsUnit: "แต้ม"
+            },
+            En: {
+                ptsLabel: "My Points",
+                promoTitle: "Interesting Activities",
+                bannerTitle: "Special Promotions",
+                highlightTitle: "Recommended Rewards",
+                ptsUnit: "Pts"
+            }
+        };
+
+        // Variables for Slider
+        let slideTimer;
+        let currentSlideIndex = 0;
+        let bannerCount = 0;
+        let resizeTimer;
+
+        // ==========================================
+        // 3. MAIN INITIALIZATION
+        // ==========================================
+        async function init() {
+            if (!window.crmData) {
+                console.error("[Home] crmData is missing!");
+                return;
+            }
+
+            const data = window.crmData;
+            const lang = (data.language === 'En') ? 'En' : 'Th';
+
+            applyLanguage(lang);
+            renderSectionIcons();
+            renderCover(data);
+            renderProfile(data, lang);
+
+            // รอการคำนวณขนาดภาพและการเรนเดอร์เนื้อหาส่วนสื่อโฆษณา
+            await renderAdsAndBanners(data);
+
+            renderHighlights(data, lang);
+
+            // คำนวณ Padding ของ Slider เมื่อมีการย่อขยายหน้าจอ
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => updateSliderPadding(), 200);
+            });
+        }
+
+        // Helper: หารูปแรกเพื่อเช็ค Aspect Ratio ป้องกันรูปแหว่งและให้ปรับสัดส่วนอัตโนมัติ
+        function getAspectRatio(url) {
+            return new Promise((resolve) => {
+                if (!url) { resolve(16 / 9); return; }
+                const img = new Image();
+                img.onload = () => {
+                    resolve(img.width / img.height);
+                };
+                img.onerror = () => {
+                    resolve(16 / 9); // กรณีรูปเสียใช้ค่ามาตรฐาน
+                };
+                img.src = url;
+            });
+        }
+
+        function handleActionClick(itemObj) {
+            if (itemObj.bannerUrl) {
+                // ถ้ามีคำสั่ง action ให้ใช้งานผ่าน PageManager หรือ iframe ระบบหลัก
+                if (itemObj.bannerUrl.startsWith('action:')) {
+                    console.log("Trigger internal action:", itemObj.bannerUrl);
+                    if (PageManager && PageManager.showToast) {
+                        PageManager.showToast(`Action: ${itemObj.name}`, "🔗");
+                    }
+                } else if (itemObj.bannerUrl.startsWith('http')) {
+                    window.open(itemObj.bannerUrl, '_blank');
+                }
+            }
+        }
+
+        // ==========================================
+        // 4. RENDERING FUNCTIONS
+        // ==========================================
+
+        // 4.0 Render Section Icons
+        function renderSectionIcons() {
+            const sections = ['promo', 'banner', 'highlight'];
+            sections.forEach(key => {
+                const wrap = document.getElementById(`icon-wrap-${key}`);
+                const conf = pageSetting.icons[key];
+                if (wrap && conf) {
+                    if (conf.bg) wrap.style.backgroundColor = conf.bg;
+                    if (conf.color) wrap.style.color = conf.color;
+
+                    if (conf.type === 'image') {
+                        wrap.innerHTML = `<img src="${conf.value}" style="width:65%; height:65%; object-fit:contain; border-radius:inherit;" alt="${key}">`;
+                    } else {
+                        wrap.innerHTML = `<i class="${conf.value}"></i>`;
+                    }
+                }
+            });
+        }
+
+        // 4.1 Apply Language
+        function applyLanguage(lang) {
+            const dict = i18nDict[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+        }
+
+        // 4.2 Render Cover
+        function renderCover(data) {
+            const coverImg = document.getElementById('home-cover-img');
+            const storeCoverURL = data.marketData?.storeInfo?.storeCoverURL;
+
+            if (storeCoverURL) {
+                coverImg.src = storeCoverURL;
+            } else {
+                // ถ้าระบบไม่ได้ตั้งค่ารูปมา ใช้รูป Default สวยๆ
+                coverImg.src = pageSetting.defaultCoverUrl;
+            }
+        }
+
+        // 4.3 Render Mini Profile
+        function renderProfile(data, lang) {
+            const profileSection = document.getElementById('home-profile-section');
+            const user = data.crmUser?.user;
+
+            if (!user) return;
+
+            // ข้อมูลทั่วไป
+            document.getElementById('ui-prof-avatar').src = user.pictureUrl || "";
+            document.getElementById('ui-prof-name').innerText = user.displayName || "Unknown";
+            document.getElementById('ui-prof-points').innerText = (user.points || 0).toLocaleString();
+
+            // การแสดงผล Tier / Rank
+            let tier = {};
+            if (window.Utility && typeof window.Utility.getTier === 'function') {
+                tier = Utility.getTier(user.tier?.id || null) || {};
+            } else {
+                tier = user.tier || {};
+            }
+
+            const tierName = tier.name ? tier.name : pageSetting.defaultTierName;
+            document.getElementById('ui-tier-text').innerText = tierName;
+
+            const tierIconEl = document.getElementById('ui-tier-icon');
+            const tierFaEl = document.getElementById('ui-tier-fa');
+            const defaultRankIcon = pageSetting.icons.rankDefault;
+
+            // ใช้ icon จาก tier ถ้ามี ถ้าไม่มีให้ใช้ default จาก pageSetting
+            if (tier && tier.icon) {
+                tierIconEl.src = tier.icon;
+                tierIconEl.style.display = 'block';
+                tierFaEl.style.display = 'none';
+            } else {
+                if (defaultRankIcon && defaultRankIcon.type === 'image') {
+                    tierIconEl.src = defaultRankIcon.value;
+                    tierIconEl.style.display = 'block';
+                    tierFaEl.style.display = 'none';
+                } else {
+                    tierIconEl.style.display = 'none';
+                    tierFaEl.style.display = 'block';
+                    if (defaultRankIcon && defaultRankIcon.type === 'icon') {
+                        tierFaEl.className = defaultRankIcon.value;
+                    }
+                }
+            }
+
+            // การแสดงผล Point Icon แบบ Dynamic
+            try {
+                const ptIconEl = document.getElementById('ui-home-point-icon');
+                let iconPath = null;
+                // พยายามดึงภาพผ่าน Utility ของระบบ
+                if (window.Utility && typeof window.Utility.getAssetPath === 'function') {
+                    iconPath = window.Utility.getAssetPath("pointIcon");
+                } else if (window.appData && window.appData.customAssets && window.appData.customAssets.pointIcon) {
+                    iconPath = window.appData.customAssets.pointIcon;
+                }
+
+                if (iconPath) {
+                    ptIconEl.src = iconPath;
+                }
+            } catch (e) {
+                console.warn("Could not load custom point icon:", e);
+            }
+
+            profileSection.style.display = 'flex';
+        }
+
+        // 4.4 Render Ads & Banners
+        async function renderAdsAndBanners(data) {
+            const allBanners = data.marketData?.banners?.marketBanners || [];
+
+            // แยกข้อมูล และเรียงลำดับ:
+            // 1. เรียงตาม displayOrder จากน้อยไปมาก (1, 2, 3...)
+            // 2. ถ้า order เท่ากัน ให้เรียงตาม createdAt (อันเก่าอยู่บน อันใหม่เอาไว้ล่าง)
+            const sortFn = (a, b) => {
+                const orderDiff = (a.displayOrder || 0) - (b.displayOrder || 0);
+                if (orderDiff !== 0) return orderDiff;
+
+                // กรณี order เท่ากัน นำเวลามาเทียบกัน
+                const dateA = new Date(a.createdAt || 0).getTime();
+                const dateB = new Date(b.createdAt || 0).getTime();
+                return dateA - dateB; // น้อยไปมาก (เก่าไปใหม่)
+            };
+
+            const banners = allBanners.filter(b => b.type === "banner").sort(sortFn);
+            const promos = allBanners.filter(b => b.type !== "banner").sort(sortFn);
+
+            // ----------------------------------------
+            // เรนเดอร์ Ads & Promos (Card แบบปกติ ปรับความสูงอิสระ)
+            // ----------------------------------------
+            if (promos.length > 0) {
+                const promoSection = document.getElementById('home-promo-section');
+                const promoList = document.getElementById('promo-list');
+                const tplPromo = document.getElementById('tpl-promo-card');
+
+                promoList.innerHTML = '';
+
+                promos.forEach(promo => {
+                    const clone = tplPromo.content.cloneNode(true);
+                    const card = clone.querySelector('.promo-card');
+
+                    clone.querySelector('.promo-img-slot').src = promo.imageUrl || '';
+                    clone.querySelector('.promo-title').innerText = promo.name || '';
+                    clone.querySelector('.promo-desc').innerText = promo.description || '';
+
+                    card.onclick = () => handleActionClick(promo);
+                    promoList.appendChild(clone);
+                });
+                promoSection.style.display = 'block';
+            }
+
+            // ----------------------------------------
+            // เรนเดอร์ Banners (Slider มีการ์ดพระเอกตรงกลาง)
+            // ----------------------------------------
+            if (banners.length > 0) {
+                const firstBannerImg = banners.find(b => b.imageUrl)?.imageUrl;
+                if (firstBannerImg) {
+                    const ratio = await getAspectRatio(firstBannerImg);
+                    // ตั้งค่า Aspect ratio 
+                    document.documentElement.style.setProperty('--banner-aspect-ratio', ratio);
+                }
+
+                const bannerSection = document.getElementById('home-banner-section');
+                const sliderTrack = document.getElementById('banner-slider-track');
+                const dotsContainer = document.getElementById('banner-dots-container');
+                const tplBanner = document.getElementById('tpl-banner-item');
+
+                // ใช้การตั้งค่าความสูงจาก config
+                sliderTrack.style.height = pageSetting.sliderHeight;
+
+                bannerCount = banners.length;
+                sliderTrack.innerHTML = '';
+                dotsContainer.innerHTML = '';
+
+                banners.forEach((banner, index) => {
+                    const clone = tplBanner.content.cloneNode(true);
+                    const img = clone.querySelector('.banner-img-slot');
+                    const item = clone.querySelector('.banner-item');
+
+                    img.src = banner.imageUrl || "";
+                    item.onclick = () => handleActionClick(banner);
+
+                    // เซ็ตให้อันแรกเป็นอันที่ถูกโฟกัส (พระเอก)
+                    if (index === 0) item.classList.add('is-active');
+
+                    sliderTrack.appendChild(clone);
+
+                    const dot = document.createElement('div');
+                    dot.className = `banner-dot ${index === 0 ? 'active' : ''}`;
+                    dotsContainer.appendChild(dot);
+                });
+
+                bannerSection.style.display = 'block';
+
+                // Setup Slide Logic
+                if (bannerCount > 1) {
+                    updateSliderPadding(); // จัดระยะ Padding ซ้ายขวาให้ไอเทมอยู่กึ่งกลาง
+                    setupSliderEvents(sliderTrack, dotsContainer);
+                    if (pageSetting.enableAutoSlide) {
+                        startSlide();
+                    }
+                }
+            }
+        }
+
+        // ฟังก์ชันคำนวณระยะ Padding ของ Track เพื่อให้ Item กึ่งกลางเป๊ะ
+        function updateSliderPadding() {
+            const track = document.getElementById('banner-slider-track');
+            if (!track || track.children.length === 0) return;
+
+            const trackWidth = track.clientWidth;
+            const itemWidth = track.children[0].offsetWidth;
+            const padding = (trackWidth - itemWidth) / 2;
+
+            track.style.paddingLeft = `${padding}px`;
+            track.style.paddingRight = `${padding}px`;
+
+            // บังคับ Scroll ให้อยู่ถูกที่หลังเปลี่ยนขนาดจอ
+            const targetItem = track.children[currentSlideIndex];
+            const scrollPos = targetItem.offsetLeft - (track.clientWidth / 2) + (targetItem.offsetWidth / 2);
+            track.scrollTo({ left: scrollPos, behavior: 'instant' });
+        }
+
+        function updateActiveBanner(track) {
+            if (!track || !track.children.length) return;
+
+            const trackCenter = track.scrollLeft + (track.clientWidth / 2);
+            let closestIndex = 0;
+            let closestDist = Infinity;
+
+            // คำนวณหา Item ที่อยู่ใกล้กึ่งกลางที่สุด
+            Array.from(track.children).forEach((child, index) => {
+                const childCenter = child.offsetLeft + (child.offsetWidth / 2);
+                const dist = Math.abs(trackCenter - childCenter);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestIndex = index;
+                }
+            });
+
+            if (closestIndex !== currentSlideIndex) {
+                currentSlideIndex = closestIndex;
+                updateDots(document.getElementById('banner-dots-container'), currentSlideIndex);
+            }
+
+            // อัปเดต Class เพื่อทำ Effect โฟกัสให้กับพระเอก
+            Array.from(track.children).forEach((child, index) => {
+                if (index === currentSlideIndex) {
+                    child.classList.add('is-active');
+                } else {
+                    child.classList.remove('is-active');
+                }
+            });
+        }
+
+        function setupSliderEvents(track, dotsContainer) {
+            track.addEventListener('scroll', () => {
+                updateActiveBanner(track);
+            });
+
+            // หยุดสไลด์อัตโนมัติเมื่อผู้ใช้กำลังแตะหรือดู
+            track.addEventListener('mouseenter', stopSlide);
+            track.addEventListener('touchstart', stopSlide, { passive: true });
+            track.addEventListener('mouseleave', () => { if (pageSetting.enableAutoSlide) startSlide() });
+            track.addEventListener('touchend', () => { if (pageSetting.enableAutoSlide) startSlide() });
+        }
+
+        function startSlide() {
+            stopSlide();
+            slideTimer = setInterval(() => {
+                const track = document.getElementById('banner-slider-track');
+                if (!track || !track.children.length) return;
+
+                currentSlideIndex = (currentSlideIndex + 1) % bannerCount;
+                const targetItem = track.children[currentSlideIndex];
+
+                // เลื่อน Slider ให้ Item ตรงกลางพอดี
+                const scrollPos = targetItem.offsetLeft - (track.clientWidth / 2) + (targetItem.offsetWidth / 2);
+                track.scrollTo({ left: scrollPos, behavior: 'smooth' });
+
+            }, pageSetting.bannerSlideInterval);
+        }
+
+        function stopSlide() {
+            if (slideTimer) clearInterval(slideTimer);
+        }
+
+        function updateDots(container, index) {
+            if (!container) return;
+            Array.from(container.children).forEach((dot, i) => {
+                if (i === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        // 4.5 Render Highlight Rewards
+        function renderHighlights(data, lang) {
+            const highlightSection = document.getElementById('home-highlight-section');
+            const grid = document.getElementById('highlight-grid');
+            const tplReward = document.getElementById('tpl-reward-item');
+
+            const highlightIds = data.marketData?.highlightRewards || [];
+            const allRewards = data.marketData?.rewards || [];
+
+            if (highlightIds.length === 0 || allRewards.length === 0) return;
+
+            // ดึงเฉพาะรางวัลที่อยู่ใน highlightIds
+            const highlights = allRewards.filter(r => highlightIds.includes(r.id));
+
+            if (highlights.length === 0) return;
+
+            grid.innerHTML = '';
+            const dict = i18nDict[lang];
+
+            highlights.forEach(reward => {
+                const clone = tplReward.content.cloneNode(true);
+                const card = clone.querySelector('.reward-card');
+
+                clone.querySelector('.reward-img-slot').src = reward.image || "";
+                clone.querySelector('.reward-name').innerText = reward.name || "Unknown";
+                clone.querySelector('.reward-points-val').innerText = `${(reward.points || 0).toLocaleString()} ${dict.ptsUnit}`;
+
+                card.onclick = () => {
+                    if (PageManager && PageManager.showOk) {
+                        PageManager.showOk(
+                            reward.name,
+                            reward.description || "ไม่มีรายละเอียดเพิ่มเติม",
+                            reward.image
+                        );
+                    }
+                };
+
+                grid.appendChild(clone);
+            });
+
+            highlightSection.style.display = 'block';
+        }
+
+        // ==========================================
+        // 5. START
+        // ==========================================
+        init();
+
+    })();
+</script>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Input Animation */
+        .input-group {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within label {
+            color: #4f46e5;
+        }
+
+        /* Loader */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #6366f1;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fade In Animation */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status Message */
+        #status-msg {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Status Message Box -->
+    <div id="status-msg" class="opacity-0 scale-95">
+        <div id="status-content"
+            class="px-6 py-3 rounded-full shadow-lg text-white font-medium flex items-center gap-2">
+            <i id="status-icon"></i>
+            <span id="status-text"></span>
+        </div>
+    </div>
+
+    <!-- Main Container (Full Page) -->
+    <div id="app-container" class="w-full min-h-screen flex flex-col fade-in hidden">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mr-4 -mt-4 w-32 h-32 rounded-full bg-white opacity-10 blur-2xl"></div>
+            <div class="absolute bottom-0 left-0 -ml-4 -mb-4 w-24 h-24 rounded-full bg-white opacity-10 blur-2xl"></div>
+
+            <div class="relative z-10">
+                <h2 id="page-title" class="text-2xl font-bold">Profile Data</h2>
+                <p id="page-subtitle" class="text-indigo-100 text-sm mt-1">จัดการข้อมูลยานพาหนะของคุณ</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-grow p-5 sm:p-8">
+
+            <!-- VIEW MODE -->
+            <div id="view-mode" class="hidden space-y-8">
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <!-- Profile Image Wrapper -->
+                        <div
+                            class="w-36 h-36 rounded-full overflow-hidden border-4 border-indigo-50 shadow-md flex items-center justify-center bg-gray-100">
+                            <img id="view-image" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                            <i id="view-image-fallback" class="fas fa-camera text-4xl text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div
+                        class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-indigo-100 transition-colors">
+                        <label
+                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">ชื่อ</label>
+                        <p id="view-name" class="text-xl font-semibold text-gray-800">-</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">ประเภท</label>
+                            <div class="flex items-center gap-2">
+                                <i id="view-type-icon" class="text-indigo-500"></i>
+                                <p id="view-type" class="text-base font-medium text-gray-700">-</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">วันเกิด</label>
+                            <p id="view-date" class="text-base font-medium text-gray-700">-</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 md:col-span-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">ชนิด
+                            (รายละเอียด)</label>
+                        <p id="view-kind" class="text-base font-medium text-gray-700">-</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-6">
+                    <button onclick="switchToEdit()"
+                        class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-indigo-100 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                        <i class="fas fa-edit"></i> แก้ไขข้อมูล
+                    </button>
+                    <button onclick="confirmDelete()"
+                        class="px-6 bg-white border border-red-100 text-red-500 hover:bg-red-50 font-semibold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- EDIT / CREATE FORM -->
+            <form id="edit-form" class="hidden space-y-6 max-w-2xl mx-auto" onsubmit="handleFormSubmit(event)">
+
+                <!-- Image Upload Section -->
+                <div class="flex flex-col items-center justify-center py-4">
+                    <label for="image-upload" class="relative cursor-pointer group">
+                        <div
+                            class="w-32 h-32 rounded-full overflow-hidden border-4 border-dashed border-gray-200 group-hover:border-indigo-400 transition-all bg-gray-50 flex items-center justify-center">
+                            <img id="preview-image" src="" class="w-full h-full object-cover hidden">
+                            <div id="upload-placeholder" class="text-center p-2">
+                                <i class="fas fa-camera text-gray-300 text-3xl mb-1 group-hover:text-indigo-400"></i>
+                                <p class="text-[10px] text-gray-400 font-medium">เปลี่ยนรูป</p>
+                            </div>
+                        </div>
+                        <div
+                            class="absolute bottom-1 right-1 bg-indigo-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-white transform group-hover:scale-110 transition-transform">
+                            <i class="fas fa-plus text-xs"></i>
+                        </div>
+                    </label>
+                    <input id="image-upload" type="file" accept="image/*" class="hidden" onchange="previewFile(this)">
+                </div>
+
+                <!-- Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="input-group md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5 ml-1">ชื่อเรียก</label>
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-id-card"></i>
+                            </span>
+                            <input type="text" id="input-name" required
+                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-gray-700"
+                                placeholder="ระบุชื่อ">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5 ml-1">ประเภท</label>
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-tag"></i>
+                            </span>
+                            <select id="input-type"
+                                class="w-full pl-11 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-gray-700 appearance-none cursor-pointer">
+                                <option value="รถยนต์">รถยนต์</option>
+                                <option value="มอไซค์">มอไซค์</option>
+                                <option value="เครื่องบิน">เครื่องบิน</option>
+                                <option value="เรือ">เรือ</option>
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label
+                            class="block text-sm font-semibold text-gray-600 mb-1.5 ml-1">วันเกิด/วันที่ได้รับ</label>
+                        <input type="date" id="input-date" required
+                            class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-gray-700">
+                    </div>
+
+                    <div class="input-group md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-600 mb-1.5 ml-1">ชนิด (เช่น สปอร์ต,
+                            ครอบครัว)</label>
+                        <input type="text" id="input-kind"
+                            class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-gray-700"
+                            placeholder="ระบุชนิดหรือคำอธิบาย">
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="btn-cancel" onclick="handleCancel()"
+                        class="flex-1 bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold py-3.5 px-6 rounded-2xl transition-all active:scale-[0.98]">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" id="btn-save"
+                        class="flex-[2] bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-indigo-100 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                        <span id="btn-save-text">บันทึกข้อมูล</span>
+                        <div id="btn-loader" class="loader hidden" style="width:18px; height:18px; border-width: 2px;">
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal (Backdrop) -->
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-gray-900/60 z-50 hidden flex items-center justify-center p-6 backdrop-blur-[2px]">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
+            id="confirm-box">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-red-50 mb-4">
+                    <i class="fas fa-trash-alt text-red-500 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">ยืนยันการลบ?</h3>
+                <p class="text-gray-500 mt-2">ข้อมูลนี้จะถูกลบถาวรและไม่สามารถกู้คืนกลับมาได้อีกครั้ง</p>
+            </div>
+            <div class="mt-8 flex gap-3">
+                <button onclick="closeModal()"
+                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all">ยกเลิก</button>
+                <button onclick="performDelete()"
+                    class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-red-100 transition-all">ลบข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State ---
+        let appData = {};
+        let currentIndex = null;
+        let isEditMode = false;
+        let originalProfileData = null;
+
+        // --- Init ---
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'initialData') {
+                appData = event.data.data;
+                console.log(appData);
+                initialize();
+            }
+        }, false);
+
+        // For direct preview/dev
+        if (!window.parent || window.parent === window) {
+            /* appData = { 
+               rootUrl: "", gameId: "test", statId: "test", token: "", index: 1, max: 3, 
+               customFields: { fav1: '{"name":"เทสคาร์","type":"รถยนต์","date":"2023-10-10","kind":"สปอร์ต"}' }
+            };
+            initialize(); */
+        }
+
+        function initialize() {
+            document.getElementById('app-container').classList.remove('hidden');
+
+            // Determine Current Index
+            if (appData.index) {
+                currentIndex = parseInt(appData.index);
+            } else {
+                const max = appData.max || 3;
+
+                // สร้าง function สำหรับเช็กความว่างเปล่าโดยเฉพาะ
+                const isEmpty = (v) => {
+                    return (
+                        !v ||                                                   // null, undefined, "", 0
+                        v === "{}" ||                                           // string "{}"
+                        (typeof v === 'object' && Object.keys(v).length === 0)  // object {}
+                    );
+                };
+                for (let i = 1; i <= max; i++) {
+                    const val = appData.customFields[`fav${i}`];
+
+                    if (isEmpty(val)) {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+
+                if (!currentIndex) currentIndex = 1;
+            }
+
+            const raw = appData.customFields[`fav${currentIndex}`];
+            const imgUrl = appData.customFields[`favimage${currentIndex}`];
+
+            if (!isEmpty(raw)) {
+                try {
+                    if (typeof raw === "string") originalProfileData = JSON.parse(raw);
+                    if (typeof raw === "object") originalProfileData = raw;
+                } catch (e) {
+                    originalProfileData = { name: "", type: "รถยนต์", date: "", kind: "" };
+                }
+                originalProfileData.image = imgUrl;
+                renderView();
+            } else {
+                originalProfileData = null;
+                switchToEdit(true);
+            }
+        }
+        function isEmpty(raw) {
+            if (raw === null || raw === undefined) return true;
+            if (typeof raw === "string" && raw.trim() === "") return true;
+            if (typeof raw === "object" && Object.keys(raw).length === 0) return true;
+            return false;
+        }
+
+        // --- Rendering ---
+        function renderView() {
+            isEditMode = false;
+            document.getElementById('view-mode').classList.remove('hidden');
+            document.getElementById('edit-form').classList.add('hidden');
+
+            document.getElementById('page-title').innerText = originalProfileData.name || "Profile";
+            document.getElementById('page-subtitle').innerText = "ดูรายละเอียดข้อมูลยานพาหนะ";
+
+            document.getElementById('view-name').innerText = originalProfileData.name || "-";
+            document.getElementById('view-type').innerText = originalProfileData.type || "-";
+            document.getElementById('view-date').innerText = originalProfileData.date || "-";
+            document.getElementById('view-kind').innerText = originalProfileData.kind || "-";
+
+            // View Image Logic
+            const imgEl = document.getElementById('view-image');
+            const fallbackEl = document.getElementById('view-image-fallback');
+
+            if (originalProfileData.image && originalProfileData.image !== "") {
+                imgEl.src = originalProfileData.image;
+                imgEl.classList.remove('hidden');
+                fallbackEl.classList.add('hidden');
+            } else {
+                imgEl.src = "";
+                imgEl.classList.add('hidden');
+                fallbackEl.classList.remove('hidden');
+            }
+
+            const iconMap = { "รถยนต์": "fa-car", "มอไซค์": "fa-motorcycle", "เครื่องบิน": "fa-plane", "เรือ": "fa-ship" };
+            const iconClass = iconMap[originalProfileData.type] || "fa-layer-group";
+            document.getElementById('view-type-icon').className = `fas ${iconClass} text-indigo-500`;
+        }
+
+        function switchToEdit(isNew = false) {
+            isEditMode = true;
+            document.getElementById('view-mode').classList.add('hidden');
+            document.getElementById('edit-form').classList.remove('hidden');
+
+            document.getElementById('page-title').innerText = isNew ? "เพิ่มข้อมูลใหม่" : "แก้ไขข้อมูล";
+            document.getElementById('page-subtitle').innerText = isNew ? `บันทึกข้อมูลลงในช่องที่ ${currentIndex}` : "จัดการการแสดงผลข้อมูลของคุณ";
+
+            const previewImg = document.getElementById('preview-image');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if (!isNew && originalProfileData) {
+                document.getElementById('input-name').value = originalProfileData.name || "";
+                document.getElementById('input-type').value = originalProfileData.type || "รถยนต์";
+                document.getElementById('input-date').value = originalProfileData.date || "";
+                document.getElementById('input-kind').value = originalProfileData.kind || "";
+
+                if (originalProfileData.image && originalProfileData.image !== "") {
+                    previewImg.src = originalProfileData.image;
+                    previewImg.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                } else {
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('edit-form').reset();
+                previewImg.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+
+            const btnCancel = document.getElementById('btn-cancel');
+            if (isNew && !appData.index) {
+                btnCancel.innerText = "ปิด";
+                btnCancel.onclick = closeIframe;
+            } else {
+                btnCancel.innerText = "ยกเลิก";
+                btnCancel.onclick = handleCancel;
+            }
+        }
+
+        function handleCancel() {
+            if (originalProfileData) renderView();
+            else closeIframe();
+        }
+
+        function previewFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('preview-image');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- API Handlers ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            setLoading(true);
+
+            const formDataObj = {
+                name: document.getElementById('input-name').value,
+                type: document.getElementById('input-type').value,
+                date: document.getElementById('input-date').value,
+                kind: document.getElementById('input-kind').value,
+                createdAt: (originalProfileData && originalProfileData.createdAt) ? originalProfileData.createdAt : Math.floor(Date.now() / 1000)
+            };
+
+            let customFields={};
+            customFields[`fav${currentIndex}`] = formDataObj;
+
+            const bodyFormData = new FormData();
+            bodyFormData.append('action', 'crm_profileupload');
+            bodyFormData.append('gameId', appData.gameId);
+            bodyFormData.append('statId', appData.statId);
+            bodyFormData.append('token', appData.token);
+            bodyFormData.append('customFields', JSON.stringify(customFields));
+
+            const fileInput = document.getElementById('image-upload');
+            if (fileInput.files.length > 0) {
+                bodyFormData.append('file', fileInput.files[0]);
+                bodyFormData.append('imagefield', `favimage${currentIndex}`);
+            }
+
+            try {
+                const response = await fetch(`${appData.rootUrl}/upload`, {
+                    method: 'POST',
+                    body: bodyFormData
+                });
+                if (response.ok) {
+                    showStatus("บันทึกข้อมูลเรียบร้อยแล้ว", "success");
+                    setTimeout(finishAndClose, 1000);
+                } else {
+                    showStatus("เกิดข้อผิดพลาดในการบันทึก", "error");
+                    setLoading(false);
+                }
+            } catch (error) {
+                showStatus("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "error");
+                setLoading(false);
+            }
+        }
+
+        async function performDelete() {
+            setLoading(true);
+            closeModal();
+
+            const bodyFormData = new FormData();
+            bodyFormData.append('action', 'crm_profileupload');
+            bodyFormData.append('gameId', appData.gameId);
+            bodyFormData.append('statId', appData.statId);
+            bodyFormData.append('token', appData.token);
+            
+            //** remove
+            let customFields={};
+            customFields[`fav${currentIndex}`] = {};
+            bodyFormData.append('customFields', JSON.stringify(customFields));
+
+
+            if (originalProfileData.image && originalProfileData.image !== "")
+                bodyFormData.append('imagefield', `favimage${currentIndex}`);
+
+
+            try {
+                const response = await fetch(`${appData.rootUrl}/upload`, {
+                    method: 'POST',
+                    body: bodyFormData
+                });
+                if (response.ok) {
+                    showStatus("ลบข้อมูลสำเร็จ", "success");
+                    setTimeout(finishAndClose, 1000);
+                } else {
+                    showStatus("เกิดข้อผิดพลาดในการลบ", "error");
+                    setLoading(false);
+                }
+            } catch (error) {
+                showStatus("ไม่สามารถลบได้ กรุณาลองใหม่", "error");
+                setLoading(false);
+            }
+        }
+
+        // --- UI Helpers ---
+        function setLoading(isLoading) {
+            const btn = document.getElementById('btn-save');
+            const txt = document.getElementById('btn-save-text');
+            const loader = document.getElementById('btn-loader');
+            const inputs = document.querySelectorAll('input, select, button');
+
+            if (isLoading) {
+                txt.classList.add('hidden');
+                loader.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+                inputs.forEach(el => el.disabled = true);
+            } else {
+                txt.classList.remove('hidden');
+                loader.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+                inputs.forEach(el => el.disabled = false);
+            }
+        }
+
+        function showStatus(msg, type) {
+            const wrap = document.getElementById('status-msg');
+            const content = document.getElementById('status-content');
+            const icon = document.getElementById('status-icon');
+            const text = document.getElementById('status-text');
+
+            text.innerText = msg;
+            if (type === 'success') {
+                content.className = "px-6 py-3 rounded-full shadow-lg text-white font-medium flex items-center gap-2 bg-emerald-500";
+                icon.className = "fas fa-check-circle";
+            } else {
+                content.className = "px-6 py-3 rounded-full shadow-lg text-white font-medium flex items-center gap-2 bg-rose-500";
+                icon.className = "fas fa-times-circle";
+            }
+
+            wrap.classList.remove('opacity-0', 'scale-95');
+            wrap.classList.add('opacity-100', 'scale-100');
+
+            setTimeout(() => {
+                wrap.classList.remove('opacity-100', 'scale-100');
+                wrap.classList.add('opacity-0', 'scale-95');
+            }, 3000);
+        }
+
+        function confirmDelete() {
+            const modal = document.getElementById('confirm-modal');
+            const box = document.getElementById('confirm-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirm-modal');
+            const box = document.getElementById('confirm-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 250);
+        }
+
+        function finishAndClose() {
+            window.parent.postMessage({ type: "formData", data: { ok: true }, closeIframe: true }, "*");
+        }
+
+        function closeIframe() {
+            window.parent.postMessage({ type: "formData", data: { ok: false }, closeIframe: true }, "*");
+        }
+    </script>
+</body>
+
+</html>

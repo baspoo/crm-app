@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการที่อยู่จัดส่ง</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* ค่าเริ่มต้น (Fallback) */
+            --primary-color: #2563eb;
+            --secondary-color: #f59e0b;
+            --primary-text: #ffffff; /* สีข้อความบนพื้น primary */
+            --secondary-text: #ffffff; /* สีข้อความบนพื้น secondary */
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --------------------------------------
+           Custom Scrollbar 
+           -------------------------------------- */
+        html {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #cbd5e1 transparent; /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px; /* Thin vertical scrollbar */
+            height: 6px; /* Thin horizontal scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Invisible track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* Tailwind slate-300 */
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8; /* Tailwind slate-400 */
+        }
+
+        /* Snap Scrolling UX (ถ้ามีการใช้ slider) */
+        .tier-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scroll-behavior: smooth;
+        }
+        
+        .tier-slider::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        /* --------------------------------------
+           Form Elements 
+           -------------------------------------- */
+        .input-base {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-base:focus {
+            background-color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 37, 99, 235), 0.1);
+        }
+
+        /* สำหรับ Select */
+        select.input-base {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+            padding-right: 2.5rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ปุ่ม Submit เปลี่ยนสี Text อัตโนมัติ */
+        .btn-theme {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+        }
+        .btn-theme:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Toggle สวิตช์ ใช้สี Primary */
+        .peer-checked\:bg-theme:checked ~ div {
+            background-color: var(--primary-color) !important;
+        }
+        
+        /* ขีดตกแต่งหัวข้อ */
+        .title-bar {
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white shadow-sm overflow-hidden">
+        <img id="headerImage" src="res/header/dummy.png" alt="Campaign Banner" class="w-full h-auto block">
+    </div>
+
+    <!-- Form Container -->
+    <div class="max-w-xl mx-auto px-6 mt-8 fade-in">
+        
+        <!-- Title & Subtitle -->
+        <div class="mb-8 flex items-center space-x-4">
+            <div class="w-1.5 h-8 rounded-full title-bar"></div>
+            <div>
+                <h2 id="headerTitle" class="text-2xl font-bold text-slate-800 leading-tight" data-i18n="title">จัดการที่อยู่จัดส่ง</h2>
+                <p class="text-sm text-slate-400 font-medium" data-i18n="subtitle">กรุณากรอกข้อมูลที่อยู่สำหรับการจัดส่งสินค้า</p>
+            </div>
+        </div>
+
+        <form id="addressForm" class="space-y-6">
+            
+            <!-- Contact Person -->
+            <div class="form-group">
+                <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="contactPerson" data-i18n="nameLabel">ชื่อผู้รับ / ติดต่อ</label>
+                <div class="relative">
+                    <input type="text" id="contactPerson" data-i18n-ph="namePh" placeholder="ชื่อ-นามสกุล" class="input-base">
+                </div>
+            </div>
+
+            <!-- Contact Phone -->
+            <div class="form-group">
+                <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="contactPhone" data-i18n="phoneLabel">เบอร์ติดต่อ</label>
+                <input type="tel" id="contactPhone" data-i18n-ph="phonePh" placeholder="ตัวเลขเท่านั้น เช่น 0812345678" class="input-base">
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+                <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="address" data-i18n="addressLabel">รายละเอียดที่อยู่</label>
+                <textarea id="address" rows="3" data-i18n-ph="addressPh" placeholder="บ้านเลขที่, หมู่, ซอย, ถนน..." class="input-base resize-none"></textarea>
+            </div>
+
+            <!-- Province Dropdown -->
+            <div class="form-group">
+                <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="province" data-i18n="provLabel">จังหวัด</label>
+                <select id="province" class="input-base">
+                    <option value="" data-i18n="selectProv">-- เลือกจังหวัด --</option>
+                </select>
+            </div>
+
+            <!-- Cascading Dropdowns Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="amphoe" data-i18n="ampLabel">อำเภอ / เขต</label>
+                    <select id="amphoe" disabled class="input-base disabled:opacity-50">
+                        <option value="" data-i18n="selectAmp">-- เลือกอำเภอ --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="district" data-i18n="distLabel">ตำบล / แขวง</label>
+                    <select id="district" disabled class="input-base disabled:opacity-50">
+                        <option value="" data-i18n="selectDist">-- เลือกตำบล --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Zipcode -->
+            <div class="form-group">
+                <label class="block text-sm font-semibold text-slate-600 mb-2 ml-1" for="zipcode" data-i18n="zipLabel">รหัสไปรษณีย์</label>
+                <!-- นำ readonly, bg-slate-100, cursor-not-allowed ออก เพื่อให้แก้ไขได้ -->
+                <input type="text" id="zipcode" data-i18n-ph="zipPh" placeholder="ระบบจะกรอกให้อัตโนมัติ" class="input-base">
+            </div>
+
+            <!-- Toggle Default -->
+            <div class="flex items-center justify-between bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 cursor-pointer group transition-all hover:bg-slate-100/50" onclick="document.getElementById('makeDefault').click()">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 group-hover:text-blue-500 transition-colors shadow-sm">
+                        <i class="fa-solid fa-house-chimney-user"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-700" data-i18n="defaultToggle">ตั้งเป็นที่อยู่หลัก (Default)</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer" onclick="event.stopPropagation()">
+                    <!-- เพิ่ม class peer-checked:bg-theme สำหรับดึงสี --primary-color -->
+                    <input type="checkbox" id="makeDefault" class="sr-only peer peer-checked:bg-theme">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4">
+                <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-[1.5rem] font-bold text-lg shadow-lg shadow-blue-100 transition-all active:scale-[0.98] flex items-center justify-center space-x-2 btn-theme">
+                    <span data-i18n="submitBtn">บันทึก</span>
+                </button>
+            </div>
+        </form>
+
+        <p class="text-center text-slate-400 text-xs mt-8 font-medium" data-i18n="warningMsg">กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนกดบันทึก</p>
+    </div>
+
+    <!-- Toast Success/Error Placeholder (Optional) -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium shadow-2xl opacity-0 transition-opacity pointer-events-none z-50"></div>
+
+    <script>
+        // --- 1. Language Dictionary (Dict สำหรับเก็บข้อมูลภาษา) ---
+        const i18nDict = {
+            Th: {
+                title: "จัดการที่อยู่จัดส่ง",
+                subtitle: "กรุณากรอกข้อมูลที่อยู่สำหรับการจัดส่งสินค้า",
+                headerCreate: "สร้างที่อยู่ใหม่",
+                headerUpdate: "แก้ไขที่อยู่",
+                btnCreate: "สร้างที่อยู่ใหม่",
+                btnUpdate: "บันทึกข้อมูล",
+                nameLabel: "ชื่อผู้รับ / ติดต่อ",
+                namePh: "ชื่อ-นามสกุล",
+                phoneLabel: "เบอร์ติดต่อ",
+                phonePh: "ตัวเลขเท่านั้น เช่น 0812345678",
+                addressLabel: "รายละเอียดที่อยู่",
+                addressPh: "บ้านเลขที่, หมู่, ซอย, ถนน...",
+                provLabel: "จังหวัด",
+                ampLabel: "อำเภอ / เขต",
+                distLabel: "ตำบล / แขวง",
+                zipLabel: "รหัสไปรษณีย์",
+                zipPh: "ระบบจะกรอกให้อัตโนมัติ",
+                defaultToggle: "ตั้งเป็นที่อยู่หลัก (Default)",
+                submitBtn: "บันทึก",
+                warningMsg: "กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนกดบันทึก",
+                selectProv: "-- เลือกจังหวัด --",
+                selectAmp: "-- เลือกอำเภอ --",
+                selectDist: "-- เลือกตำบล --",
+                waitMsg: "-- รอสักครู่ --",
+                loadingZip: "กำลังโหลด...",
+                errVal1: "กรุณากรอกชื่อผู้รับและเบอร์โทรศัพท์",
+                errVal2: "กรุณากรอกข้อมูลที่อยู่ให้ครบถ้วน"
+            },
+            En: {
+                title: "Address Form",
+                subtitle: "Please enter your shipping address details",
+                headerCreate: "Create New Address",
+                headerUpdate: "Update Address",
+                btnCreate: "Create Address",
+                btnUpdate: "Save Changes",
+                nameLabel: "Contact Name",
+                namePh: "Full Name",
+                phoneLabel: "Phone Number",
+                phonePh: "Numbers only, e.g. 0812345678",
+                addressLabel: "Address Details",
+                addressPh: "House No., Village, Soi, Road...",
+                provLabel: "Province",
+                ampLabel: "District / Amphoe",
+                distLabel: "Sub-district / Tambon",
+                zipLabel: "Postal Code",
+                zipPh: "Auto-filled by system",
+                defaultToggle: "Set as Default Address",
+                submitBtn: "Save",
+                warningMsg: "Please verify your information before saving",
+                selectProv: "-- Select Province --",
+                selectAmp: "-- Select District --",
+                selectDist: "-- Select Sub-district --",
+                waitMsg: "-- Please wait --",
+                loadingZip: "Loading...",
+                errVal1: "Please enter contact name and phone number",
+                errVal2: "Please complete all address fields"
+            }
+        };
+
+        let config = { apiURL: "", data: {}, lang: "Th" }; // Default Language
+
+        const els = {
+            header: document.getElementById('headerTitle'),
+            contactPerson: document.getElementById('contactPerson'),
+            contactPhone: document.getElementById('contactPhone'),
+            address: document.getElementById('address'),
+            province: document.getElementById('province'),
+            amphoe: document.getElementById('amphoe'),
+            district: document.getElementById('district'),
+            zipcode: document.getElementById('zipcode'),
+            makeDefault: document.getElementById('makeDefault'),
+            form: document.getElementById('addressForm'),
+            submitBtn: document.getElementById('submitBtn'),
+            toast: document.getElementById('toast'),
+            headerImage: document.getElementById('headerImage')
+        };
+
+        // --- 2. Helper: ฟังก์ชันหาค่า Contrast (มืด/สว่าง) จากสี Hex ---
+        function getContrastColor(hexColor) {
+            if (!hexColor) return '#ffffff';
+            // ลบ # ออกถ้ามี
+            if (hexColor.startsWith('#')) hexColor = hexColor.slice(1);
+            // แปลงเป็นรหัสสีแบบยาวถ้ามาแบบสั้น (เช่น #FFF)
+            if (hexColor.length === 3) {
+                hexColor = hexColor.split('').map(c => c + c).join('');
+            }
+            // แปลงเป็น RGB
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            
+            // คำนวณความสว่าง (Luminance) - YIQ equation
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            
+            // ถ้าสีพื้นสว่าง (yiq >= 128) ให้ตัวอักษรสีเข้ม (slate-800) ถ้ามืดให้ตัวอักษรสีขาว
+            return (yiq >= 128) ? '#1e293b' : '#ffffff';
+        }
+
+        // --- 3. Helper: ฟังก์ชันเปลี่ยนภาษา ---
+        function applyLanguage(langCode) {
+            const dict = i18nDict[langCode] || i18nDict['Th'];
+            
+            // อัปเดต Text Node (Inner Text)
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+
+            // อัปเดต Placeholder
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (dict[key]) el.placeholder = dict[key];
+            });
+        }
+
+        function getLangText(key) {
+            return i18nDict[config.lang][key];
+        }
+
+        // รับค่า Message จากหน้าต่างหลัก (Parent)
+        window.addEventListener('message', function(event) {
+            if(event.data && event.data.type == "initialData") {
+                initializeForm(event.data.data);
+            }
+        }, false);
+
+        async function initializeForm(data) {
+
+                        
+            const appData = window.parent.appData; 
+            const htmlCacheVersion = window.parent.htmlCacheVersion;
+
+
+            config.apiURL = data.apiURL;
+            config.data = data;
+
+            // --- A. ตั้งค่าภาษา (Language) ---
+            if (appData.language && (appData.language === 'Th' || appData.language === 'En')) {
+                config.lang = appData.language;
+            }
+            applyLanguage(config.lang);
+
+            // --- B. ตั้งค่า Theme Colors & Contrast ---
+            if (appData.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', appData.primaryColor);
+                document.documentElement.style.setProperty('--primary-text', getContrastColor(appData.primaryColor));
+                
+                // สกัดสี RGB เพื่อใช้ในส่วน Focus Ring (Box shadow)
+                let hex = appData.primaryColor.replace('#', '');
+                if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+                if(hex.length === 6) {
+                    const r = parseInt(hex.substr(0, 2), 16);
+                    const g = parseInt(hex.substr(2, 2), 16);
+                    const b = parseInt(hex.substr(4, 2), 16);
+                    document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+                }
+            }
+            if (appData.secondaryColor) {
+                document.documentElement.style.setProperty('--secondary-color', appData.secondaryColor);
+                document.documentElement.style.setProperty('--secondary-text', getContrastColor(appData.secondaryColor));
+            }
+
+            // --- C. ตั้งค่า Path รูปภาพ (resPath) ---
+            if(appData.customAssets?.addressHeader) els.headerImage.src = appData.customAssets.addressHeader;
+            else els.headerImage.src = `${appData.resPath || `res`}/header/address.png?v=${htmlCacheVersion}`;
+
+
+
+
+
+
+
+            // --- D. ตั้งค่า Header & Button แบบเจาะจง (เช็คจาก headerName อิงระบบภาษา) ---
+            if (data.headerName) {
+                if (data.headerName === "Create New Address") {
+                    els.header.innerText = getLangText('headerCreate');
+                    els.submitBtn.querySelector('span').innerText = getLangText('btnCreate');
+                    // ผูก data-i18n ใหม่ให้ตรงเพื่อรองรับการเปลี่ยนภาษาแบบสลับไปมาในอนาคต
+                    els.header.setAttribute('data-i18n', 'headerCreate');
+                    els.submitBtn.querySelector('span').setAttribute('data-i18n', 'btnCreate');
+                } else if (data.headerName === "Update Address") {
+                    els.header.innerText = getLangText('headerUpdate');
+                    els.submitBtn.querySelector('span').innerText = getLangText('btnUpdate');
+                    // ผูก data-i18n ใหม่ให้ตรง
+                    els.header.setAttribute('data-i18n', 'headerUpdate');
+                    els.submitBtn.querySelector('span').setAttribute('data-i18n', 'btnUpdate');
+                } else {
+                    // กรณีส่งชื่ออื่นมาที่ไม่ตรงเงื่อนไข
+                    els.header.innerText = data.headerName;
+                }
+            }
+
+            // --- E. Map values เดิม ---
+            els.contactPerson.value = data.contactPerson || "";
+            els.contactPhone.value = data.contactPhone || "";
+            els.address.value = data.address || "";
+            els.makeDefault.checked = data.makeDefault === true;
+            
+            // ดึง zipcode เดิมมาแสดงเลย (ถ้ามี)
+            if (data.zipcode) {
+                els.zipcode.value = data.zipcode;
+            }
+
+            await loadProvinces();
+
+            // Edit Mode Logic
+            if (data.province) {
+                els.province.value = data.province;
+                await loadAmphoes(data.province);
+                if (data.amphoe) {
+                    els.amphoe.value = data.amphoe;
+                    await loadDistricts(data.province, data.amphoe);
+                    if (data.district) {
+                        els.district.value = data.district;
+                        
+                        // ปรับปรุงตรงนี้: ไม่ต้องดึง API ทับถ้ามี zipcode เดิมอยู่แล้ว
+                        if (!data.zipcode) {
+                            await loadZipcode(data.province, data.amphoe, data.district);
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- API Logic ---
+        async function fetchData(params = "") {
+            try {
+                if(!config.apiURL) return [];
+                const url = `${config.apiURL}${params}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("API Error");
+                return await res.json();
+            } catch (error) {
+                console.error("Fetch error:", error);
+                return [];
+            }
+        }
+
+        function populateSelect(element, items, defaultText) {
+            element.innerHTML = `<option value="">${defaultText}</option>`;
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                element.appendChild(option);
+            });
+            element.disabled = false;
+        }
+
+        async function loadProvinces() {
+            const provinces = await fetchData(""); 
+            populateSelect(els.province, provinces, getLangText('selectProv'));
+        }
+
+        async function loadAmphoes(province) {
+            const amphoes = await fetchData(`?province=${encodeURIComponent(province)}`);
+            populateSelect(els.amphoe, amphoes, getLangText('selectAmp'));
+        }
+
+        async function loadDistricts(province, amphoe) {
+            const districts = await fetchData(`?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}`);
+            populateSelect(els.district, districts, getLangText('selectDist'));
+        }
+
+        async function loadZipcode(province, amphoe, district) {
+            const result = await fetchData(`?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}&district=${encodeURIComponent(district)}`);
+            if (result && result.length > 0) els.zipcode.value = result[0];
+            else els.zipcode.value = "";
+        }
+
+        // --- Events ---
+        els.province.addEventListener('change', async (e) => {
+            const val = e.target.value;
+            els.amphoe.innerHTML = `<option value="">${getLangText('waitMsg')}</option>`; 
+            els.amphoe.disabled = true;
+            els.district.innerHTML = `<option value="">${getLangText('selectDist')}</option>`; 
+            els.district.disabled = true;
+            els.zipcode.value = "";
+            
+            if (val) await loadAmphoes(val);
+            else els.amphoe.innerHTML = `<option value="">${getLangText('selectAmp')}</option>`;
+        });
+
+        els.amphoe.addEventListener('change', async (e) => {
+            const prov = els.province.value;
+            const val = e.target.value;
+            els.district.innerHTML = `<option value="">${getLangText('waitMsg')}</option>`; 
+            els.district.disabled = true;
+            els.zipcode.value = "";
+            
+            if (val) await loadDistricts(prov, val);
+            else els.district.innerHTML = `<option value="">${getLangText('selectDist')}</option>`;
+        });
+
+        els.district.addEventListener('change', async (e) => {
+            const prov = els.province.value;
+            const amp = els.amphoe.value;
+            const val = e.target.value;
+            els.zipcode.value = getLangText('loadingZip');
+            
+            if (val) await loadZipcode(prov, amp, val);
+            else els.zipcode.value = "";
+        });
+
+        els.form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const outputData = {
+                contactPerson: els.contactPerson.value.trim(),
+                contactPhone: els.contactPhone.value.trim(),
+                address: els.address.value.trim(),
+                province: els.province.value,
+                amphoe: els.amphoe.value,
+                district: els.district.value,
+                zipcode: els.zipcode.value,
+                makeDefault: els.makeDefault.checked
+            };
+
+            // Validation (ใช้คำเตือนตามภาษาที่เลือก)
+            if(!outputData.contactPerson || !outputData.contactPhone) {
+                 showToast(getLangText('errVal1'));
+                 return;
+            }
+
+            if(!outputData.province || !outputData.amphoe || !outputData.district) {
+                showToast(getLangText('errVal2'));
+                return;
+            }
+
+            // Post to Parent
+            window.parent.postMessage({ type: "formData", data: outputData, closeIframe: true }, "*");
+        });
+
+        function showToast(msg) {
+            els.toast.innerText = msg;
+            els.toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                els.toast.classList.add('opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

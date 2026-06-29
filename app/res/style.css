@@ -1,0 +1,182 @@
+/* ========================================
+   CRM App — GLOBAL THEME OVERRIDE ENGINE
+   เปลี่ยน Mood & Tone ของแอปทั้งระบบได้ที่นี่ที่เดียว
+   ======================================== */
+
+/* 🎛️ แผงควบคุม THEME (MASTER CONFIG)
+  คุณสามารถสลับชุดตัวแปรด้านล่างนี้ (เปิด/ปิดคอมเมนต์) เพื่อเปลี่ยนสไตล์แอปทั้งหมดได้ทันที
+*/
+
+:root {
+    /* --------------------------------------
+       [ THEME 1: MODERN FLAT (สไตล์เรียบง่าย ทันสมัย คลีนๆ) ] 
+       -------------------------------------- */
+    /* Theme Colors */
+    --theme-font: 'Prompt', sans-serif;
+    --theme-bg-app: #F8FAFC;
+    --theme-bg-color: var(--theme-bg-app);
+    --theme-bg-image: none;
+    --theme-bg-card: #FFFFFF;
+
+    --theme-primary: #3B82F6;
+    --theme-primary-hover: #2563EB;
+    --theme-primary-light: #eff6ff;
+
+    --theme-secondary: #f59e0b;
+
+    --theme-text-main: #1E293B;
+    --theme-text-muted: #64748B;
+
+    /* Theme Layouts */
+    --theme-border-width: 1px;
+    --theme-border-color: #E2E8F0;
+    --theme-radius: 16px;
+    --theme-radius-btn: 12px;
+
+    /* Shadows */
+    --theme-shadow-color: rgba(0, 0, 0, 0.05);
+    --theme-shadow: 0 4px 6px -1px var(--theme-shadow-color), 0 2px 4px -1px var(--theme-shadow-color);
+    --theme-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --theme-shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+    --theme-backdrop-blur: none;
+
+    /* --------------------------------------
+       [ THEME 2: NEO-BRUTALISM (สไตล์ Retro เน้นเส้นขอบดำหนา เงาเหลี่ยม) ] 
+       * ปลดคอมเมนต์ชุดนี้ และคอมเมนต์ชุดอื่น เพื่อใช้งาน
+       -------------------------------------- */
+    /*
+    --theme-font: 'Prompt', sans-serif;
+    --theme-bg-app: #FFF4E0;
+    --theme-bg-color: var(--theme-bg-app);
+    --theme-bg-image: none;
+    --theme-bg-card: #FFFFFF;
+    
+    --theme-primary: #FF3366;
+    --theme-primary-hover: #E62E5C;
+    --theme-secondary: #00C4B5;
+    
+    --theme-text-main: #111111;
+    --theme-text-muted: #666666;
+
+    --theme-border-width: 3px;
+    --theme-border-color: #111111;
+    --theme-radius: 12px;
+    --theme-radius-btn: 8px;
+    
+    --theme-shadow-color: #111111;
+    --theme-shadow: 4px 4px 0px var(--theme-shadow-color);
+    --theme-shadow-hover: 6px 6px 0px var(--theme-shadow-color);
+    --theme-shadow-inset: inset 4px 4px 0px rgba(0,0,0,0.05);
+    --theme-backdrop-blur: none;
+    */
+
+    /* --------------------------------------
+       [ THEME 3: GLASSMORPHISM (สไตล์กระจก โปร่งแสง พื้นหลังไล่สี) ] 
+       * ปลดคอมเมนต์ชุดนี้ และคอมเมนต์ชุดอื่น เพื่อใช้งาน
+       -------------------------------------- */
+    /*
+    --theme-font: 'Prompt', sans-serif;
+    --theme-bg-app: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    --theme-bg-color: var(--theme-bg-app);
+    --theme-bg-image: none;
+    --theme-bg-card: rgba(255, 255, 255, 0.4);
+    
+    --theme-primary: #FF6B6B;
+    --theme-primary-hover: #FF5252;
+    --theme-secondary: #4ECDC4;
+    
+    --theme-text-main: #2D3436;
+    --theme-text-muted: #636E72;
+
+    --theme-border-width: 1px;
+    --theme-border-color: rgba(255, 255, 255, 0.5);
+    --theme-radius: 24px;
+    --theme-radius-btn: 999px;
+    
+    --theme-shadow-color: rgba(31, 38, 135, 0.15);
+    --theme-shadow: 0 8px 32px 0 var(--theme-shadow-color);
+    --theme-shadow-hover: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+    --theme-shadow-inset: inset 0 0 0 transparent;
+    --theme-backdrop-blur: blur(12px);
+    */
+}
+
+/* ========================================
+   CRM App — GLOBAL THEME BASE & VARIABLES
+   ไฟล์นี้จะเก็บเฉพาะตัวแปรหลัก และ Reset พื้นฐานเท่านั้น
+   จะไม่มีการใส่ !important เพื่อไปบังคับทับหน้าย่อยต่างๆ
+   ======================================== */
+
+
+/* ========================================
+   0. BASE RESET & TYPOGRAPHY
+   ======================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--theme-font);
+    background: transparent;
+    /* ให้โปร่งใส เพื่อใช้พื้นหลังจาก index.html */
+    color: var(--theme-text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ========================================
+   1. GLOBAL SCROLLBAR
+   ======================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ========================================
+   2. GLOBAL UTILITIES
+   ======================================== */
+.hidden {
+    display: none !important;
+}

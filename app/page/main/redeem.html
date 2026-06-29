@@ -1,0 +1,300 @@
+<style>
+    .page-container {
+        padding: 1rem;
+        padding-bottom: 5rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background-color: #f9fafb;
+    }
+
+    .redeem-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+    }
+
+    .redeem-pts-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .redeem-pts-val {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+    }
+
+    .redeem-icon {
+        width: 3rem;
+        height: 3rem;
+        background: var(--color-primary-light);
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .category-tabs {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 0.25rem;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        color: #4b5563;
+        padding: 0.375rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .tab-btn:hover {
+        background: #f9fafb;
+    }
+
+    .tab-btn.active {
+        background: #111827;
+        color: #ffffff;
+        border-color: #111827;
+    }
+
+    .catalog-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        flex-grow: 1;
+        align-content: flex-start;
+    }
+
+    .catalog-card {
+        background: #ffffff;
+        border: 1px solid #f3f4f6;
+        border-radius: 1rem;
+        padding: 0.75rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 100%;
+    }
+
+    .catalog-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-color: var(--color-primary-light);
+    }
+
+    .catalog-card:active {
+        transform: scale(0.98);
+    }
+
+    .catalog-img-wrapper {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: 0.75rem;
+        background: #f3f4f6;
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .catalog-card .img-slot {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .catalog-card .qty-slot {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        color: #ffffff;
+        font-size: 0.5625rem;
+        font-weight: 700;
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        display: none;
+    }
+
+    .catalog-card .qty-slot.show {
+        display: block;
+    }
+
+    .catalog-card .title-slot {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.25rem;
+        line-height: 1.375;
+    }
+
+    .catalog-footer {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #f9fafb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .catalog-card .point-slot {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--color-primary);
+    }
+
+    .catalog-btn {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 9999px;
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .catalog-card:hover .catalog-btn {
+        background: var(--color-primary);
+        color: #ffffff;
+    }
+</style>
+
+<div class="page-container">
+    <!-- Header & Points -->
+    <div class="redeem-header">
+        <div>
+            <span class="redeem-pts-label">Available Points</span>
+            <span class="redeem-pts-val" id="redeem-my-points">0</span>
+        </div>
+        <div class="redeem-icon">💎</div>
+    </div>
+
+    <!-- Categories Filters -->
+    <div class="category-tabs">
+        <button class="tab-btn active">All</button>
+        <button class="tab-btn">Physical</button>
+        <button class="tab-btn">Digital</button>
+    </div>
+
+    <!-- Catalog Grid -->
+    <div id="redeem-catalog-grid" class="catalog-grid">
+        <!-- JS ยัด Template ลงตรงนี้ -->
+    </div>
+</div>
+
+<!-- ================= TEMPLATES ================= -->
+<template id="tpl-catalog-card">
+    <div class="catalog-card">
+        <div>
+            <div class="catalog-img-wrapper">
+                <img class="img-slot" src="" onerror="this.style.display='none'" />
+                <div class="qty-slot">Limit 1</div>
+            </div>
+            <h4 class="title-slot">Reward Name</h4>
+        </div>
+
+        <div class="catalog-footer">
+            <span class="point-slot">0 Pts</span>
+            <div class="catalog-btn">
+                <svg style="width: 0.75rem; height: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    (() => {
+        const grid = document.getElementById('redeem-catalog-grid');
+        const tplCard = document.getElementById('tpl-catalog-card');
+        const lblPoints = document.getElementById('redeem-my-points');
+
+        async function loadCatalog() {
+            if (window.crmData && window.crmData.user) {
+                const pts = window.crmData.user.points || 0;
+                lblPoints.textContent = pts.toLocaleString();
+            }
+
+            let rewards = window.crmData?.marketData?.rewards;
+            if (!rewards) {
+                try {
+                    await CrmApi.getMarketData();
+                    rewards = window.crmData?.marketData?.rewards || [];
+                } catch (e) {
+                    rewards = [];
+                }
+            }
+
+            grid.innerHTML = '';
+
+            if (!Array.isArray(rewards) || rewards.length === 0) {
+                grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #9ca3af; font-size: 0.75rem; padding: 2.5rem 0;">No items available</div>';
+                return;
+            }
+
+            rewards.forEach(item => {
+                const clone = tplCard.content.cloneNode(true);
+                clone.querySelector('.title-slot').textContent = item.name;
+
+                const itemPts = item.points || 0;
+                clone.querySelector('.point-slot').textContent = `${itemPts.toLocaleString()} Pts`;
+
+                if (item.image) clone.querySelector('.img-slot').src = item.image;
+
+                if (item.oneTimeRedemption) {
+                    const qtySlot = clone.querySelector('.qty-slot');
+                    qtySlot.classList.add('show');
+                    qtySlot.textContent = "1 / user";
+                }
+
+                clone.querySelector('.catalog-card').onclick = () => {
+                    PageManager.showConfirm(
+                        "Confirm Redeem",
+                        `Do you want to redeem "${item.name}" for ${itemPts} Pts?`,
+                        item.image || "🎁",
+                        () => {
+                            PageManager.showComplete("Success!", "Reward redeemed successfully. Check your inventory.");
+                        }
+                    );
+                };
+
+                grid.appendChild(clone);
+            });
+        }
+
+        loadCatalog();
+    })();
+</script>

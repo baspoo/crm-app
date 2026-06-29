@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อัปโหลดใบเสร็จรับคะแนน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Custom Scrollbar */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+
+        /* Modal Inner Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+        }
+
+        /* Loading Animations */
+        @keyframes indeterminate-progress {
+            0% {
+                transform: translateX(-100%) scaleX(0.2);
+            }
+
+            50% {
+                transform: translateX(0%) scaleX(0.5);
+            }
+
+            100% {
+                transform: translateX(100%) scaleX(0.2);
+            }
+        }
+
+        .animate-progress {
+            animation: indeterminate-progress 2s infinite linear;
+            transform-origin: 0% 50%;
+        }
+
+        /* Modal Animation */
+        .modal-enter {
+            animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .slide-up-enter {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Dropzone Hover */
+        #dropzone label:hover svg {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen pb-12">
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white shadow-sm">
+        <img id="headerImage" src="res/header/dummy.png" alt="Campaign Banner"
+            class="w-full h-auto block object-cover max-h-[250px]"
+            onerror="this.src='https://via.placeholder.com/800x400?text=Upload+Receipt'">
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-xl mx-auto px-4 mt-6">
+        <div
+            class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden relative">
+
+            <!-- Label Bar -->
+            <div id="campaignLabelContainer"
+                class="hidden relative px-6 transition-all duration-300 overflow-hidden shadow-inner theme-bg-primary-dark">
+                <div id="campaignLabelBgImage"
+                    class="absolute inset-0 z-0 bg-center bg-cover transition-opacity duration-300 opacity-40 hidden">
+                </div>
+                <div class="relative z-10 flex items-center justify-center gap-2.5 w-full">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                        </path>
+                    </svg>
+                    <p id="campaignLabelText"
+                        class="text-white font-semibold text-lg sm:text-xl tracking-wide drop-shadow-md"></p>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8 relative">
+
+                <!-- Header (Cleaned up, no absolute button) -->
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-slate-800 leading-tight" data-i18n="pageTitle">ส่งใบเสร็จรับคะแนน
+                    </h1>
+                    <p class="text-slate-500 mt-2 text-sm" data-i18n="pageDesc">
+                        กรุณาแนบรูปภาพใบเสร็จที่ชัดเจนเพื่อความรวดเร็ว</p>
+                </div>
+
+                <!-- Upload Dropzone -->
+                <div id="dropzone" class="relative group mt-2">
+                    <input id="fileInput" type="file" class="hidden" accept="image/*" multiple />
+                    <label for="fileInput"
+                        class="flex flex-col items-center justify-center w-full min-h-[200px] border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer bg-slate-50/50 transition-all duration-300 theme-hover-border theme-hover-bg">
+                        <div id="uploadPlaceholder" class="flex flex-col items-center justify-center py-8">
+                            <div
+                                class="w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center mb-4 transition-transform duration-300">
+                                <svg class="w-8 h-8 theme-text-primary transition-transform duration-300" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                            </div>
+                            <p class="text-slate-700 font-semibold" data-i18n="uploadMain">
+                                กดเพื่อเลือกหรือถ่ายรูปใบเสร็จ</p>
+                            <p class="text-slate-400 text-sm mt-1" data-i18n="uploadSub">อัปโหลดได้หลายรูปพร้อมกัน</p>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="previewContainer" class="hidden mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-slate-800 text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 theme-text-primary" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span data-i18n="previewTitle">รูปภาพที่เลือก</span> (<span id="fileCount"
+                                class="theme-text-primary">0</span>)
+                        </h3>
+                        <button id="clearAll"
+                            class="text-xs px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium transition-colors"
+                            data-i18n="clearAll">ลบทั้งหมด</button>
+                    </div>
+                    <div id="previewGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="submitBtn" disabled
+                    class="w-full mt-8 theme-bg-primary py-4 px-6 rounded-2xl font-semibold shadow-md active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none"
+                    data-i18n="submitBtn">
+                    ส่งข้อมูลใบเสร็จ
+                </button>
+
+                <!-- Subtle History Button -->
+                <div class="mt-5 flex justify-center">
+                    <button id="openHistoryBtn"
+                        class="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 transition-colors font-medium group focus:outline-none">
+                        <svg class="w-4 h-4 group-hover:-rotate-12 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span data-i18n="historyBtnText">ดูประวัติการอัปโหลด</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <p class="text-center text-slate-400 text-xs mt-6 px-4 leading-relaxed" data-i18n="footerNote">
+            ระบบจะทำการตรวจสอบข้อมูลอัตโนมัติ<br>กรุณาตรวจสอบความชัดเจนของรูปภาพก่อนส่ง</p>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal"
+        class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-[70] transition-opacity duration-300">
+        <div
+            class="bg-white w-full h-[85vh] sm:h-auto sm:max-h-[85vh] sm:max-w-md rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl relative slide-up-enter sm:modal-enter overflow-hidden">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-white z-10 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full theme-bg-primary-light flex items-center justify-center">
+                        <svg class="w-5 h-5 theme-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800" data-i18n="historyTitle">ประวัติการอัปโหลด</h3>
+                </div>
+                <button id="closeHistoryBtn"
+                    class="p-2 text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content List -->
+            <div id="historyContent" class="flex-1 overflow-y-auto p-4 sm:p-5 bg-slate-50/80 custom-scroll relative">
+                <!-- Data will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6 transition-all duration-300">
+        <div
+            class="bg-white/95 backdrop-blur-xl rounded-[2rem] p-8 max-w-[340px] w-full flex flex-col items-center shadow-2xl border border-white">
+            <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 border-4 border-slate-100 rounded-full theme-border-primary-light"></div>
+                <div
+                    class="absolute inset-0 border-4 rounded-full border-t-transparent border-l-transparent animate-spin theme-border-primary">
+                </div>
+                <div
+                    class="absolute bg-slate-50 w-12 h-12 rounded-full flex items-center justify-center animate-pulse theme-bg-primary-light">
+                    <svg class="w-6 h-6 theme-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <h3 id="loadingTitle" class="text-lg font-bold text-slate-800 text-center tracking-wide"
+                data-i18n="loadingTitle">กำลังประมวลผล</h3>
+            <div class="mt-4 text-center w-full">
+                <p id="loadingText" class="text-slate-600 text-sm" data-i18n="loadingSub">
+                    ระบบกำลังวิเคราะห์ข้อมูลจากรูปภาพ</p>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 mt-5 mb-4 overflow-hidden relative">
+                    <div class="absolute top-0 bottom-0 left-0 w-full rounded-full animate-progress theme-bg-primary">
+                    </div>
+                </div>
+                <div
+                    class="mt-2 w-full theme-bg-primary-light theme-border-primary-light border rounded-xl p-3 flex items-start gap-2.5 text-left transition-all shadow-sm">
+                    <svg class="w-5 h-5 shrink-0 theme-text-primary mt-0.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p id="loadingSubText" class="text-slate-700 text-xs font-medium leading-relaxed"
+                        data-i18n="loadingFooter">
+                        สามารถปิดหน้านี้ลงได้ เมื่อตรวจสอบเสร็จสิ้น<br>จะได้รับคะแนนอัตโนมัติ (ดูได้ที่หน้าประวัติ)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Popup Modal -->
+    <div id="resultModal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-6 transition-opacity">
+        <div class="bg-white rounded-[2rem] w-full max-w-[360px] overflow-hidden modal-enter shadow-2xl relative">
+            <div class="absolute top-0 left-0 w-full h-32 bg-slate-50 opacity-50 pointer-events-none"
+                style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 16px 16px;">
+            </div>
+
+            <div id="resultStatusIcon" class="pt-10 pb-2 flex justify-center relative z-10"></div>
+
+            <div class="px-8 pb-8 pt-4 text-center relative z-10">
+                <h3 id="resultTitle" class="text-2xl font-bold text-slate-800">ดำเนินการสำเร็จ</h3>
+                <div id="resultBody" class="mt-3 w-full"></div>
+                <button id="resultCloseBtn"
+                    class="w-full mt-8 bg-slate-800 text-white py-4 rounded-2xl font-semibold hover:bg-slate-900 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]">
+                    ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // --- 1. Language Dictionary (i18n) ---
+        const translations = {
+            Th: {
+                pageTitle: "ส่งใบเสร็จรับคะแนน",
+                pageDesc: "กรุณาแนบรูปภาพใบเสร็จที่ชัดเจนเพื่อความรวดเร็ว",
+                historyBtnText: "ดูประวัติการอัปโหลด",
+                uploadMain: "กดเพื่อเลือกหรือถ่ายรูปใบเสร็จ",
+                uploadSub: "อัปโหลดได้หลายรูปพร้อมกัน",
+                previewTitle: "รูปภาพที่เลือก",
+                clearAll: "ลบทั้งหมด",
+                submitBtn: "ส่งข้อมูลใบเสร็จ",
+                footerNote: "ระบบจะทำการตรวจสอบข้อมูลอัตโนมัติ<br>กรุณาตรวจสอบความชัดเจนของรูปภาพก่อนส่ง",
+
+                // Loading
+                loadingTitle: "กำลังประมวลผล",
+                loadingSub: "ระบบกำลังวิเคราะห์ข้อมูลจากรูปภาพ",
+                loadingFooter: "สามารถปิดหน้านี้ลงได้ เมื่อตรวจสอบเสร็จสิ้น<br>จะได้รับคะแนนอัตโนมัติ (ดูได้ที่หน้าประวัติ)",
+                loadingUploadTitle: "กำลังอัปโหลดข้อมูล...",
+                loadingUploadSub: "ระบบกำลังเตรียมไฟล์และส่งข้อมูล",
+                loadingCheckTitle: "กำลังตรวจสอบใบเสร็จ...",
+                loadingCheckSub: "ระบบกำลังวิเคราะห์ข้อมูลจากรูปภาพ",
+
+                // Result Modal
+                successTitle: "อัปโหลดสำเร็จ!",
+                successDesc: "ระบบตรวจสอบข้อมูลเรียบร้อยแล้ว",
+                successAmount: "ยอดเงินที่ตรวจสอบ",
+                successPoints: "คะแนนที่ได้รับ",
+                successPointsUnit: "คะแนน",
+                reviewTitle: "ได้รับข้อมูลแล้ว",
+                reviewDesc1: "ระบบกำลังรอการอนุมัติ",
+                reviewDesc2: "คะแนนจะถูกโอนเข้าบัญชีของคุณอัตโนมัติ<br>เมื่อเจ้าหน้าที่ทำการตรวจสอบเสร็จสิ้น",
+                reviewNoticeTitle: "ใช้เวลาดำเนินการ 1-2 วัน",
+                errorTitle: "เกิดข้อผิดพลาด",
+                errorDesc: "ไม่สามารถอัปโหลดข้อมูลได้ในขณะนี้",
+                duplicateTitle: "ใบเสร็จซ้ำ",
+                duplicateDesc: "ใบเสร็จนี้ถูกสแกนใช้งานไปแล้ว",
+                btnOk: "ตกลง",
+
+                // History Modal
+                historyTitle: "ประวัติการอัปโหลด",
+                historyEmpty: "ยังไม่มีประวัติ",
+                historyEmptyDesc: "รายการใบเสร็จที่คุณส่งจะแสดงที่นี่",
+                historyLoading: "กำลังโหลดข้อมูล...",
+                status_completed: "สำเร็จ",
+                status_pending: "รอตรวจสอบ",
+                status_processing: "กำลังตรวจสอบ",
+                status_duplicate: "ซ้ำ",
+                status_rejected: "ไม่อนุมัติ",
+                historyOrderRef: "หมายเลขอ้างอิง:"
+            },
+            En: {
+                pageTitle: "Submit Receipt",
+                pageDesc: "Please attach clear photos of your receipts.",
+                historyBtnText: "View Upload History",
+                uploadMain: "Click to select or take a photo",
+                uploadSub: "You can upload multiple photos",
+                previewTitle: "Selected Images",
+                clearAll: "Clear All",
+                submitBtn: "Submit Receipt",
+                footerNote: "The system will verify automatically.<br>Please ensure the image is clear before submitting.",
+
+                // Loading
+                loadingTitle: "Processing",
+                loadingSub: "System is analyzing image data",
+                loadingFooter: "You can close this page.<br>Points will be awarded automatically upon completion.",
+                loadingUploadTitle: "Uploading Data...",
+                loadingUploadSub: "Preparing and sending files",
+                loadingCheckTitle: "Checking Receipt...",
+                loadingCheckSub: "Analyzing image data",
+
+                // Result
+                successTitle: "Upload Successful!",
+                successDesc: "System has verified the data.",
+                successAmount: "Verified Amount",
+                successPoints: "Points Earned",
+                successPointsUnit: "pts",
+                reviewTitle: "Data Received",
+                reviewDesc1: "Awaiting approval",
+                reviewDesc2: "Points will be automatically transferred<br>once the review is complete.",
+                reviewNoticeTitle: "Processing takes 1-2 days",
+                errorTitle: "Error Occurred",
+                errorDesc: "Cannot upload data at this time",
+                duplicateTitle: "Duplicate Receipt",
+                duplicateDesc: "This receipt has already been used.",
+                btnOk: "OK",
+
+                // History Modal
+                historyTitle: "Upload History",
+                historyEmpty: "No History Yet",
+                historyEmptyDesc: "Your submitted receipts will appear here",
+                historyLoading: "Loading...",
+                status_completed: "Completed",
+                status_pending: "Pending",
+                status_processing: "Processing",
+                status_duplicate: "Duplicate",
+                status_rejected: "Rejected",
+                historyOrderRef: "Order Ref:"
+            }
+        };
+
+        // --- Config & State ---
+        let config = {
+            rootUrl: '',
+            token: '',
+            gameId: '',
+            statId: '',
+            ida: '', // เพิ่ม ida สำหรับใช้งานใน API Get History
+            tags: [],
+            label: '',
+            bannerImg: '',
+            primaryColor: '#2563eb',
+            secondaryColor: '#f59e0b',
+            language: 'Th',
+            resPath: 'res'
+        };
+        let appData = {};
+        let htmlCacheVersion = null;
+        let selectedFiles = [];
+        let currentResultData = null;
+        let currentSuccessStatus = false;
+        let t = translations['Th'];
+
+        // --- Elements ---
+        const fileInput = document.getElementById('fileInput');
+        const previewGrid = document.getElementById('previewGrid');
+        const previewContainer = document.getElementById('previewContainer');
+        const fileCountEl = document.getElementById('fileCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const resultModal = document.getElementById('resultModal');
+        const historyModal = document.getElementById('historyModal');
+        const openHistoryBtn = document.getElementById('openHistoryBtn');
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        const historyContent = document.getElementById('historyContent');
+
+        // --- Communication ---
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'initialData') {
+                const data = event.data.data;
+                config = { ...config, ...data };
+                appData = window.parent.appData; 
+                htmlCacheVersion = window.parent.htmlCacheVersion;
+                setupUI();
+            }
+        }, false);
+
+        // --- Color Helper ---
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#ffffff';
+            hexcolor = hexcolor.replace("#", "");
+            if (hexcolor.length === 3) {
+                hexcolor = hexcolor.split('').map(char => char + char).join('');
+            }
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1e293b' : '#ffffff';
+        }
+
+        // --- Apply Theme ---
+        function applyTheme() {
+            const pColor = appData.primaryColor || '#2563eb';
+            const sColor = appData.secondaryColor || '#f59e0b';
+            const pText = getContrastYIQ(pColor);
+            const sText = getContrastYIQ(sColor);
+
+            let styleTag = document.getElementById('dynamic-theme');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamic-theme';
+                document.head.appendChild(styleTag);
+            }
+
+            const hexToRgbArr = hex => {
+                let h = hex.replace("#", "");
+                if (h.length === 3) h = h.split('').map(char => char + char).join('');
+                return [
+                    parseInt(h.substr(0, 2), 16),
+                    parseInt(h.substr(2, 2), 16),
+                    parseInt(h.substr(4, 2), 16)
+                ];
+            };
+
+            let pRgbArr = [37, 99, 235];
+            try { pRgbArr = hexToRgbArr(pColor); } catch (e) { }
+
+            const pRgb = pRgbArr.join(', ');
+            const darkRgb = pRgbArr.map(c => Math.floor(c * 0.35)).join(', ');
+
+            styleTag.innerHTML = `
+                .theme-bg-primary { background-color: ${pColor} !important; color: ${pText} !important; }
+                .theme-bg-primary:hover { opacity: 0.9; }
+                .theme-text-primary { color: ${pColor} !important; }
+                .theme-border-primary { border-color: ${pColor} !important; }
+                .theme-border-primary-light { border-color: rgba(${pRgb}, 0.2) !important; }
+                .theme-bg-primary-light { background-color: rgba(${pRgb}, 0.08) !important; }
+                
+                .theme-bg-primary-dark { background-color: rgb(${darkRgb}) !important; color: #ffffff !important; }
+                
+                .theme-hover-border:hover { border-color: ${pColor} !important; }
+                .theme-hover-bg:hover { background-color: rgba(${pRgb}, 0.04) !important; }
+
+                #submitBtn:not(:disabled) { box-shadow: 0 4px 14px 0 rgba(${pRgb}, 0.39); }
+                #submitBtn:not(:disabled):hover { box-shadow: 0 6px 20px rgba(${pRgb}, 0.23); }
+            `;
+        }
+
+        // --- Apply Language ---
+        function applyLanguage( ) {
+            t = translations[appData.language] || translations['Th'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerHTML = t[key];
+            });
+        }
+
+        // --- Setup UI ---
+        function setupUI( ) {
+            applyLanguage();
+            applyTheme();
+
+                           
+
+
+            const headerImage = document.getElementById('headerImage');
+            if (headerImage) {
+                if(appData.customAssets?.uploadHeader) headerImage.src = appData.customAssets.uploadHeader;
+                else headerImage.src = `${appData.resPath}/header/upload.png?v=${htmlCacheVersion}`;
+            }
+
+            const campaignLabelContainer = document.getElementById('campaignLabelContainer');
+            const campaignLabelText = document.getElementById('campaignLabelText');
+            const bgImgLayer = document.getElementById('campaignLabelBgImage');
+
+            if (config.label) {
+                campaignLabelText.textContent = config.label;
+                campaignLabelContainer.classList.remove('hidden');
+
+                if (config.bannerImg) {
+                    bgImgLayer.style.backgroundImage = `url('${config.bannerImg}')`;
+                    bgImgLayer.classList.remove('hidden');
+                    campaignLabelContainer.classList.add('py-12', 'sm:py-16');
+                    campaignLabelContainer.classList.remove('py-5');
+                } else {
+                    bgImgLayer.classList.add('hidden');
+                    campaignLabelContainer.classList.add('py-5');
+                    campaignLabelContainer.classList.remove('py-12', 'sm:py-16');
+                }
+            } else {
+                campaignLabelContainer.classList.add('hidden');
+            }
+        }
+
+        // --- Handling History Modal ---
+        openHistoryBtn.addEventListener('click', () => {
+            historyModal.classList.remove('hidden');
+            fetchHistory();
+        });
+
+        closeHistoryBtn.addEventListener('click', () => {
+            historyModal.classList.add('hidden');
+        });
+
+        // ปิด modal เมื่อคลิกพื้นที่ว่าง
+        historyModal.addEventListener('click', (e) => {
+            if (e.target === historyModal) {
+                historyModal.classList.add('hidden');
+            }
+        });
+
+        async function fetchHistory() {
+            // Loading State in History
+            historyContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full py-16">
+                    <svg class="w-8 h-8 animate-spin theme-text-primary mb-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="text-slate-500 text-sm font-medium" data-i18n="historyLoading">${t.historyLoading}</p>
+                </div>
+            `;
+            applyLanguage();
+
+            try {
+                // Request ตามโจทย์
+                const response = await fetch(`${config.rootUrl}/open/crm_ocrcheck`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        gameId: config.gameId,
+                        statId: config.statId,
+                        limit: 30,
+                        offset: 0,
+                        ida: config.ida
+                    })
+                });
+
+                const result = await response.json();
+
+                // แก้ไข: ดึงข้อมูลจาก result.data.jobs (อ้างอิงตาม JSON Response ของจริง)
+                const jobs = result?.data?.jobs || result?.data?.job || [];
+                renderHistoryList(jobs);
+
+            } catch (err) {
+                console.error("Fetch history error:", err);
+                historyContent.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full py-12 text-center">
+                        <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h4 class="text-base font-semibold text-slate-700">${t.errorTitle}</h4>
+                        <p class="text-slate-500 text-sm mt-1">ไม่สามารถดึงข้อมูลได้ โปรดลองอีกครั้ง</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getStatusStyling(status) {
+            const s = status ? status.toLowerCase() : '';
+            if (s === 'completed') return { text: t.status_completed, class: 'bg-emerald-50 text-emerald-600 border-emerald-100', dot: 'bg-emerald-500' };
+            if (s === 'pending_review') return { text: t.status_pending, class: 'bg-amber-50 text-amber-600 border-amber-100', dot: 'bg-amber-500' };
+            if (s === 'processing') return { text: t.status_processing, class: 'theme-bg-primary-light theme-text-primary theme-border-primary-light', dot: 'theme-bg-primary' };
+            if (s === 'duplicate') return { text: t.status_duplicate, class: 'bg-orange-50 text-orange-600 border-orange-100', dot: 'bg-orange-500' };
+            if (s === 'rejected') return { text: t.status_rejected, class: 'bg-rose-50 text-rose-600 border-rose-100', dot: 'bg-rose-500' };
+            return { text: status || 'Unknown', class: 'bg-slate-100 text-slate-600 border-slate-200', dot: 'bg-slate-400' };
+        }
+
+        function renderHistoryList(jobs) {
+            if (!jobs || jobs.length === 0) {
+                historyContent.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full py-16 text-center">
+                        <div class="w-20 h-20 bg-white border-2 border-slate-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                            <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-700" data-i18n="historyEmpty">${t.historyEmpty}</h4>
+                        <p class="text-slate-500 text-sm mt-1" data-i18n="historyEmptyDesc">${t.historyEmptyDesc}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // เพิ่ม space-y-4 เพื่อระยะห่างที่มากขึ้น
+            let html = '<div class="space-y-4 pb-6">';
+            jobs.forEach(job => {
+                const style = getStatusStyling(job.status);
+
+                // Format Date
+                let dateStr = '';
+                if (job.createdAt) {
+                    const dateObj = new Date(job.createdAt);
+                    const locale = config.language === 'En' ? 'en-GB' : 'th-TH';
+                    dateStr = dateObj.toLocaleDateString(locale, {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                }
+
+                // รูปแบบ Card ที่จัด UX ใหม่ให้ ID อยู่บรรทัดเดียวอย่างสวยงาม
+                html += `
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        
+                        <!-- Top Row: Icon, Date, Status -->
+                        <div class="flex justify-between items-start gap-2 mb-3 relative z-10">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-slate-800 leading-tight">รายการอัปโหลด</span>
+                                    <span class="text-[11px] text-slate-400 font-medium mt-0.5">${dateStr}</span>
+                                </div>
+                            </div>
+                            <!-- Status Badge -->
+                            <div class="flex-shrink-0 flex items-center px-2 py-1 rounded-md border ${style.class}">
+                                <div class="w-1.5 h-1.5 rounded-full ${style.dot} mr-1.5"></div>
+                                <span class="text-[10px] sm:text-[11px] font-bold whitespace-nowrap">${style.text}</span>
+                            </div>
+                        </div>
+
+                        <!-- Job ID Block (แยกพื้นที่เต็มๆ ให้รหัสยาวๆ และจัดชิดซ้าย) -->
+                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 flex items-center gap-2 overflow-x-auto custom-scroll relative z-10">
+                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500 flex-shrink-0">ID:</span>
+                            <span class="text-[11px] sm:text-xs font-mono text-slate-700 tracking-tight whitespace-nowrap select-all" title="${job.jobId}">
+                                ${job.jobId}
+                            </span>
+                        </div>
+
+                        <!-- Order Ref Block (ไม่มีไอคอนหน้า Order Ref และมีพื้นหลังสีฟ้าอ่อน) -->
+                        ${job.orderId ? `
+                            <div class="mt-3 bg-sky-50 border border-sky-100 rounded-xl p-2.5 flex items-center relative z-10">
+                                <span class="text-[11px] sm:text-xs text-sky-600 font-medium">${t.historyOrderRef} <span class="text-sky-800 font-bold ml-1">${job.orderId}</span></span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            historyContent.innerHTML = html;
+        }
+
+
+        // --- Handling Upload Files ---
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            selectedFiles = [...selectedFiles, ...files];
+            updatePreview();
+        });
+
+        document.getElementById('clearAll').onclick = () => {
+            selectedFiles = [];
+            updatePreview();
+        };
+
+        function updatePreview() {
+            previewGrid.innerHTML = '';
+            fileCountEl.textContent = selectedFiles.length;
+            if (selectedFiles.length > 0) {
+                previewContainer.classList.remove('hidden');
+                submitBtn.disabled = false;
+                selectedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'relative group aspect-square rounded-xl overflow-hidden border-2 border-slate-100 bg-slate-50 shadow-sm';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                            <button onclick="removeFile(${index})" class="absolute top-2 right-2 bg-white text-red-500 rounded-full w-7 h-7 flex items-center justify-center shadow-md transform scale-0 group-hover:scale-100 transition-all duration-200 hover:bg-red-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        `;
+                        previewGrid.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+                submitBtn.disabled = true;
+                fileInput.value = '';
+            }
+        }
+
+        window.removeFile = (index) => {
+            selectedFiles.splice(index, 1);
+            updatePreview();
+        };
+
+        // --- OCR & Upload Logic ---
+        async function generatePDF(files) {
+            const pdf = new jsPDF();
+            for (let i = 0; i < files.length; i++) {
+                const imgData = await readFileAsDataURL(files[i]);
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                if (i > 0) pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            }
+            return pdf.output('blob');
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        let pointsAutoApprove = false;
+        submitBtn.addEventListener('click', async () => {
+            if (!config.rootUrl) return showToast('Error: rootUrl not found');
+
+            showLoading(t.loadingUploadTitle, t.loadingUploadSub);
+
+            const formData = new FormData();
+            formData.append('gameId', config.gameId);
+            formData.append('statId', config.statId);
+            formData.append('token', config.token);
+            formData.append('action', 'crm_ocrupload');
+            formData.append('tags', JSON.stringify(config.tags));
+
+            try {
+                if (selectedFiles.length === 1) {
+                    formData.append('files', selectedFiles[0]);
+                } else {
+                    const pdfBlob = await generatePDF(selectedFiles);
+                    formData.append('files', pdfBlob, 'multi_receipts.pdf');
+                }
+
+                const response = await fetchWithRetry(`${config.rootUrl}/uploads`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.data) {
+                    pointsAutoApprove = result.data.pointsAutoApprove;
+                    if (pointsAutoApprove) {
+                        startOCRPolling(result.data.jobId, result.data.ida);
+                    } else {
+                        finishProcess(result);
+                    }
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (err) {
+                hideLoading();
+                finishProcess({ error: err.message }, false);
+            }
+        });
+
+        async function startOCRPolling(jobId, ida) {
+            showLoading(t.loadingCheckTitle, t.loadingCheckSub);
+
+            const poll = async () => {
+                try {
+                    const response = await fetch(`${config.rootUrl}/open/crm_ocrcheck`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            gameId: config.gameId,
+                            statId: config.statId,
+                            jobId: jobId,
+                            ida: ida
+                        })
+                    });
+
+                    const result = await response.json();
+                    const status = result?.data?.job?.status;
+
+                    if (status === 'completed') {
+                        finishProcess(result);
+                    } else if (status === 'pending_review' || status === 'processing') {
+                        setTimeout(poll, 3000);
+                    } else if (status === 'duplicate') {
+                        result.isDuplicate = true;
+                        finishProcess(result, false);
+                    } else {
+                        finishProcess(result, false);
+                    }
+                } catch (err) {
+                    finishProcess({ error: 'Check failed' }, false);
+                }
+            };
+            poll();
+        }
+
+        // --- Final Process Output ---
+        function finishProcess(data, success = true) {
+            hideLoading();
+            currentResultData = data;
+            currentSuccessStatus = success;
+
+            const resultTitle = document.getElementById('resultTitle');
+            const resultBody = document.getElementById('resultBody');
+            const resultStatusIcon = document.getElementById('resultStatusIcon');
+            const resultCloseBtn = document.getElementById('resultCloseBtn');
+
+            resultBody.innerHTML = '';
+            resultCloseBtn.textContent = t.btnOk;
+
+            if (success) {
+                if (pointsAutoApprove) {
+                    resultStatusIcon.innerHTML = `
+                        <div class="relative w-24 h-24 mb-2">
+                            <div class="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-60"></div>
+                            <div class="relative w-full h-full bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 border-[6px] border-white shadow-sm">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+                    `;
+                    resultTitle.textContent = t.successTitle;
+                    resultTitle.className = "text-2xl font-bold text-emerald-600";
+
+                    const totalAmount = data?.data?.job?.order?.totalAmount || data?.job?.order?.totalAmount || "0.00";
+                    const pointsEarned = data?.data?.job?.order?.pointsEarned || data?.job?.order?.pointsEarned || 0;
+
+                    resultBody.innerHTML = `
+                        <p class="text-slate-500 text-sm mb-5">${t.successDesc}</p>
+                        <div class="rounded-2xl p-4 border shadow-inner bg-emerald-50 border-emerald-100">
+                            <div class="flex justify-between items-center mb-3 px-1">
+                                <span class="text-slate-500 text-sm">${t.successAmount}</span>
+                                <span class="font-bold text-slate-800 text-base">฿${parseFloat(totalAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div class="h-px w-full mb-3 bg-emerald-200/50"></div>
+                            <div class="flex justify-between items-center px-1">
+                                <span class="text-slate-500 text-sm">${t.successPoints}</span>
+                                <div class="px-3 py-1 rounded-lg font-bold text-lg shadow-sm bg-emerald-500 text-white">
+                                    + ${pointsEarned} <span class="text-xs font-medium ml-0.5">${t.successPointsUnit}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    resultCloseBtn.className = "w-full mt-8 py-4 rounded-2xl font-semibold shadow-md transition-all active:scale-[0.98] theme-bg-primary";
+                } else {
+                    resultStatusIcon.innerHTML = `
+                        <div class="relative w-24 h-24 mb-2">
+                            <div class="absolute inset-0 rounded-full animate-pulse opacity-80 theme-bg-primary"></div>
+                            <div class="relative w-full h-full rounded-full flex items-center justify-center border-[6px] border-white shadow-sm theme-bg-primary-light theme-text-primary">
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                    `;
+                    resultTitle.textContent = t.reviewTitle;
+                    resultTitle.className = "text-2xl font-bold theme-text-primary";
+                    resultBody.innerHTML = `
+                        <div class="rounded-2xl p-5 mt-4 border theme-bg-primary-light theme-border-primary-light">
+                            <p class="text-slate-700 font-medium mb-1">${t.reviewDesc1}</p>
+                            <p class="text-slate-500 text-xs leading-relaxed">${t.reviewDesc2}</p>
+                        </div>
+                        <!-- New Highlight Panel for Processing Time -->
+                        <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3.5 relative shadow-sm">
+                            <!-- icon ลอย -->
+                            <svg class="w-5 h-5 text-amber-500 absolute left-3 top-1/2 -translate-y-1/2"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <!-- text center จริง -->
+                            <p class="text-amber-800 text-xs font-medium text-center">
+                                ${t.reviewNoticeTitle}
+                            </p>
+                        </div>
+                    `;
+                    resultCloseBtn.className = "w-full mt-6 py-4 rounded-2xl font-semibold shadow-md transition-all active:scale-[0.98] theme-bg-primary";
+                }
+            } else {
+                resultStatusIcon.innerHTML = `
+                    <div class="relative w-24 h-24 mb-2">
+                        <div class="relative w-full h-full bg-rose-50 rounded-full flex items-center justify-center text-rose-500 border-[6px] border-white shadow-sm">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </div>
+                    </div>
+                `;
+
+                if (data.isDuplicate) {
+                    resultTitle.textContent = t.duplicateTitle;
+                    resultTitle.className = "text-2xl font-bold text-rose-600";
+                    resultBody.innerHTML = `
+                        <p class="text-slate-500 text-sm mt-2">${t.duplicateDesc}</p>
+                    `;
+                } else {
+                    resultTitle.textContent = t.errorTitle;
+                    resultTitle.className = "text-2xl font-bold text-slate-800";
+                    resultBody.innerHTML = `
+                        <p class="text-slate-500 text-sm mt-2">${t.errorDesc}</p>
+                        <div class="bg-rose-50 rounded-xl p-3 mt-4 border border-rose-100">
+                            <p class="text-rose-500 text-xs font-medium break-words">${data.error || 'Unknown Error'}</p>
+                        </div>
+                    `;
+                }
+
+                const errBtnColor = config.secondaryColor || '#1e293b';
+                const errBtnText = getContrastYIQ(errBtnColor);
+                resultCloseBtn.className = "w-full mt-8 py-4 rounded-2xl font-semibold shadow-lg transition-all active:scale-[0.98]";
+                resultCloseBtn.style.backgroundColor = errBtnColor;
+                resultCloseBtn.style.color = errBtnText;
+            }
+
+            resultModal.classList.remove('hidden');
+        }
+
+        document.getElementById('resultCloseBtn').onclick = () => {
+            window.parent.postMessage({
+                type: "formData",
+                data: currentResultData,
+                success: currentSuccessStatus,
+                closeIframe: true
+            }, "*");
+        };
+
+        // --- Core Helpers ---
+        function showLoading(title, text) {
+            document.getElementById('loadingTitle').textContent = title;
+            document.getElementById('loadingText').textContent = text;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+            try {
+                return await fetch(url, options);
+            } catch (err) {
+                if (retries <= 0) throw err;
+                await new Promise(r => setTimeout(r, delay));
+                return fetchWithRetry(url, options, retries - 1, delay * 2);
+            }
+        }
+
+        function showToast(msg) {
+            const div = document.createElement('div');
+            div.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/95 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-2xl z-[100] text-sm font-medium transition-all duration-300 opacity-0 transform translate-y-4';
+            div.textContent = msg;
+            document.body.appendChild(div);
+
+            requestAnimationFrame(() => div.classList.remove('opacity-0', 'translate-y-4'));
+
+            setTimeout(() => {
+                div.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => div.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

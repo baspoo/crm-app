@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Profile Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            main: '#F04F9D', // 70%
+                            light: '#FEA5B1', // 30%
+                            soft: '#FFF0F5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fdf2f8;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FEA5B1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F04F9D;
+        }
+
+        /* Input Animation */
+        .input-group {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within label {
+            color: #F04F9D;
+        }
+
+        .input-group:focus-within i {
+            color: #F04F9D;
+        }
+
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(254, 165, 177, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Fade In Animation */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Status Message */
+        #status-msg {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+
+        /* Paw Pattern Background */
+        .paw-pattern {
+            background-image: radial-gradient(#FEA5B1 2px, transparent 2px);
+            background-size: 30px 30px;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800">
+
+    <!-- Status Message Box -->
+    <div id="status-msg" class="opacity-0 scale-95 translate-y-[-20px]">
+        <div id="status-content"
+            class="px-6 py-3.5 rounded-full shadow-lg text-white font-medium flex items-center gap-2">
+            <i id="status-icon" class="text-lg"></i>
+            <span id="status-text"></span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full min-h-screen flex flex-col fade-in hidden bg-white">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-brand-main to-brand-light px-6 pt-8 pb-20 text-white relative overflow-hidden rounded-b-[2.5rem] shadow-sm">
+            <!-- Decorative Elements -->
+            <i class="fas fa-paw absolute top-[-10px] right-[-10px] text-white opacity-10 text-8xl transform rotate-12"></i>
+            <i class="fas fa-bone absolute bottom-2 left-6 text-white opacity-20 text-3xl transform -rotate-12"></i>
+            
+            <div class="absolute top-0 right-0 -mr-4 -mt-4 w-32 h-32 rounded-full bg-white opacity-10 blur-2xl"></div>
+            <div class="absolute bottom-0 left-0 -ml-4 -mb-4 w-24 h-24 rounded-full bg-white opacity-10 blur-2xl"></div>
+
+            <div class="relative z-10 text-center">
+                <h2 id="page-title" class="text-2xl sm:text-3xl font-bold tracking-wide drop-shadow-sm" data-i18n="pageTitle">Pet Profile</h2>
+                <p id="page-subtitle" class="text-white/95 text-sm sm:text-base mt-2 font-light max-w-xs sm:max-w-sm mx-auto leading-relaxed drop-shadow-sm" data-i18n="pageSubtitleManage">จัดการข้อมูลสัตว์เลี้ยงแสนรักของคุณ</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-grow p-5 sm:p-8 relative">
+            <div class="absolute inset-0 paw-pattern z-0"></div>
+
+            <div class="relative z-10">
+                <!-- VIEW MODE -->
+                <div id="view-mode" class="hidden space-y-6 max-w-2xl mx-auto relative z-20">
+                    <!-- Profile Image -->
+                    <div class="flex justify-center mt-[-4rem]">
+                        <div class="relative">
+                            <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-[6px] border-white shadow-xl flex items-center justify-center bg-brand-soft">
+                                <img id="view-image" src="" alt="Pet Profile" class="w-full h-full object-cover hidden">
+                                <i id="view-image-fallback" class="fas fa-paw text-5xl text-brand-light opacity-50"></i>
+                            </div>
+                            <div id="view-gender-badge" class="absolute bottom-2 right-2 w-10 h-10 rounded-full border-4 border-white flex items-center justify-center shadow-md bg-gray-200">
+                                <i class="fas fa-genderless text-white text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="bg-white rounded-3xl p-6 shadow-lg shadow-brand-light/20 border border-brand-soft">
+                        <div class="text-center mb-6">
+                            <h3 id="view-name" class="text-3xl font-bold text-gray-800 mb-1">-</h3>
+                            <p id="view-kind" class="text-brand-main font-medium bg-brand-soft inline-block px-4 py-1 rounded-full text-sm">-</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Type -->
+                            <div class="bg-brand-soft/50 p-4 rounded-2xl flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-main text-xl">
+                                    <i id="view-type-icon" class="fas fa-paw"></i>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block" data-i18n="labelType">ชนิด</label>
+                                    <p id="view-type" class="text-base font-semibold text-gray-700">-</p>
+                                </div>
+                            </div>
+
+                            <!-- Birthday & Age -->
+                            <div class="bg-brand-soft/50 p-4 rounded-2xl flex items-center gap-4 md:col-span-2">
+                                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-main text-xl shrink-0">
+                                    <i class="fas fa-cake-candles"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block" data-i18n="labelBirthdayView">วันเกิด</label>
+                                    <div class="flex flex-wrap items-baseline gap-2">
+                                        <p id="view-date" class="text-base font-semibold text-gray-700">-</p>
+                                        <p id="view-age" class="text-sm font-medium text-brand-main"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 pt-4">
+                        <button onclick="switchToEdit()"
+                            class="flex-1 bg-gradient-to-r from-brand-main to-brand-light hover:shadow-lg hover:shadow-brand-light/50 text-white font-semibold py-3.5 px-6 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i class="fas fa-pen-to-square"></i> <span data-i18n="btnEdit">แก้ไขข้อมูล</span>
+                        </button>
+                        <button onclick="confirmDelete()"
+                            class="px-6 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 font-semibold py-3.5 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- EDIT / CREATE FORM -->
+                <form id="edit-form" class="hidden space-y-6 max-w-2xl mx-auto bg-white p-6 rounded-3xl shadow-lg shadow-brand-light/20 border border-brand-soft mt-[-4rem] relative z-20" onsubmit="handleFormSubmit(event)">
+
+                    <!-- Image Upload Section -->
+                    <div class="flex flex-col items-center justify-center py-2">
+                        <label for="image-upload" class="relative cursor-pointer group">
+                            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dashed border-brand-light group-hover:border-brand-main transition-all bg-brand-soft flex items-center justify-center shadow-sm">
+                                <img id="preview-image" src="" class="w-full h-full object-cover hidden">
+                                <div id="upload-placeholder" class="text-center p-2 text-brand-main/60 group-hover:text-brand-main transition-colors">
+                                    <i class="fas fa-camera text-3xl mb-1"></i>
+                                    <p class="text-[11px] font-medium tracking-wide" data-i18n="addPhoto">เพิ่มรูปน้อง</p>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-1 right-1 bg-brand-main text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white transform group-hover:scale-110 transition-transform">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </label>
+                        <input id="image-upload" type="file" accept="image/*" class="hidden" onchange="previewFile(this)">
+                    </div>
+
+                    <!-- Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        <!-- ชื่อสัตว์เลี้ยง -->
+                        <div class="input-group md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" data-i18n="labelName">ชื่อสัตว์เลี้ยง</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 transition-colors">
+                                    <i class="fas fa-tag"></i>
+                                </span>
+                                <input type="text" id="input-name" required data-i18n-placeholder="phName"
+                                    class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-main/20 focus:border-brand-main outline-none transition-all text-gray-700 font-medium"
+                                    placeholder="เช่น ทองหยิบ, โมจิ">
+                            </div>
+                        </div>
+
+                        <!-- ชนิด -->
+                        <div class="input-group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" data-i18n="labelType">ชนิด</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 transition-colors">
+                                    <i class="fas fa-paw"></i>
+                                </span>
+                                <select id="input-type"
+                                    class="w-full pl-11 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-main/20 focus:border-brand-main outline-none transition-all text-gray-700 appearance-none cursor-pointer font-medium">
+                                    <option value="dog" data-i18n="optDog">สุนัข</option>
+                                    <option value="cat" data-i18n="optCat">แมว</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- เพศ -->
+                        <div class="input-group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" data-i18n="labelGender">เพศ</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 transition-colors">
+                                    <i class="fas fa-venus-mars"></i>
+                                </span>
+                                <select id="input-gender"
+                                    class="w-full pl-11 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-main/20 focus:border-brand-main outline-none transition-all text-gray-700 appearance-none cursor-pointer font-medium">
+                                    <option value="male" data-i18n="optMale">ตัวผู้ ♂</option>
+                                    <option value="female" data-i18n="optFemale">ตัวเมีย ♀</option>
+                                    <option value="none" data-i18n="optNone">ไม่ระบุ</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- สายพันธุ์ -->
+                        <div class="input-group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" data-i18n="labelBreed">สายพันธุ์</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 transition-colors">
+                                    <i class="fas fa-dna"></i>
+                                </span>
+                                <input type="text" id="input-kind" data-i18n-placeholder="phBreed"
+                                    class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-main/20 focus:border-brand-main outline-none transition-all text-gray-700 font-medium"
+                                    placeholder="เช่น โกลเด้น, เปอร์เซีย">
+                            </div>
+                        </div>
+
+                        <!-- วันเกิด -->
+                        <div class="input-group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1" data-i18n="labelBirthday">วันเกิด (สำหรับคำนวณอายุ)</label>
+                            <div class="relative">
+                                <input type="date" id="input-date" required
+                                    class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-main/20 focus:border-brand-main outline-none transition-all text-gray-700 font-medium">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex gap-4 pt-4 border-t border-gray-100 mt-6">
+                        <button type="button" id="btn-cancel" onclick="handleCancel()" data-i18n="btnCancel"
+                            class="flex-1 bg-gray-50 border border-gray-200 text-gray-500 hover:bg-gray-100 font-semibold py-3.5 px-6 rounded-2xl transition-all active:scale-[0.98]">
+                            ยกเลิก
+                        </button>
+                        <button type="submit" id="btn-save"
+                            class="flex-[2] bg-gradient-to-r from-brand-main to-brand-light hover:opacity-90 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-brand-light/50 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            <span id="btn-save-text" data-i18n="btnSave">บันทึกข้อมูล</span>
+                            <div id="btn-loader" class="loader hidden"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-gray-900/60 z-50 hidden flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-8 w-full max-sm shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
+            id="confirm-box">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-5">
+                    <i class="fas fa-heart-crack text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900" data-i18n="confirmDeleteTitle">ลบข้อมูลน้อง?</h3>
+                <p class="text-gray-500 mt-2 text-sm" data-i18n="confirmDeleteDesc">ข้อมูลนี้จะถูกลบถาวรและไม่สามารถกู้คืนกลับมาได้อีกครั้ง</p>
+            </div>
+            <div class="mt-8 flex gap-3">
+                <button onclick="closeModal()" data-i18n="btnCancel"
+                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all">ยกเลิก</button>
+                <button onclick="performDelete()" data-i18n="btnDelete"
+                    class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-red-100 transition-all">ลบข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONSTANTS & IMAGE PROCESSING
+        // ==========================================
+        const MAX_SIZE = 1024;
+        let processedImageBlob = null; // เก็บไฟล์รูปที่ผ่านการย่อขนาดและเคลียร์ EXIF แล้ว
+
+        // ==========================================
+        // LANGUAGE DICTIONARY
+        // ==========================================
+        const translations = {
+            Th: {
+                pageTitle: "Pet Profile",
+                pageSubtitleManage: "จัดการข้อมูลสัตว์เลี้ยงแสนรักของคุณ",
+                pageSubtitleView: "ข้อมูลน้องตัวโปรดของคุณ",
+                pageTitleAdd: "เพิ่มข้อมูลสัตว์เลี้ยง",
+                pageSubtitleAdd: "เพิ่มข้อมูลสัตว์เลี้ยงตัวใหม่ (ลำดับที่ {index})",
+                pageTitleEdit: "แก้ไขข้อมูลสัตว์เลี้ยง",
+                pageSubtitleEdit: "อัปเดตข้อมูลให้เป็นปัจจุบัน",
+                
+                addPhoto: "เพิ่มรูปน้อง",
+                labelName: "ชื่อสัตว์เลี้ยง",
+                phName: "เช่น ทองหยิบ, โมจิ",
+                labelType: "ชนิด",
+                optDog: "สุนัข",
+                optCat: "แมว",
+                labelGender: "เพศ",
+                optMale: "ตัวผู้ ♂",
+                optFemale: "ตัวเมีย ♀",
+                optNone: "ไม่ระบุ",
+                labelBreed: "สายพันธุ์",
+                phBreed: "เช่น โกลเด้น, เปอร์เซีย",
+                labelBirthday: "วันเกิด (สำหรับคำนวณอายุ)",
+                labelBirthdayView: "วันเกิด",
+                
+                btnCancel: "ยกเลิก",
+                btnClose: "ปิดหน้าต่าง",
+                btnSave: "บันทึกข้อมูล",
+                btnEdit: "แก้ไขข้อมูล",
+                btnDelete: "ลบข้อมูล",
+                
+                confirmDeleteTitle: "ลบข้อมูลน้อง?",
+                confirmDeleteDesc: "ข้อมูลนี้จะถูกลบถาวรและไม่สามารถกู้คืนกลับมาได้อีกครั้ง",
+                
+                unnamed: "ยังไม่มีชื่อ",
+                unspecifiedBreed: "ไม่ระบุสายพันธุ์",
+                
+                ageUnderOneMonth: "(อายุไม่ถึง 1 เดือน)",
+                ageFormatYearMonth: "(อายุ {years} ปี {months} เดือน)",
+                ageFormatYear: "(อายุ {years} ปี)",
+                ageFormatMonth: "(อายุ {months} เดือน)",
+                
+                msgSaveSuccess: "บันทึกข้อมูลน้องเรียบร้อย",
+                msgSaveError: "เกิดข้อผิดพลาดในการบันทึก",
+                msgConnError: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
+                msgDelSuccess: "ลบข้อมูลสำเร็จ",
+                msgDelError: "เกิดข้อผิดพลาดในการลบ",
+                msgDelFail: "ไม่สามารถลบได้ กรุณาลองใหม่"
+            },
+            En: {
+                pageTitle: "Pet Profile",
+                pageSubtitleManage: "Manage your beloved pet's profile",
+                pageSubtitleView: "Your favorite pet's information",
+                pageTitleAdd: "Add Pet Profile",
+                pageSubtitleAdd: "Add your new pet's profile (Slot {index})",
+                pageTitleEdit: "Edit Pet Profile",
+                pageSubtitleEdit: "Keep your pet's info up to date",
+                
+                addPhoto: "Add Photo",
+                labelName: "Pet Name",
+                phName: "e.g., Moji, Bella",
+                labelType: "Type",
+                optDog: "Dog",
+                optCat: "Cat",
+                labelGender: "Gender",
+                optMale: "Male ♂",
+                optFemale: "Female ♀",
+                optNone: "Not Specified",
+                labelBreed: "Breed",
+                phBreed: "e.g., Golden Retriever",
+                labelBirthday: "Birthday (for age calculation)",
+                labelBirthdayView: "Birthday",
+                
+                btnCancel: "Cancel",
+                btnClose: "Close",
+                btnSave: "Save Profile",
+                btnEdit: "Edit Profile",
+                btnDelete: "Delete",
+                
+                confirmDeleteTitle: "Delete Profile?",
+                confirmDeleteDesc: "This data will be permanently deleted and cannot be recovered.",
+                
+                unnamed: "Unnamed",
+                unspecifiedBreed: "Unspecified breed",
+                
+                ageUnderOneMonth: "(Under 1 month old)",
+                ageFormatYearMonth: "(Age: {years} yr {months} mo)",
+                ageFormatYear: "(Age: {years} yr)",
+                ageFormatMonth: "(Age: {months} mo)",
+                
+                msgSaveSuccess: "Profile saved successfully",
+                msgSaveError: "Error saving profile",
+                msgConnError: "Cannot connect to server",
+                msgDelSuccess: "Profile deleted successfully",
+                msgDelError: "Error deleting profile",
+                msgDelFail: "Cannot delete, please try again"
+            }
+        };
+
+        const valueToKeyMap = {
+            "dog": "optDog",
+            "cat": "optCat",
+            "male": "optMale",
+            "female": "optFemale",
+            "none": "optNone",
+            "สุนัข": "optDog",
+            "แมว": "optCat",
+            "ตัวผู้": "optMale",
+            "ตัวเมีย": "optFemale",
+            "ไม่ระบุ": "optNone"
+        };
+
+        let appData = {};
+        let currentIndex = null;
+        let isEditMode = false;
+        let originalProfileData = null;
+        let currentLang = 'Th';
+
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'initialData') {
+                appData = event.data.data;
+                currentLang = (appData.language === 'En') ? 'En' : 'Th';
+                applyTranslations();
+                initialize();
+            }
+        }, false);
+
+        function t(key, params = {}) {
+            const langDict = translations[currentLang] || translations['Th'];
+            let text = langDict[key] || key;
+            for (const [k, v] of Object.entries(params)) {
+                text = text.replace(`{${k}}`, v);
+            }
+            return text;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.innerText = t(key);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+        }
+
+        function translateDbValue(val) {
+            if (!val) return "-";
+            const key = valueToKeyMap[val];
+            return key ? t(key) : val;
+        }
+
+        function initialize() {
+            document.getElementById('app-container').classList.remove('hidden');
+
+            if (appData.index) {
+                currentIndex = parseInt(appData.index);
+            } else {
+                const max = appData.max || 3;
+                const checkEmpty = (v) => {
+                    return (
+                        !v || 
+                        v === "{}" || 
+                        (typeof v === 'object' && Object.keys(v).length === 0)
+                    );
+                };
+
+                for (let i = 1; i <= max; i++) {
+                    const val = appData.customFields[`pet${i}`];
+                    if (checkEmpty(val)) {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+                if (!currentIndex) currentIndex = 1;
+            }
+
+            const raw = appData.customFields[`pet${currentIndex}`];
+            const imgUrl = appData.customFields[`petimage${currentIndex}`];
+
+            if (!isEmpty(raw)) {
+                try {
+                    if (typeof raw === "string") originalProfileData = JSON.parse(raw);
+                    if (typeof raw === "object") originalProfileData = raw;
+                } catch (e) {
+                    originalProfileData = { name: "", type: "dog", date: "", kind: "", gender: "none" };
+                }
+                originalProfileData.image = imgUrl;
+                renderView();
+            } else {
+                originalProfileData = null;
+                switchToEdit(true);
+            }
+        }
+
+        function isEmpty(raw) {
+            if (raw === null || raw === undefined) return true;
+            if (typeof raw === "string" && raw.trim() === "") return true;
+            if (typeof raw === "object" && Object.keys(raw).length === 0) return true;
+            return false;
+        }
+
+        function calculateAge(dateString) {
+            if (!dateString) return "";
+            const birthDate = new Date(dateString);
+            const today = new Date();
+            
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            
+            if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+                years--;
+                months += 12;
+            }
+            
+            if (today.getDate() < birthDate.getDate()) {
+                months--;
+                if (months < 0) months = 11;
+            }
+            
+            if (years === 0 && months === 0) return t('ageUnderOneMonth');
+            if (years > 0 && months > 0) return t('ageFormatYearMonth', {years, months});
+            if (years > 0) return t('ageFormatYear', {years});
+            if (months > 0) return t('ageFormatMonth', {months});
+            
+            return "";
+        }
+
+        function formatDateThai(dateString) {
+            if (!dateString) return "-";
+            const monthsTh = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            const monthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const d = new Date(dateString);
+            if (isNaN(d)) return dateString;
+            
+            const months = currentLang === 'En' ? monthsEn : monthsTh;
+            const year = currentLang === 'En' ? d.getFullYear() : d.getFullYear();
+            
+            return `${d.getDate()} ${months[d.getMonth()]} ${year}`;
+        }
+
+        function renderView() {
+            isEditMode = false;
+            document.getElementById('view-mode').classList.remove('hidden');
+            document.getElementById('edit-form').classList.add('hidden');
+
+            document.getElementById('page-title').innerText = t('pageTitle');
+            document.getElementById('page-subtitle').innerText = t('pageSubtitleView');
+
+            document.getElementById('view-name').innerText = originalProfileData.name || t('unnamed');
+            document.getElementById('view-type').innerText = translateDbValue(originalProfileData.type) || "-";
+            document.getElementById('view-kind').innerText = originalProfileData.kind || t('unspecifiedBreed');
+            
+            document.getElementById('view-date').innerText = formatDateThai(originalProfileData.date);
+            document.getElementById('view-age').innerText = calculateAge(originalProfileData.date);
+
+            const gender = originalProfileData.gender || "none";
+            const badgeEl = document.getElementById('view-gender-badge');
+            const badgeIcon = badgeEl.querySelector('i');
+            
+            if (gender === "male" || gender === "ตัวผู้") {
+                badgeEl.className = "absolute bottom-2 right-2 w-10 h-10 rounded-full border-4 border-white flex items-center justify-center shadow-md bg-blue-400";
+                badgeIcon.className = "fas fa-mars text-white text-lg";
+            } else if (gender === "female" || gender === "ตัวเมีย") {
+                badgeEl.className = "absolute bottom-2 right-2 w-10 h-10 rounded-full border-4 border-white flex items-center justify-center shadow-md bg-pink-400";
+                badgeIcon.className = "fas fa-venus text-white text-lg";
+            } else {
+                badgeEl.className = "absolute bottom-2 right-2 w-10 h-10 rounded-full border-4 border-white flex items-center justify-center shadow-md bg-gray-300";
+                badgeIcon.className = "fas fa-genderless text-white text-lg";
+            }
+
+            const imgEl = document.getElementById('view-image');
+            const fallbackEl = document.getElementById('view-image-fallback');
+
+            if (originalProfileData.image && originalProfileData.image !== "") {
+                imgEl.src = originalProfileData.image;
+                imgEl.classList.remove('hidden');
+                fallbackEl.classList.add('hidden');
+            } else {
+                imgEl.src = "";
+                imgEl.classList.add('hidden');
+                fallbackEl.classList.remove('hidden');
+            }
+
+            const iconMap = { "dog": "fa-dog", "cat": "fa-cat", "สุนัข": "fa-dog", "แมว": "fa-cat" };
+            const iconClass = iconMap[originalProfileData.type] || "fa-paw";
+            document.getElementById('view-type-icon').className = `fas ${iconClass}`;
+        }
+        
+        function normalizeTypeForEdit(val) {
+            if (val === "สุนัข") return "dog";
+            if (val === "แมว") return "cat";
+            return val || "dog";
+        }
+        
+        function normalizeGenderForEdit(val) {
+            if (val === "ตัวผู้") return "male";
+            if (val === "ตัวเมีย") return "female";
+            if (val === "ไม่ระบุ") return "none";
+            return val || "none";
+        }
+
+        function switchToEdit(isNew = false) {
+            isEditMode = true;
+            processedImageBlob = null; // Reset image blob เมื่อเปิดฟอร์ม
+            
+            document.getElementById('view-mode').classList.add('hidden');
+            document.getElementById('edit-form').classList.remove('hidden');
+
+            document.getElementById('page-title').innerText = isNew ? t('pageTitleAdd') : t('pageTitleEdit');
+            document.getElementById('page-subtitle').innerText = isNew ? t('pageSubtitleAdd', {index: currentIndex}) : t('pageSubtitleEdit');
+
+            const previewImg = document.getElementById('preview-image');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if (!isNew && originalProfileData) {
+                document.getElementById('input-name').value = originalProfileData.name || "";
+                document.getElementById('input-type').value = normalizeTypeForEdit(originalProfileData.type);
+                document.getElementById('input-kind').value = originalProfileData.kind || "";
+                document.getElementById('input-date').value = originalProfileData.date || "";
+                document.getElementById('input-gender').value = normalizeGenderForEdit(originalProfileData.gender);
+
+                if (originalProfileData.image && originalProfileData.image !== "") {
+                    previewImg.src = originalProfileData.image;
+                    previewImg.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                } else {
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('edit-form').reset();
+                previewImg.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+
+            const btnCancel = document.getElementById('btn-cancel');
+            if (isNew && !appData.index) {
+                btnCancel.innerText = t('btnClose');
+                btnCancel.onclick = closeIframe;
+            } else {
+                btnCancel.innerText = t('btnCancel');
+                btnCancel.onclick = handleCancel;
+            }
+        }
+
+        function handleCancel() {
+            if (originalProfileData) renderView();
+            else closeIframe();
+        }
+
+        // ==========================================
+        // PROCESS IMAGE (RESIZE & FIX EXIF)
+        // ==========================================
+        function processImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.onload = function () {
+                        let width = img.width;
+                        let height = img.height;
+
+                        // คำนวณขนาดใหม่โดยรักษาอัตราส่วน (Aspect Ratio)
+                        if (width > height) {
+                            if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                            }
+                        } else {
+                            if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                            }
+                        }
+
+                        // วาดรูปลง Canvas (Browser จะปรับ Orientation ให้อัตโนมัติตาม EXIF)
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // โชว์ Preview จาก Canvas
+                        const previewImg = document.getElementById('preview-image');
+                        previewImg.src = canvas.toDataURL(file.type || 'image/jpeg', 0.9);
+                        previewImg.classList.remove('hidden');
+                        document.getElementById('upload-placeholder').classList.add('hidden');
+
+                        // แปลง Canvas เป็น Blob สำหรับส่ง Upload (ภาพที่ได้จะตั้งตรงและขนาดไม่เกินกำหนด)
+                        canvas.toBlob((blob) => {
+                            processedImageBlob = blob;
+                            resolve();
+                        }, file.type || 'image/jpeg', 0.9);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function previewFile(input) {
+            const file = input.files[0];
+            if (file) {
+                // ปิดปุ่ม Save ชั่วคราวระหว่างประมวลผลรูป
+                const btnSave = document.getElementById('btn-save');
+                btnSave.disabled = true;
+                btnSave.classList.add('opacity-50');
+                
+                await processImage(file);
+                
+                // เปิดปุ่ม Save กลับมา
+                btnSave.disabled = false;
+                btnSave.classList.remove('opacity-50');
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            setLoading(true);
+
+            let totalCat = 0;
+            let totalDog = 0;
+            const maxPets = appData.max || 3;
+            const currentSelectedType = document.getElementById('input-type').value;
+
+            for (let i = 1; i <= maxPets; i++) {
+                if (i === currentIndex) {
+                    if (currentSelectedType === "cat") totalCat++;
+                    if (currentSelectedType === "dog") totalDog++;
+                } else {
+                    const rawPet = appData.customFields[`pet${i}`];
+                    if (!isEmpty(rawPet)) {
+                        try {
+                            const petObj = (typeof rawPet === "string") ? JSON.parse(rawPet) : rawPet;
+                            if (petObj.type === "cat" || petObj.type === "แมว") totalCat++;
+                            if (petObj.type === "dog" || petObj.type === "สุนัข") totalDog++;
+                        } catch (err) {}
+                    }
+                }
+            }
+
+            const formDataObj = {
+                name: document.getElementById('input-name').value,
+                type: currentSelectedType,
+                date: document.getElementById('input-date').value,
+                kind: document.getElementById('input-kind').value,
+                gender: document.getElementById('input-gender').value,
+                createdAt: (originalProfileData && originalProfileData.createdAt) ? originalProfileData.createdAt : Math.floor(Date.now() / 1000)
+            };
+
+            let customFields={};
+            customFields[`pet${currentIndex}`] = formDataObj;
+            customFields.totalcat = totalCat;
+            customFields.totaldog = totalDog;
+
+            const bodyFormData = new FormData();
+            bodyFormData.append('action', 'crm_profileupload');
+            bodyFormData.append('gameId', appData.gameId);
+            bodyFormData.append('statId', appData.statId);
+            bodyFormData.append('token', appData.token);
+            bodyFormData.append('customFields', JSON.stringify(customFields));
+
+            // ใช้รูปที่ถูก Process และย่อขนาดแล้ว หากมีการอัปโหลดใหม่
+            if (processedImageBlob) {
+                const fileInput = document.getElementById('image-upload');
+                const originalFile = fileInput.files[0];
+                // แปลง Blob กลับเป็น File Object เพื่อรักษานามสกุลและชื่อไฟล์
+                const finalFile = new File([processedImageBlob], originalFile.name, { type: processedImageBlob.type || 'image/jpeg' });
+                
+                bodyFormData.append('file', finalFile);
+                bodyFormData.append('imagefield', `petimage${currentIndex}`);
+            }
+            
+            try {
+                const response = await fetch(`${appData.rootUrl}/upload`, {
+                    method: 'POST',
+                    body: bodyFormData
+                });
+                if (response.ok) {
+                    showStatus(t('msgSaveSuccess'), "success");
+                    setTimeout(finishAndClose, 1000);
+                } else {
+                    showStatus(t('msgSaveError'), "error");
+                    setLoading(false);
+                }
+            } catch (error) {
+                showStatus(t('msgConnError'), "error");
+                setLoading(false);
+            }
+        }
+
+        async function performDelete() {
+            setLoading(true);
+            closeModal();
+
+            const bodyFormData = new FormData();
+            bodyFormData.append('action', 'crm_profileupload');
+            bodyFormData.append('gameId', appData.gameId);
+            bodyFormData.append('statId', appData.statId);
+            bodyFormData.append('token', appData.token);
+
+            let customFields={};
+            customFields[`pet${currentIndex}`] = {};
+            bodyFormData.append('customFields', JSON.stringify(customFields));
+            
+            if (originalProfileData.image && originalProfileData.image !== "")
+                bodyFormData.append('imagefield', `petimage${currentIndex}`);
+
+            try {
+                const response = await fetch(`${appData.rootUrl}/upload`, {
+                    method: 'POST',
+                    body: bodyFormData
+                });
+                if (response.ok) {
+                    showStatus(t('msgDelSuccess'), "success");
+                    setTimeout(finishAndClose, 1000);
+                } else {
+                    showStatus(t('msgDelError'), "error");
+                    setLoading(false);
+                }
+            } catch (error) {
+                showStatus(t('msgDelFail'), "error");
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            const btn = document.getElementById('btn-save');
+            const txt = document.getElementById('btn-save-text');
+            const loader = document.getElementById('btn-loader');
+            const inputs = document.querySelectorAll('input, select, button');
+
+            if (isLoading) {
+                txt.classList.add('hidden');
+                loader.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+                inputs.forEach(el => el.disabled = true);
+            } else {
+                txt.classList.remove('hidden');
+                loader.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                inputs.forEach(el => el.disabled = false);
+            }
+        }
+
+        function showStatus(msg, type) {
+            const wrap = document.getElementById('status-msg');
+            const content = document.getElementById('status-content');
+            const icon = document.getElementById('status-icon');
+            const text = document.getElementById('status-text');
+
+            text.innerText = msg;
+            if (type === 'success') {
+                content.className = "px-6 py-3.5 rounded-full shadow-lg shadow-emerald-500/20 text-white font-medium flex items-center gap-2 bg-emerald-500";
+                icon.className = "fas fa-check-circle";
+            } else {
+                content.className = "px-6 py-3.5 rounded-full shadow-lg shadow-rose-500/20 text-white font-medium flex items-center gap-2 bg-rose-500";
+                icon.className = "fas fa-times-circle";
+            }
+
+            wrap.classList.remove('opacity-0', 'scale-95', 'translate-y-[-20px]');
+            wrap.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+
+            setTimeout(() => {
+                wrap.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                wrap.classList.add('opacity-0', 'scale-95', 'translate-y-[-20px]');
+            }, 3000);
+        }
+
+        function confirmDelete() {
+            const modal = document.getElementById('confirm-modal');
+            const box = document.getElementById('confirm-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirm-modal');
+            const box = document.getElementById('confirm-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function finishAndClose() {
+            window.parent.postMessage({ type: "formData", data: { ok: true }, closeIframe: true }, "*");
+        }
+
+        function closeIframe() {
+            window.parent.postMessage({ type: "formData", data: { ok: false }, closeIframe: true }, "*");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,414 @@
+<style>
+    /* ==========================================
+       System Popup / Toast / Link Styles
+       ========================================== */
+    .sys-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 50;
+    }
+
+    .sys-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .sys-toast-overlay {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(-1rem);
+        z-index: 100;
+        width: 91.666%;
+        max-width: 24rem;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    .sys-toast-overlay.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+    }
+
+    .sys-link-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 40;
+    }
+
+    .sys-link-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Card Panels */
+    .sys-card {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        width: 91.666%;
+        max-width: 24rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .sys-overlay.show .sys-card {
+        transform: scale(1);
+    }
+
+    .sys-icon-wrap {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.25rem;
+        margin-bottom: 1rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .sys-icon-img {
+        width: 4rem;
+        height: 4rem;
+        object-fit: contain;
+    }
+
+    .sys-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.375;
+    }
+
+    .sys-msg {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 0 0 1.5rem 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.5;
+    }
+
+    /* Buttons */
+    .sys-actions {
+        display: flex;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .sys-btn-primary {
+        flex: 1;
+        background: var(--color-primary, #2563eb);
+        color: #fff;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        font-size: 0.875rem;
+    }
+
+    .sys-btn-primary:hover {
+        filter: brightness(0.9);
+    }
+
+    .sys-btn-primary:active {
+        transform: scale(0.95);
+    }
+
+    .sys-btn-secondary {
+        flex: 1;
+        background: #fff;
+        color: #4b5563;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+    }
+
+    .sys-btn-secondary:hover {
+        background: #f9fafb;
+    }
+
+    .sys-btn-secondary:active {
+        transform: scale(0.95);
+    }
+
+    /* Toast Elements */
+    .toast-box {
+        background: rgba(17, 24, 39, 0.95);
+        backdrop-filter: blur(4px);
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: 1px solid #1f2937;
+    }
+
+    .toast-emoji {
+        font-size: 1.25rem;
+    }
+
+    .toast-msg {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+        flex-grow: 1;
+        line-height: 1.25;
+        margin: 0;
+        text-align: left;
+    }
+
+    .toast-close {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        transition: color 0.2s ease;
+    }
+
+    .toast-close:hover {
+        color: #fff;
+    }
+
+    /* Bottom Sheet Elements */
+    .link-sheet {
+        background: #fff;
+        width: 100%;
+        max-width: 28rem;
+        padding: 1.5rem;
+        padding-bottom: 2rem;
+        border-top-left-radius: 1.5rem;
+        border-top-right-radius: 1.5rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        border-top: 1px solid #f3f4f6;
+    }
+
+    .sys-link-overlay.show .link-sheet {
+        transform: translateY(0);
+    }
+
+    .sheet-handle {
+        width: 3rem;
+        height: 0.25rem;
+        background: #e5e7eb;
+        border-radius: 9999px;
+        margin: -0.5rem auto 0.5rem auto;
+    }
+
+    .sheet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sheet-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .sheet-close {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 9999px;
+        background: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .sheet-close:active {
+        transform: scale(0.95);
+    }
+
+    .sheet-desc {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .sheet-input-group {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .sheet-input-group:focus-within {
+        border-color: var(--color-primary, #2563eb);
+    }
+
+    .sheet-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 0.75rem;
+        color: #4b5563;
+        flex-grow: 1;
+        font-family: monospace;
+    }
+
+    .sheet-copy-btn {
+        background: var(--color-primary-light, #eff6ff);
+        color: var(--color-primary, #2563eb);
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .sheet-copy-btn:hover {
+        filter: brightness(0.95);
+    }
+
+    .sheet-copy-btn:active {
+        transform: scale(0.95);
+    }
+
+    .sheet-open-btn {
+        width: 100%;
+        padding: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<!-- 1. General Dialog Popup -->
+<div id="sys-popup-overlay" class="sys-overlay">
+    <div id="sys-popup-card" class="sys-card">
+        <!-- Icon / Image Slot -->
+        <div id="sys-popup-icon-container" class="sys-icon-wrap">
+            <span id="sys-popup-emoji"></span>
+            <img id="sys-popup-img" src="" class="hidden sys-icon-img" />
+        </div>
+
+        <!-- Header -->
+        <h3 id="sys-popup-title" class="sys-title"></h3>
+
+        <!-- Message -->
+        <p id="sys-popup-message" class="sys-msg"></p>
+
+        <!-- Footer / Buttons -->
+        <!-- Type: Confirm Yes/No -->
+        <div id="sys-popup-actions-confirm" class="sys-actions hidden">
+            <button id="sys-popup-btn-no" class="sys-btn-secondary">No</button>
+            <button id="sys-popup-btn-yes" class="sys-btn-primary">Yes</button>
+        </div>
+
+        <!-- Type: OK / Complete / Failed -->
+        <div id="sys-popup-actions-ok" class="sys-actions hidden">
+            <button id="sys-popup-btn-ok" class="sys-btn-primary w-full">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Top Toast Message Pop -->
+<div id="sys-toast-overlay" class="sys-toast-overlay">
+    <div class="toast-box">
+        <span id="sys-toast-emoji" class="toast-emoji"></span>
+        <img id="sys-toast-img" src="" class="hidden sys-icon-img" style="width: 1.5rem; height: 1.5rem;" />
+        <span id="sys-toast-message" class="toast-msg"></span>
+        <button onclick="PageManager.hideToast()" class="toast-close">
+            <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- 3. Bottom Direct Link Popup -->
+<div id="sys-link-overlay" class="sys-link-overlay">
+    <div id="sys-link-card" class="link-sheet">
+        <!-- Drag Handle Indicator -->
+        <div class="sheet-handle"></div>
+
+        <!-- Header -->
+        <div class="sheet-header">
+            <h3 class="sheet-title">External Link</h3>
+            <button onclick="PageManager.hideDirectLink()" class="sheet-close">
+                <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <p class="sheet-desc">
+            You are about to navigate to an external link. You can copy the URL or open it directly.
+        </p>
+
+        <!-- Link Input and Copy Button -->
+        <div class="sheet-input-group">
+            <input id="sys-link-input" type="text" readonly class="sheet-input" value="" />
+            <button onclick="PageManager.copyDirectLink()" id="sys-link-btn-copy" class="sheet-copy-btn">
+                Copy
+            </button>
+        </div>
+
+        <!-- Open Link Button -->
+        <button id="sys-link-btn-open" onclick="PageManager.openDirectLink()" class="sys-btn-primary sheet-open-btn">
+            <span>Open in Browser</span>
+            <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+        </button>
+    </div>
+</div>

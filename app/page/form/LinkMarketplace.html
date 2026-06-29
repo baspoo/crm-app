@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เชื่อมต่อบัญชี Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f59e0b;
+            --text-on-primary: #ffffff;
+        }
+
+        .bg-theme-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        .text-theme-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .text-theme-on-primary {
+            color: var(--text-on-primary) !important;
+        }
+
+        .focus:border-theme-primary:focus {
+            border-color: var(--primary-color) !important;
+        }
+
+        .shadow-theme-primary {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px var(--primary-color) !important;
+        }
+
+        html,
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            overflow-x: hidden;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-active:active {
+            transform: scale(0.98);
+        }
+
+        .modal-enter {
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen pb-12 relative">
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white border-b border-gray-100 shadow-sm">
+        <img id="headerImage" src="res/header/dummy.png" alt="Marketplace Banner"
+            class="w-full h-auto block transition-opacity duration-500 opacity-0"
+            onerror="this.src='https://via.placeholder.com/800x200?text=Marketplace+Connection'; this.classList.remove('opacity-0')"
+            onload="this.classList.remove('opacity-0')">
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="max-w-xl mx-auto px-5 mt-8">
+
+        <!-- Info Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800" data-i18n="title">ยืนยันคำสั่งซื้อ</h1>
+            <p class="text-gray-500 mt-2 text-sm leading-relaxed">
+                <span data-i18n="subtitle1">เชื่อมต่อบัญชีเพื่อรับคะแนนสะสมพิเศษ</span> <br>
+                <span data-i18n="subtitle2">จากคำสั่งซื้อสินค้าผ่านช่องทาง</span> <span id="marketplaceName"
+                    class="font-semibold text-theme-primary">Marketplace</span>
+            </p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-50">
+            <div class="space-y-6">
+
+                <!-- Order ID Input -->
+                <div>
+                    <label for="orderId" class="block text-sm font-medium text-gray-600 mb-2 ml-1"
+                        data-i18n="orderIdLabel">
+                        หมายเลขคำสั่งซื้อ (Order ID)
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="orderId" data-i18n-placeholder="orderIdPlaceholder"
+                            placeholder="กรอกหมายเลขคำสั่งซื้อ"
+                            class="input-focus w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-theme-primary outline-none text-gray-800 placeholder:text-gray-300">
+                    </div>
+                </div>
+
+                <!-- Zipcode Input -->
+                <div>
+                    <label for="zipcode" class="block text-sm font-medium text-gray-600 mb-2 ml-1"
+                        data-i18n="zipcodeLabel">
+                        รหัสไปรษณีย์ (Zipcode)
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="number" id="zipcode" pattern="[0-9]*" inputmode="numeric"
+                            data-i18n-placeholder="zipcodePlaceholder" placeholder="กรอกรหัสไปรษณีย์จัดส่ง"
+                            class="input-focus w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-theme-primary outline-none text-gray-800 placeholder:text-gray-300">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button id="submitBtn"
+                        class="btn-active w-full bg-theme-primary text-theme-on-primary shadow-theme-primary py-4 px-6 rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2">
+                        <span data-i18n="submitBtn">ส่งข้อมูลรับแต้ม</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal (Hidden by default) -->
+    <div id="resultModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl modal-enter">
+            <div class="p-8 text-center">
+                <!-- Icon Area -->
+                <div id="modalIcon" class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full">
+                    <!-- Dynamic Icon -->
+                </div>
+
+                <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                <p id="modalMessage" class="text-gray-500 text-sm leading-relaxed"></p>
+
+                <!-- Highlight Box (แสดงเฉพาะตอนรอดำเนินการ) -->
+                <div id="modalHighlightBox" class="hidden mt-5 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                    <div class="flex items-center space-x-3 text-left">
+                        <svg class="w-6 h-6 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                        <p id="modalHighlightText" class="text-amber-800 font-semibold text-sm leading-tight"></p>
+                    </div>
+                </div>
+
+                <button id="modalCloseBtn" data-i18n="modalCloseBtn"
+                    class="mt-8 w-full py-4 bg-gray-800 text-white font-semibold rounded-2xl hover:bg-black transition-colors btn-active">
+                    ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const i18n = {
+            Th: {
+                title: "ยืนยันคำสั่งซื้อ",
+                subtitle1: "เชื่อมต่อบัญชีเพื่อรับคะแนนสะสมพิเศษ",
+                subtitle2: "จากคำสั่งซื้อสินค้าผ่านช่องทาง",
+                orderIdLabel: "หมายเลขคำสั่งซื้อ (Order ID)",
+                orderIdPlaceholder: "กรอกหมายเลขคำสั่งซื้อ",
+                zipcodeLabel: "รหัสไปรษณีย์ (Zipcode)",
+                zipcodePlaceholder: "กรอกรหัสไปรษณีย์จัดส่ง",
+                submitBtn: "ส่งข้อมูลรับแต้ม",
+                sendingBtn: "กำลังส่งข้อมูล...",
+                modalSuccessTitle: "เชื่อมต่อสำเร็จ",
+                modalSuccessMsg: "เชื่อมต่อบัญชีและตรวจสอบหมายเลขคำสั่งซื้อถูกต้องเรียบร้อยแล้ว",
+                modalPendingTitle: "กำลังดำเนินการ",
+                modalPendingMsg: "ได้รับคำขอการเชื่อมต่อแล้ว สถานะจะเปลี่ยนเป็นเชื่อมต่อแล้วเมื่อดำเนินการเสร็จสิ้น",
+                modalPendingHighlight: "อาจใช้ระยะเวลาดำเนินการภายใน 7 วัน",
+                modalErrorTitle: "เกิดข้อผิดพลาด",
+                modalErrorMsg: "ไม่สามารถดำเนินการได้ในขณะนี้ กรุณาตรวจสอบข้อมูลหรือลองใหม่อีกครั้ง",
+                modalCloseBtn: "ตกลง",
+                toastError: "กรุณากรอกข้อมูลให้ครบถ้วน"
+            },
+            En: {
+                title: "Confirm Order",
+                subtitle1: "Connect your account to earn reward points",
+                subtitle2: "from your order via",
+                orderIdLabel: "Order ID",
+                orderIdPlaceholder: "Enter your Order ID",
+                zipcodeLabel: "Zipcode",
+                zipcodePlaceholder: "Enter shipping zipcode",
+                submitBtn: "Submit for Points",
+                sendingBtn: "Sending...",
+                modalSuccessTitle: "Connection Successful",
+                modalSuccessMsg: "Your account has been connected and the order ID verified successfully.",
+                modalPendingTitle: "Processing",
+                modalPendingMsg: "Connection request received. Status will update once processing is complete.",
+                modalPendingHighlight: "Processing may take up to 7 days.",
+                modalErrorTitle: "An Error Occurred",
+                modalErrorMsg: "Unable to process at this time. Please check your information and try again.",
+                modalCloseBtn: "OK",
+                toastError: "Please fill in all required fields"
+            }
+        };
+
+        let currentMarketplace = 'lazada';
+        let latestFinalStatus = 'failed'; // เก็บสถานะสุดท้ายเพื่อแจ้ง parent: success, failed, pending
+        let currentLang = 'Th';
+        let resPathStr = 'res';
+
+        const resultModal = document.getElementById('resultModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalHighlightBox = document.getElementById('modalHighlightBox');
+        const modalHighlightText = document.getElementById('modalHighlightText');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#ffffff';
+            hexcolor = hexcolor.replace("#", "");
+            if (hexcolor.length === 3) {
+                hexcolor = hexcolor.split('').map(c => c + c).join('');
+            }
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1f2937' : '#ffffff';
+        }
+
+        function updateTheme(primary, secondary) {
+            const root = document.documentElement;
+            if (primary) {
+                root.style.setProperty('--primary-color', primary);
+                root.style.setProperty('--text-on-primary', getContrastYIQ(primary));
+            }
+            if (secondary) {
+                root.style.setProperty('--secondary-color', secondary);
+            }
+        }
+
+        function applyLanguage(lang) {
+            const dict = i18n[lang] || i18n['Th'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) el.placeholder = dict[key];
+            });
+        }
+
+        // --- 1. รับค่าจาก Parent ---
+        window.addEventListener('message', function (event) {
+            if (!event.data) return;
+
+            if (event.data.type === 'initialData') {
+
+                const data = event.data.data;
+                const appData = window.parent.appData; 
+                const htmlCacheVersion = window.parent.htmlCacheVersion;
+                currentMarketplace = data.marketplace;
+
+
+
+                if (appData.resPath) resPathStr = appData.resPath;
+                updateTheme(appData.primaryColor, appData.secondaryColor);
+                if (appData.language && i18n[appData.language]) {
+                    currentLang = appData.language;
+                    applyLanguage(currentLang);
+                }
+
+
+                if (currentMarketplace) 
+                {
+                   
+                    const customeHeader = appData.customAssets[`${currentMarketplace}Header`];
+                    if(customeHeader) document.getElementById('headerImage').src = customeHeader;
+                    else document.getElementById('headerImage').src = `${resPathStr}/header/${currentMarketplace}.png?v=${htmlCacheVersion}`;
+
+                    document.getElementById('marketplaceName').textContent = currentMarketplace.charAt(0).toUpperCase() + currentMarketplace.slice(1);
+                }
+            }
+
+            // จัดการเมื่อมีการส่ง updateData เข้ามา
+            if (event.data.type === 'updateData') {
+                const data = event.data.data;
+                
+                // ตรวจสอบ 3 สถานะตามเงื่อนไขใหม่
+                if (data.ok === false) {
+                    // 1. data.ok === false : failed
+                    latestFinalStatus = 'failed';
+                    showResultPopup('failed');
+                } else {
+                    const isFullyConfirmed = (data.linkStatus === "confirm");
+                    if (isFullyConfirmed) {
+                        // 2. isFullyConfirmed === true : สำเร็จ
+                        latestFinalStatus = 'success';
+                        showResultPopup('success');
+                    } else {
+                        // 3. isFullyConfirmed === false : กำลังดำเนินการ
+                        latestFinalStatus = 'pending';
+                        showResultPopup('pending');
+                    }
+                }
+            }
+        }, false);
+
+        /**
+         * แสดง Popup ตามสถานะที่ระบุ
+         * @param {string} status - 'success', 'pending', 'failed'
+         */
+        function showResultPopup(status) {
+            const dict = i18n[currentLang];
+
+            // รีเซ็ตค่าเริ่มต้น
+            modalHighlightBox.classList.add('hidden');
+
+            if (status === 'success') {
+                // กรณีสำเร็จ (Confirm)
+                modalIcon.className = "w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100 text-green-600";
+                modalIcon.innerHTML = `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                modalTitle.textContent = dict.modalSuccessTitle;
+                modalMessage.textContent = dict.modalSuccessMsg;
+            } else if (status === 'pending') {
+                // กรณีรอดำเนินการ (ยังไม่ Confirm)
+                modalIcon.className = "w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100 text-blue-600";
+                modalIcon.innerHTML = `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                modalTitle.textContent = dict.modalPendingTitle;
+                modalMessage.textContent = dict.modalPendingMsg;
+                modalHighlightText.textContent = dict.modalPendingHighlight;
+                modalHighlightBox.classList.remove('hidden');
+            } else {
+                // กรณีเกิดข้อผิดพลาด (Failed)
+                modalIcon.className = "w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-red-100 text-red-600";
+                modalIcon.innerHTML = `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                modalTitle.textContent = dict.modalErrorTitle;
+                modalMessage.textContent = dict.modalErrorMsg;
+            }
+
+            resultModal.classList.remove('hidden');
+        }
+
+        modalCloseBtn.addEventListener('click', function () {
+            window.parent.postMessage({
+                type: "formData",
+                data: { status: latestFinalStatus },
+                closeIframe: true
+            }, "*");
+            resultModal.classList.add('hidden');
+        });
+
+        submitBtn.addEventListener('click', function (e) {
+            const orderIdInput = document.getElementById('orderId');
+            const zipcodeInput = document.getElementById('zipcode');
+            const dict = i18n[currentLang];
+
+            e.preventDefault();
+            const orderId = orderIdInput.value.trim();
+            const zipcode = zipcodeInput.value.trim();
+
+            if (!orderId || !zipcode) {
+                showToast(dict.toastError);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            const originalContent = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>${dict.sendingBtn}</span>
+            `;
+
+            window.parent.postMessage({
+                type: "formData",
+                data: {
+                    status: "link",
+                    marketplace: currentMarketplace,
+                    orderId: orderId,
+                    zipcode: zipcode
+                },
+                closeIframe: false
+            }, "*");
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+            }, 1000);
+        });
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl z-[200] text-sm animate-bounce';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    </script>
+</body>
+
+</html>

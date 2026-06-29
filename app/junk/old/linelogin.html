@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LINE Login Bridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #000000;
+            /* ดำสนิทเพื่อให้กลืนไปกับขอบจอ */
+        }
+
+        .line-green {
+            color: #06C755;
+        }
+
+        .bg-line-green {
+            background-color: #06C755;
+        }
+
+        /* ปรับปรุง Dots Loader ให้ดูทันสมัยขึ้น */
+        .dots-loader {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 40px;
+        }
+
+        .dots-loader div {
+            position: absolute;
+            top: 16px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #06C755;
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .dots-loader div:nth-child(1) {
+            left: 8px;
+            animation: dots1 0.6s infinite;
+        }
+
+        .dots-loader div:nth-child(2) {
+            left: 8px;
+            animation: dots2 0.6s infinite;
+        }
+
+        .dots-loader div:nth-child(3) {
+            left: 32px;
+            animation: dots2 0.6s infinite;
+        }
+
+        .dots-loader div:nth-child(4) {
+            left: 56px;
+            animation: dots3 0.6s infinite;
+        }
+
+        @keyframes dots1 {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes dots3 {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(0);
+            }
+        }
+
+        @keyframes dots2 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(24px, 0);
+            }
+        }
+
+        /* เพิ่ม Fade In สำหรับการเปลี่ยนหน้าจอ */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="text-white min-h-screen flex items-center justify-center p-6">
+
+    <div id="main-container" class="max-w-sm w-full text-center">
+        <!-- Loading State: เปลี่ยนเป็นแบบเรียบง่าย ไม่รบกวนสายตา -->
+        <div id="loading-view" class="flex flex-col items-center fade-in">
+            <div class="dots-loader mb-6">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <h1 class="text-lg font-medium text-gray-200 mb-2" id="status-title">กำลังเตรียมความพร้อม</h1>
+            <p class="text-gray-500 text-xs tracking-wide" id="status-desc">โปรดรอสักครู่ ระบบกำลังนำคุณไปต่อ...</p>
+        </div>
+
+        <!-- Error State: คงไว้แต่ปรับปรุงความชัดเจน -->
+        <div id="error-view" class="hidden flex flex-col items-center fade-in">
+            <div class="bg-red-500/10 p-5 rounded-full mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold mb-2">พบปัญหาในการทำงาน</h2>
+            <p class="text-gray-400 text-sm mb-8 px-4" id="error-msg"></p>
+            <button onclick="retryLogin()"
+                class="w-full bg-[#06C755] text-white py-3.5 rounded-2xl font-medium active:scale-95 transition-all shadow-lg shadow-green-500/20">
+                ลองใหม่อีกครั้ง
+            </button>
+        </div>
+
+        <!-- Debug View -->
+        <div id="debug-view"
+            class="hidden text-left bg-gray-900/50 backdrop-blur-md p-4 rounded-2xl border border-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-bold text-[#06C755]">DEBUG DATA</span>
+                <button onclick="copyPayload()"
+                    class="text-[10px] bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-full transition-colors">Copy
+                    JSON</button>
+            </div>
+            <pre id="debug-json" class="text-[10px] overflow-auto max-h-[400px] text-gray-400 font-mono"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = location.origin.includes("gamestore-gg.1mobystudio.com")
+            ? 'https://aws-bug-parse-gamification.thelastbug.co/open/crm_getgame'
+            : 'https://reflex-crm-mdgl7ag2.g.1mobystudio.com/open/crm_getgame';
+
+        const ui = {
+            loading: document.getElementById('loading-view'),
+            error: document.getElementById('error-view'),
+            debug: document.getElementById('debug-view'),
+            title: document.getElementById('status-title'),
+            desc: document.getElementById('status-desc'),
+            errorMsg: document.getElementById('error-msg'),
+            debugJson: document.getElementById('debug-json')
+        };
+
+        const updateStatus = (title, desc) => {
+            if (title) ui.title.innerText = title;
+            if (desc) ui.desc.innerText = desc;
+        };
+
+        const showError = (msg) => {
+            ui.loading.classList.add('hidden');
+            ui.error.classList.remove('hidden');
+            ui.errorMsg.innerHTML = msg;
+        };
+
+        const retryLogin = () => {
+            clearAllSession();
+            location.reload();
+        };
+        let check = false;
+        let currentStep = "INIT";
+        let appMode;
+
+        (async () => {
+            try {
+                currentStep = "GET_PARAMS";
+                const params = new URLSearchParams(location.search);
+                let appid = params.get('appid');
+                let subDomain = getDomainOrSubdomain();
+                const debug = params.get('debug');
+                const liffRedirectUri = params.get('liffRedirectUri');
+                const liffClientId = params.get('liffClientId');
+                check = params.get('check');
+                const statId = sessionStorage.getItem('CRM_STATID');
+
+
+
+                let body = {};
+                if (appid) body.appid = appid;
+                else if (subDomain) body.subDomain = subDomain;
+                else {
+                    showError('ไม่พบพารามิเตอร์ <b>appid</b> ในการเข้าถึงระบบ');
+                    return;
+                }
+
+
+                // 1. Fetch Config
+                currentStep = "FETCH_CONFIG";
+                updateStatus('กำลังตรวจสอบสิทธิ์', 'รอผลการตรวจสอบสักครู่...');
+
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                currentStep = "PARSE_JSON";
+                const result = await resp.json();
+                console.log(result);
+                if (!result?.success) {
+                    showError(result?.message || 'ไม่สามารถโหลดข้อมูลระบบได้ในขณะนี้');
+                    return;
+                }
+
+
+                currentStep = "LIFF_CONFIG";
+                //const gameURL = `${location.origin.replace(/\/+$/, '')}/${String(result.path).replace(/^\/+/, '')}`;
+                appid = result.appid;
+                appMode = result.initializeData.appMode;
+                const liffId = result.liffid;
+                const initializeData = result.initializeData;
+                const storeInfo = result.storeInfo;
+
+
+                if (!liffId) {
+                    showError("ไม่พบ LIFF ID ในข้อมูลที่ได้รับ");
+                    return;
+                }
+                else {
+                    console.log("liffId:", liffId);
+                }
+                currentStep = "MANAGE_SESSION";
+
+
+                // 2. Manage Session
+                const currentSessionApp = sessionStorage.getItem('CRM_APPID');
+                if (currentSessionApp !== appid) {
+                    clearAllSession();
+                    //sessionStorage.setItem('CRM_REDIRECTLOGIN', result.redirectLogin);
+                    sessionStorage.setItem('CRM_APPID', appid);
+                    sessionStorage.setItem('CRM_SUBDOMAIN', subDomain || "");
+                    console.log("appid mismatch");
+                }
+                sessionStorage.setItem('CRM_REDIRECTLOGIN', result.redirectLogin);
+
+                /*
+                else {
+                    if (!debug && statId) {
+                        console.log("direct start ok");
+                        sessionStorage.setItem('CRM_REDIRECTLOGIN', result.redirectLogin);
+                        startApp(appid);
+                        return;
+                    }
+                }
+                */
+
+
+
+
+                // 3. Init LIFF
+                currentStep = "LIFF_INIT";
+                updateStatus('เชื่อมต่อ LINE', 'กำลังเข้าสู่ระบบที่ปลอดภัย...');
+                console.log("LIFF_CHECK");
+                if (typeof liff === 'undefined') {
+                    showError('ไม่สามารถโหลด LIFF SDK ได้ (Network issue?)');
+                    return;
+                }
+                await new Promise(function (resolve) { setTimeout(resolve, 200); });
+                console.log("LIFF_INIT");
+                console.log(liffId);
+                await liff.init({ liffId });
+
+
+                // --- [KEY LOGIC] เช็คเวลาเพื่อ Force Logout ---
+                currentStep = "LIFF_CHECK_AUTH";
+                let rawUNIX = sessionStorage.getItem('LIFF_UNIX');
+                let now = Date.now();
+                let expireTime = parseInt(rawUNIX);
+                if (isNaN(expireTime) || expireTime < now) {
+                    let newExpireTime = now + 60000;
+                    sessionStorage.setItem('LIFF_UNIX', newExpireTime);
+                    sessionStorage.removeItem('LIFF_PAYLOAD');
+
+                    if (liff.isLoggedIn()) {
+                        liff.logout();
+                        liff.login({ redirectUri: location.href });
+                        return;
+                    }
+                }
+
+
+                if (liff.isLoggedIn() && sessionStorage.getItem('LIFF_PAYLOAD') !== null) {
+                    sessionStorage.removeItem('LIFF_PAYLOAD');
+                    liff.logout();
+                }
+
+                if (!liff.isLoggedIn()) {
+                    liff.login({ redirectUri: location.href });
+                    return;
+                }
+
+                currentStep = "LIFF_GET_TOKEN";
+                const idToken = liff.getIDToken();
+                const decoded = liff.getDecodedIDToken();
+
+                if (!idToken || !decoded) {
+                    liff.logout();
+                    liff.login({ redirectUri: location.href });
+                    return;
+                }
+
+                // 4. Save Payload & Success
+                currentStep = "SAVE_PAYLOAD";
+                const payload = {
+                    ok: true,
+                    userId: decoded.sub || null,
+                    displayName: decoded.name || null,
+                    pictureUrl: decoded.picture || null,
+                    idToken,
+                    inClient: liff.isInClient(),
+                    os: liff.getOS(),
+                    language: liff.getLanguage(),
+                    liffId,
+                    appid,
+                    storeInfo,
+                    initializeData
+                };
+
+                try { sessionStorage.setItem('LIFF_PAYLOAD', JSON.stringify(payload)); } catch (_) { }
+
+
+                if (debug) {
+                    ui.loading.classList.add('hidden');
+                    ui.debug.classList.remove('hidden');
+                    ui.debugJson.innerText = JSON.stringify(payload, null, 2);
+                    return;
+                }
+                currentStep = "START_APP_FINAL";
+                startApp(appid);
+
+            } catch (e) {
+                showError(`ขออภัย ระบบขัดข้องชั่วคราว: ${e.message} 
+                Step: ${currentStep} | ${e.name}`);
+            }
+        })();
+
+        function getDomainOrSubdomain() {
+            const host = window.location.hostname.toLowerCase();
+            if (host.includes("reflex")) 
+            {
+                // https://nike.reflex-crm.co
+                const parts = host.split(".");
+                if (host.includes("localhost") || parts.length < 3) {
+                    return null;
+                }
+                return parts[0]; // subdomain เช่น nike
+            } 
+            else 
+            {
+                return window.location.origin; // https://crm.nike.com
+            }
+        }
+
+        function startApp(appid) {
+
+            console.log("startApp");
+            if (check)
+                return;
+
+            updateStatus('เข้าสู่ระบบสำเร็จ', 'กำลังนำคุณไปยังหน้าร้านค้า...');
+
+            //** มี appid ใน URL หน้านี้ เข้าแบบมี App Id ??
+            const params = new URLSearchParams(location.search);
+            const myappid = params.get('appid');
+            const hasAppId = myappid && myappid !== "undefined" && myappid !== "null";
+
+            //** goto main
+            let final = "";
+            const url = new URL(window.location.href);                      // https://yourpath/linelogin.html?appid=my_appid
+            const base = url.pathname.replace(/linelogin\.html$/, "");      // url.pathname = crm_platform/linelogin.html ---> base = /crm_platform/  
+            
+            // สร้าง url หลัก
+            final = url.origin + base;                                      // https://yourpath/   or   https://yourpath/crm_platform/
+            // เข้าแบบ flatapp ?
+            console.log(appMode);
+            if(appMode && appMode.mode === "FLATAPP"){
+                const pathName = appMode.path || "app";
+                final += `${pathName}/`;                                    // https://yourpath/app/   or   https://yourpath/crm_platform/app/
+            }
+             // มี query ?appId เอาไปต่อท้าย
+             if(hasAppId){
+                const query = `?appid=${appid}`;  //url.search;             // query = ?appid=crm_platform
+                final += query;                                             // https://yourpath/?appid=my_appid
+            }
+            window.location.replace(final);
+
+        }
+
+        function clearAllSession() {
+            sessionStorage.removeItem('LIFF_UNIX');
+            sessionStorage.removeItem('LIFF_PAYLOAD');
+            sessionStorage.removeItem('CRM_REDIRECTLOGIN');
+            sessionStorage.removeItem('CRM_APPID');
+            sessionStorage.removeItem('CRM_SUBDOMAIN');
+        }
+
+        async function closeGracefully() {
+            try { if (window.liff) liff.closeWindow(); } catch (e) { }
+            window.close();
+        }
+
+        function copyPayload() {
+            navigator.clipboard.writeText(ui.debugJson.innerText).then(() => {
+                const btn = event.target;
+                const oldText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => btn.innerText = oldText, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

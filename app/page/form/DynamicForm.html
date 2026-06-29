@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form (Final)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* CSS Reset และ Custom Properties */
+        body {
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            transition: background-color 0.3s;
+        }
+
+        .hidden { display: none !important; }
+
+        /* -------------------------------------------------------------
+           Theme Mode: Body Background
+           ------------------------------------------------------------- */
+        body { background-color: #f4f4f4; }
+        body.dark-mode { background-color: #111827 !important; /* Gray-900 */ }
+
+        /* -------------------------------------------------------------
+           Form Container Theme
+           ------------------------------------------------------------- */
+        .form-container {
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        /* Light Mode */
+        .form-container.light-mode {
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+        
+        /* Dark Mode Container */
+        .form-container.dark-mode {
+            background-color: #1f2937 !important; /* Gray-800 */
+            border: 1px solid #374151;
+        }
+
+        /* -------------------------------------------------------------
+           ⚠️ DARK MODE TEXT OVERRIDES (บังคับเปลี่ยนสีตัวหนังสือ)
+           ------------------------------------------------------------- */
+        
+        /* 1. บังคับให้ข้อความทั่วไปเป็นสีขาว/เทาอ่อน */
+        .form-container.dark-mode h1,
+        .form-container.dark-mode label,
+        .form-container.dark-mode p,
+        .form-container.dark-mode span,
+        .form-container.dark-mode div {
+            color: #e5e7eb !important; /* Gray-200 */
+        }
+
+        /* 2. Override คลาสสีของ Tailwind ที่ติดมากับ Element (เช่น text-gray-700) */
+        .form-container.dark-mode .text-gray-700,
+        .form-container.dark-mode .text-gray-500 {
+            color: #d1d5db !important; /* Gray-300 */
+        }
+
+        /* 3. ปรับสี Input Fields ให้พื้นหลังมืด ตัวหนังสือขาว */
+        .form-container.dark-mode input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        .form-container.dark-mode textarea,
+        .form-container.dark-mode select {
+            background-color: #374151 !important; /* Gray-700 */
+            border-color: #4b5563 !important; /* Gray-600 */
+            color: #ffffff !important;
+        }
+        
+        /* Placeholder ใน Input สีจางลง */
+        .form-container.dark-mode ::placeholder {
+            color: #9ca3af !important;
+        }
+
+        /* 4. ปรับสี Group Container (Radio/Checkbox/Toggle) */
+        .form-container.dark-mode .options-group, 
+        .form-container.dark-mode .toggle-container {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+        }
+
+        /* 5. ยกเว้น! สี Error ต้องเป็นสีแดง (ปรับให้สว่างขึ้นให้อ่านง่ายบนพื้นดำ) */
+        .form-container.dark-mode .text-red-600,
+        .form-container.dark-mode .text-red-500,
+        .form-container.dark-mode .error-message {
+            color: #f87171 !important; /* Red-400 */
+        }
+        
+        /* 6. ยกเว้น! ปุ่ม Submit ให้ใช้สีของ Theme (ตัวหนังสือขาว) */
+        .form-container.dark-mode #submit-btn {
+            color: #ffffff !important;
+        }
+
+        /* -------------------------------------------------------------
+           Dynamic Theme Colors
+           ------------------------------------------------------------- */
+        .bg-custom-accent { background-color: var(--color-theme, #007bff); }
+        .hover\:bg-custom-hover:hover { background-color: var(--color-hover, #0056b3); }
+        
+        .focus\:ring-custom-accent:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: var(--color-theme, #007bff);
+        }
+        
+        .text-custom-accent { color: var(--color-theme, #007bff); }
+        .border-custom-accent { border-color: var(--color-theme, #007bff); }
+
+        /* General Styles */
+        .error-message { @apply text-red-600 text-xs mt-1; }
+        .input-error { @apply border-red-500 focus:border-red-500 focus:ring-red-500; }
+
+        /* Toggle & Slider Base */
+        .toggle-switch-base {
+            appearance: none; width: 40px; height: 20px; border-radius: 9999px; background-color: #ccc;
+            position: relative; cursor: pointer; transition: background-color 0.3s; flex-shrink: 0; 
+        }
+        .toggle-switch-base:checked { background-color: var(--color-theme, #007bff); }
+        .toggle-switch-base::before {
+            content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+            background-color: white; top: 2px; left: 2px; transition: transform 0.3s;
+        }
+        .toggle-switch-base:checked::before { transform: translateX(20px); }
+        
+        input[type="range"] { width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="hidden w-full max-w-xl p-6 md:p-8 rounded-xl shadow-2xl form-container" id="dynamic-form-container">
+        
+        <div class="text-center pb-6 mb-6 border-b border-gray-200" id="form-header">
+            <img id="cover-image" src="" alt="Cover Image" class="hidden w-full h-40 object-cover rounded-lg mb-4">
+            <h1 id="form-title" class="text-3xl font-extrabold"></h1>
+            <p id="form-subtitle" class="text-gray-500 mt-1"></p>
+        </div>
+
+        <form id="dynamic-form" class="space-y-5"></form>
+
+        <div id="form-errors" class="hidden p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg mt-4" role="alert">
+            <p class="font-bold">❌ Submission Failed</p>
+            <p id="error-message-text">Please correct the highlighted fields before proceeding.</p>
+        </div>
+
+        <button id="submit-btn" class="mt-8 w-full py-3 text-white font-semibold rounded-lg shadow-lg bg-custom-accent hover:bg-custom-hover transition duration-300"></button>
+
+    </div>
+
+    <script>
+        const FORM_CONTAINER = document.getElementById('dynamic-form-container');
+        const DYNAMIC_FORM = document.getElementById('dynamic-form');
+        const SUBMIT_BTN = document.getElementById('submit-btn');
+        const FORM_ERRORS = document.getElementById('form-errors');
+        const ERROR_MESSAGE_TEXT = document.getElementById('error-message-text');
+
+        let formConfig = null;
+
+        // --- Utility Functions for Color Calculation ---
+        function lightenDarkenColor(col, amt) {
+            let usePound = false;
+            if (col[0] === "#") {
+                col = col.slice(1);
+                usePound = true;
+            }
+            let num = parseInt(col, 16);
+            let r = (num >> 16) + amt;
+            let b = ((num >> 8) & 0x00FF) + amt;
+            let g = (num & 0x0000FF) + amt;
+            
+            r = Math.max(0, Math.min(255, r));
+            b = Math.max(0, Math.min(255, b));
+            g = Math.max(0, Math.min(255, g));
+            
+            return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+        }
+        
+        // -------------------------------------------------------------
+        // 🛠️ ฟังก์ชันสำหรับตรวจสอบค่า (Validation Functions)
+        // -------------------------------------------------------------
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function checkLength(value, min, max) {
+            const strValue = String(value).trim();
+            if (min && strValue.length < min) return { isValid: false, message: `Must be at least ${min} characters long.` };
+            if (max && strValue.length > max) return { isValid: false, message: `Must be no more than ${max} characters long.` };
+            return { isValid: true };
+        }
+        
+        function checkRequired(field, value) {
+            if (field.require) {
+                if (field.type === 'birthday') {
+                    const [day, month, year] = Array.isArray(value) ? value : [null, null, null];
+                    if (!day || !month || !year || day === 0 || month === 0 || year === 0) return { isValid: false, message: "Date of Birth is required." };
+                } else if (field.type === 'checkbox') {
+                    if (!value || value.split(',').length === 0 || value.trim() === '') return { isValid: false, message: "Please select at least one option." };
+                } else if (field.type === 'radio') {
+                    if (!value) return { isValid: false, message: "Please select an option." };
+                } else if (field.type === 'dropdown') {
+                    if (!value || value.trim() === '') return { isValid: false, message: "Please select an option." };
+                } else {
+                    if (!value || String(value).trim() === '') return { isValid: false, message: "This field is required." };
+                }
+            }
+            return { isValid: true };
+        }
+        
+        function validateForm(formDatasConfig) {
+            let formIsValid = true;
+            let errorCount = 0;
+
+            formDatasConfig.forEach(field => {
+                const key = field.key;
+                const element = document.getElementById(key) || document.querySelector(`input[name="${key}"]:checked`) || (field.type === 'checkbox' ? document.querySelector(`input[name="${key}"]`) : null);
+                const group = element ? element.closest('.form-group') : null;
+                const errorDiv = group ? group.querySelector(`#${key}-error`) : null;
+                
+                let currentValue = getFieldValue(field);
+                let validationErrors = [];
+
+                const reqResult = checkRequired(field, currentValue);
+                if (!reqResult.isValid) {
+                    validationErrors.push(reqResult.message);
+                } else {
+                    if (currentValue !== null && (field.type !== 'birthday' && String(currentValue).trim() !== '')) {
+                        if (field.type === 'text' || field.type === 'longtext' || field.type === 'number') {
+                            const lenResult = checkLength(currentValue, field.min, field.max);
+                            if (!lenResult.isValid) validationErrors.push(lenResult.message);
+                        } 
+                        else if (field.type === 'email') {
+                            if (!isValidEmail(currentValue)) validationErrors.push("Invalid email format."); 
+                        }
+                    }
+                }
+                
+                const errorTarget = (field.type === 'birthday') ? document.getElementById(`${key}-group`) : element;
+                
+                if (field.type === 'radio' || field.type === 'checkbox') {
+                     if (group) {
+                        const optionsGroup = group.querySelector('.options-group');
+                        if (optionsGroup) optionsGroup.classList.remove('input-error');
+                    }
+                }
+
+                if (validationErrors.length > 0) {
+                    formIsValid = false;
+                    errorCount++;
+                    
+                    if (errorDiv) {
+                        errorDiv.textContent = validationErrors[0];
+                        errorDiv.classList.remove('hidden');
+                    }
+                    if (errorTarget) {
+                        errorTarget.classList.add('input-error');
+                    } else if (field.type === 'radio' || field.type === 'checkbox') {
+                        if (group) {
+                             const optionsGroup = group.querySelector('.options-group');
+                             if (optionsGroup) optionsGroup.classList.add('input-error');
+                        }
+                    }
+                } else {
+                    if (errorDiv) errorDiv.classList.add('hidden');
+                    if (errorTarget) errorTarget.classList.remove('input-error');
+                }
+            });
+
+            if (!formIsValid) {
+                ERROR_MESSAGE_TEXT.textContent = `Please correct ${errorCount} required or invalid field(s).`;
+                FORM_ERRORS.classList.remove('hidden');
+            } else {
+                FORM_ERRORS.classList.add('hidden');
+            }
+            
+            return formIsValid;
+        }
+
+        // -------------------------------------------------------------
+        // 🎨 ฟังก์ชันสำหรับสร้าง UI Element
+        // -------------------------------------------------------------
+        
+        function createFormElement(data) {
+            const group = document.createElement('div');
+            group.className = 'form-group space-y-2';
+
+            if (data.type !== 'toggle') {
+                const label = document.createElement('label');
+                label.setAttribute('for', data.key);
+                label.className = 'block text-sm font-medium text-gray-700';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = data.name;
+                label.appendChild(nameSpan);
+
+                if (data.require) {
+                    const requiredStar = document.createElement('span');
+                    requiredStar.textContent = ' *';
+                    requiredStar.className = 'text-red-500';
+                    label.appendChild(requiredStar);
+                }
+                group.appendChild(label);
+            }
+            
+            let inputElement;
+            const defaultValue = data.defaultValue !== undefined ? data.defaultValue : null;
+
+            switch (data.type) {
+                case 'text':
+                case 'email':
+                case 'number':
+                    inputElement = document.createElement('input');
+                    inputElement.type = (data.type === 'email' || data.type === 'number') ? data.type : 'text';
+                    inputElement.id = data.key;
+                    inputElement.name = data.key;
+                    inputElement.placeholder = data.placeHolder || '';
+                    inputElement.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150';
+                    
+                    if (defaultValue !== null) {
+                        inputElement.value = defaultValue;
+                    }
+                    if (data.min) inputElement.setAttribute('minlength', data.min);
+                    if (data.max) inputElement.setAttribute('maxlength', data.max);
+                    if (data.require) inputElement.setAttribute('required', 'true');
+                    
+                    group.appendChild(inputElement);
+                    break;
+                
+                case 'longtext':
+                    inputElement = document.createElement('textarea');
+                    inputElement.id = data.key;
+                    inputElement.name = data.key;
+                    inputElement.placeholder = data.placeHolder || '';
+                    inputElement.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150 resize-y min-h-[80px]';
+                    
+                    if (defaultValue !== null) {
+                        inputElement.value = defaultValue;
+                    }
+                    if (data.min) inputElement.setAttribute('minlength', data.min);
+                    if (data.max) inputElement.setAttribute('maxlength', data.max);
+                    if (data.require) inputElement.setAttribute('required', 'true');
+                    
+                    group.appendChild(inputElement);
+                    break;
+
+                case 'dropdown':
+                    inputElement = document.createElement('select');
+                    inputElement.id = data.key;
+                    inputElement.name = data.key;
+                    inputElement.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150';
+                    
+                    if (data.require) {
+                         const emptyOption = document.createElement('option');
+                         emptyOption.value = '';
+                         emptyOption.textContent = '-- Select --';
+                         if (defaultValue === null || defaultValue === '') emptyOption.selected = true;
+                         inputElement.appendChild(emptyOption);
+                    }
+
+                    data.values.forEach(value => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = value;
+                        
+                        if (defaultValue !== null && value === defaultValue) {
+                            option.selected = true;
+                        }
+                        
+                        inputElement.appendChild(option);
+                    });
+                    if (data.require) inputElement.setAttribute('required', 'true');
+                    group.appendChild(inputElement);
+                    break;
+
+                case 'birthday':
+                    // 🟢 ปรับปรุงสัดส่วน Birthday: Day(25%) | Month(50%) | Year(25%)
+                    const dateContainer = document.createElement('div');
+                    dateContainer.className = 'flex space-x-2';
+                    dateContainer.id = `${data.key}-group`; 
+                    
+                    const defaults = Array.isArray(defaultValue) ? defaultValue : [null, null, null];
+                    
+                    // 1. Day (Number Input) - กว้าง 1/4
+                    const dayInput = document.createElement('input');
+                    dayInput.type = 'number';
+                    dayInput.placeholder = 'Day';
+                    dayInput.id = `${data.key}-day`;
+                    dayInput.className = 'w-1/4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150 text-center';
+                    dayInput.min = 1; dayInput.max = 31;
+                    if (defaults[0]) dayInput.value = defaults[0];
+                    if (data.require) dayInput.setAttribute('required', 'true');
+                    
+                    // 2. Month (Dropdown) - กว้าง 2/4 (50%)
+                    const monthSelect = document.createElement('select');
+                    monthSelect.id = `${data.key}-month`;
+                    monthSelect.className = 'w-[40%] px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150';                    
+                    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    
+                    const monthPlace = document.createElement('option');
+                    monthPlace.value = ''; monthPlace.text = 'Month';
+                    monthSelect.add(monthPlace);
+                    
+                    months.forEach((m, index) => {
+                        const opt = document.createElement('option');
+                        opt.value = index + 1;
+                        opt.text = m;
+                        if (defaults[1] === index + 1) opt.selected = true;
+                        monthSelect.add(opt);
+                    });
+                    if (data.require) monthSelect.setAttribute('required', 'true');
+
+                    // 3. Year (Dropdown) - กว้าง 1/4
+                    const yearSelect = document.createElement('select');
+                    yearSelect.id = `${data.key}-year`;
+                    yearSelect.className = 'w-[35%] px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-accent focus:border-transparent transition duration-150';                    
+                    
+                    const currentYear = new Date().getFullYear();
+                    const yearPlace = document.createElement('option');
+                    yearPlace.value = ''; yearPlace.text = 'Year';
+                    yearSelect.add(yearPlace);
+
+                    for (let y = currentYear; y >= currentYear - 100; y--) {
+                        const opt = document.createElement('option');
+                        opt.value = y;
+                        opt.text = y;
+                        if (defaults[2] === y) {
+                            opt.selected = true;
+                        } else if (!defaults[2] && y === currentYear) {
+                            // เลือกปีปัจจุบันหากไม่มี default
+                            opt.selected = true;
+                        }
+                        yearSelect.add(opt);
+                    }
+                    if (data.require) yearSelect.setAttribute('required', 'true');
+
+                    dateContainer.appendChild(dayInput);
+                    dateContainer.appendChild(monthSelect);
+                    dateContainer.appendChild(yearSelect);
+                    
+                    group.appendChild(dateContainer);
+                    break;
+                
+                case 'radio':
+                case 'checkbox':
+                    const optionsGroup = document.createElement('div');
+                    optionsGroup.className = 'options-group p-4 border border-gray-300 rounded-lg bg-gray-50 space-y-2 transition duration-150';
+                    optionsGroup.id = `${data.key}-group`; 
+                    
+                    const defaultArray = Array.isArray(defaultValue) ? defaultValue : (defaultValue !== null ? [defaultValue] : []);
+
+                    data.values.forEach(value => {
+                        const optionLabel = document.createElement('label');
+                        optionLabel.className = 'flex items-center text-sm text-gray-700 cursor-pointer';
+                        
+                        const optionInput = document.createElement('input');
+                        optionInput.type = data.type === 'radio' ? 'radio' : 'checkbox';
+                        optionInput.name = data.key; 
+                        optionInput.value = value;
+                        optionInput.className = `form-${data.type} h-4 w-4 text-custom-accent border-gray-300 rounded focus:ring-custom-accent mr-3`;
+                        if (data.require) optionInput.setAttribute('required', 'true');
+                        
+                        if (defaultArray.includes(value)) {
+                            optionInput.checked = true;
+                        }
+                        
+                        optionLabel.appendChild(optionInput);
+                        optionLabel.appendChild(document.createTextNode(value));
+                        optionsGroup.appendChild(optionLabel);
+                    });
+                    group.appendChild(optionsGroup);
+                    break;
+                    
+                case 'toggle':
+                    const toggleContainer = document.createElement('div');
+                    toggleContainer.className = 'toggle-container p-4 border border-gray-300 rounded-lg bg-gray-50 space-y-1';
+                    
+                    const toggleRow = document.createElement('div');
+                    toggleRow.className = 'toggle-row flex justify-between items-center w-full';
+                    
+                    const toggleName = document.createElement('span');
+                    toggleName.className = 'toggle-name text-sm font-medium text-gray-700';
+                    
+                    const nameText = document.createElement('span');
+                    nameText.textContent = data.name;
+                    toggleName.appendChild(nameText);
+
+                    if (data.require) {
+                        const requiredStar = document.createElement('span');
+                        requiredStar.textContent = ' *';
+                        requiredStar.className = 'text-red-500';
+                        toggleName.appendChild(requiredStar);
+                    }
+                    
+                    const toggleInput = document.createElement('input');
+                    toggleInput.type = 'checkbox';
+                    toggleInput.id = data.key;
+                    toggleInput.name = data.key;
+                    toggleInput.className = 'toggle-switch-base'; 
+                    
+                    if (defaultValue === true) {
+                        toggleInput.checked = true;
+                    }
+                    
+                    toggleRow.appendChild(toggleName);
+                    toggleRow.appendChild(toggleInput);
+                    
+                    toggleContainer.appendChild(toggleRow);
+
+                    if (data.description) {
+                        const descriptionElement = document.createElement('p');
+                        descriptionElement.className = 'toggle-description text-xs text-gray-500 mt-1';
+                        descriptionElement.textContent = data.description;
+                        toggleContainer.appendChild(descriptionElement);
+                    }
+
+                    group.appendChild(toggleContainer);
+                    break;
+                    
+                case 'slider':
+                    const [min, max] = data.values.map(v => parseFloat(v.replace(/,/g, '')));
+                    const initialValue = defaultValue !== null ? parseFloat(defaultValue) : min;
+                    
+                    inputElement = document.createElement('input');
+                    inputElement.type = 'range';
+                    inputElement.id = data.key;
+                    inputElement.name = data.key;
+                    inputElement.min = min;
+                    inputElement.max = max;
+                    inputElement.value = initialValue; 
+                    inputElement.className = 'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer focus:outline-none';
+                    if (data.require) inputElement.setAttribute('required', 'true');
+                    
+                    const valueDisplay = document.createElement('span');
+                    valueDisplay.id = `${data.key}-value`;
+                    valueDisplay.textContent = initialValue.toLocaleString(); 
+                    valueDisplay.className = 'font-semibold text-gray-800';
+                    
+                    inputElement.oninput = (e) => {
+                        valueDisplay.textContent = parseFloat(e.target.value).toLocaleString();
+                    };
+                    
+                    const displayContainer = document.createElement('div');
+                    displayContainer.className = 'slider-display flex justify-between text-xs text-gray-500';
+                    displayContainer.appendChild(document.createTextNode(min.toLocaleString()));
+                    displayContainer.appendChild(valueDisplay);
+                    displayContainer.appendChild(document.createTextNode(max.toLocaleString()));
+                    
+                    group.appendChild(inputElement);
+                    group.appendChild(displayContainer);
+                    break;
+            }
+            
+            // 4. เพิ่ม Error Message Div สำหรับทุกฟิลด์
+            const errorDiv = document.createElement('p');
+            errorDiv.id = `${data.key}-error`;
+            errorDiv.className = 'text-red-600 text-xs mt-1 hidden'; 
+            group.appendChild(errorDiv);
+
+            return group;
+        }
+
+        // -------------------------------------------------------------
+        // 💾 ฟังก์ชันสำหรับดึงค่าฟิลด์
+        // -------------------------------------------------------------
+
+        function getFieldValue(field) {
+            const key = field.key;
+            let value;
+
+            if (field.type === 'birthday') {
+                const day = document.getElementById(`${key}-day`)?.value;
+                const month = document.getElementById(`${key}-month`)?.value;
+                const year = document.getElementById(`${key}-year`)?.value;
+                
+                if (day || month || year) {
+                     value = [
+                        day ? parseInt(day) : null, 
+                        month ? parseInt(month) : null, 
+                        year ? parseInt(year) : null
+                     ];
+                     if (value.some(v => v === null)) return null;
+                } else {
+                    value = null;
+                }
+            } else {
+                switch (field.type) {
+                    case 'text':
+                    case 'email':
+                    case 'longtext':
+                    case 'dropdown':
+                        value = document.getElementById(key)?.value;
+                        break;
+                    case 'number':
+                        value = document.getElementById(key)?.value;
+                        break;
+                    case 'toggle':
+                        value = document.getElementById(key)?.checked;
+                        break;
+                    case 'slider':
+                        value = parseFloat(document.getElementById(key)?.value);
+                        break;
+                    case 'radio':
+                        const radioElement = document.querySelector(`input[name="${key}"]:checked`);
+                        value = radioElement ? radioElement.value : null;
+                        break;
+                    case 'checkbox':
+                        const checkedBoxes = Array.from(document.querySelectorAll(`input[name="${key}"]:checked`));
+                        value = checkedBoxes.map(cb => cb.value).join(',');
+                        break;
+                    default:
+                        value = null;
+                        break;
+                }
+            }
+            return value;
+        }
+
+        // -------------------------------------------------------------
+        // 🚀 ฟังก์ชันหลักในการ Render และ Submit
+        // -------------------------------------------------------------
+
+        function renderForm(data) {
+            const style = data.style;
+            document.getElementById('form-title').textContent = style.header || 'Dynamic Form';
+            document.getElementById('form-subtitle').textContent = style.subTitle || '';
+            SUBMIT_BTN.textContent = style.submitBtnName || 'Submit';
+            
+            const accentColor = style.colorTheme || '#007bff';
+            const hoverColor = lightenDarkenColor(accentColor, -20); 
+
+            // กำหนด Custom Properties
+            document.documentElement.style.setProperty('--color-theme', accentColor);
+            document.documentElement.style.setProperty('--color-hover', hoverColor);
+            
+            // 🟢 Handle Dark/Light Mode on Container AND Body
+            const isDark = style.colorMode === 'dark';
+            
+            FORM_CONTAINER.classList.remove('light-mode', 'dark-mode');
+            document.body.classList.remove('light-mode', 'dark-mode');
+            
+            if (isDark) {
+                FORM_CONTAINER.classList.add('dark-mode');
+                document.body.classList.add('dark-mode');
+            } else {
+                FORM_CONTAINER.classList.add('light-mode');
+                document.body.classList.add('light-mode');
+            }
+
+            const coverImage = document.getElementById('cover-image');
+            if (style.coverImageURL && style.coverImageURL.startsWith('http')) {
+                coverImage.src = style.coverImageURL;
+                coverImage.classList.remove('hidden');
+                coverImage.classList.add('block');
+            } else {
+                coverImage.classList.add('hidden');
+                coverImage.classList.remove('block');
+            }
+
+            DYNAMIC_FORM.innerHTML = ''; 
+            data.formDatas.forEach(formData => {
+                const element = createFormElement(formData);
+                DYNAMIC_FORM.appendChild(element);
+            });
+            
+            FORM_CONTAINER.classList.remove('hidden');
+        }
+
+        // Event Listener สำหรับ Submit
+        SUBMIT_BTN.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (!formConfig) {
+                console.error("Form configuration not loaded.");
+                return;
+            }
+            
+            const isValid = validateForm(formConfig.formDatas);
+            
+            if (!isValid) {
+                console.warn("Form validation failed. Stopping submission.");
+                return;
+            }
+            
+            FORM_ERRORS.classList.add('hidden');
+            const outputData = {};
+
+            formConfig.formDatas.forEach(field => {
+                const key = field.key;
+                let value = getFieldValue(field);
+
+                if (field.type === 'number' && value !== null) {
+                    value = parseFloat(value);
+                }
+                
+                // ส่งค่า Birthday เป็น Array [D, M, Y]
+                if (field.type === 'birthday') {
+                    outputData[key] = value; 
+                } else if (field.type === 'checkbox' && value !== null) {
+                    value = value.split(',').join(', ');
+                    outputData[key] = value;
+                } else {
+                    outputData[key] = value;
+                }
+            });
+            
+            const finalPayload = {
+                type: "formData",
+                data: outputData,
+                closeIframe : true
+            };
+
+            window.parent.postMessage(finalPayload, "*"); 
+            console.log("Form submitted and data sent to parent:", finalPayload);
+        });
+        
+        // รับข้อมูลจาก Parent
+        window.addEventListener('message', function(event) {
+            console.log("Message received in iframe:", event.data);
+
+            if(event.data.type == "initialData")
+            {
+                formConfig = event.data.data;
+                if (formConfig && formConfig.style && formConfig.formDatas) 
+                {
+                    renderForm(formConfig);
+                }
+            }
+        
+        }, false);
+    </script>
+</body>
+</html>

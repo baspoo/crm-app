@@ -1,0 +1,660 @@
+/**
+ * Page Manager (Router)
+ * หน้าที่: Fetch HTML, จัดการ Cache, รัน Script ใน HTML Fragment, เปิด Iframe และจัดการ Console UI
+ */
+window.PageManager = (function () {
+    'use strict';
+
+    const htmlCache = {};
+    let contentContainer = null;
+    let configRoutes = {}; // เก็บ Path จาก config.json
+
+    // --- ตัวแปรสำหรับจัดการ Iframe Callback ---
+    let currentIframeOnClose = null;
+    let currentIframeResponse = null;
+
+    // --- ตัวแปรสำหรับจัดการ Modal Callback ---
+    let currentModalOnClose = null;
+    let currentModalResponse = null;
+
+    // ฟังก์ชันสำคัญ: แปะ HTML และบังคับให้เบราว์เซอร์รันแท็ก <script>
+    function setInnerHTMLAndExecuteScripts(element, htmlContent, useAnimation = true) {
+        element.innerHTML = htmlContent;
+        if (useAnimation) {
+            // ลบคลาส fade-in เดิมออกก่อน แล้วค่อยใส่ใหม่เพื่อให้เกิด Animation ทวนซ้ำ
+            element.classList.remove('fade-in');
+            void element.offsetWidth; // Trigger Reflow
+            element.classList.add('fade-in');
+        }
+
+        const scripts = element.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+
+    // ==========================================
+    // Console Manager สำหรับจัดการ Header/Footer
+    // ==========================================
+    const ConsoleManager = {
+        _getHeader: () => document.getElementById('console-header'),
+        _getFooter: () => document.getElementById('console-footer'),
+        _getTitle: () => document.getElementById('console-page-title'),
+
+        visible: function (show) {
+            this.activeTop(show);
+            this.activeBot(show);
+        },
+
+        activeTop: function (show) {
+            const el = this._getHeader();
+            if (el) el.style.display = show ? '' : 'none';
+        },
+
+        activeBot: function (show) {
+            const el = this._getFooter();
+            if (el) el.style.display = show ? '' : 'none';
+        },
+
+        setTitle: function (titleText) {
+            const el = this._getTitle();
+            if (el) el.textContent = titleText;
+        }
+    };
+
+    return {
+        console: ConsoleManager,
+
+        setupRoutes: async function (config, preloadedLayoutHtml, preloadedSystemHtml) {
+            configRoutes = { ...config.mainPage, ...config.subPage, ...config.systemPage };
+
+            // ทำการ assign DOM ที่โหลด text มารอไว้แล้วทีเดียว
+            //[ CONSOLE-LAYOUT ]
+            if (preloadedLayoutHtml) {
+                const root = document.getElementById('app-layout-root') || document.body;
+                setInnerHTMLAndExecuteScripts(root, preloadedLayoutHtml, false);
+                contentContainer = document.getElementById('main-content');
+                this.console.visible(false);
+            }
+            //[ SYSTEM-LAYOUT ]
+            if (preloadedSystemHtml) {
+                let overlayRoot = document.getElementById('system-overlay-root');
+                if (!overlayRoot) {
+                    overlayRoot = document.createElement('div');
+                    overlayRoot.id = 'system-overlay-root';
+                    overlayRoot.style.position = 'absolute';
+                    overlayRoot.style.inset = '0';
+                    overlayRoot.style.zIndex = '50';
+                    overlayRoot.style.pointerEvents = 'none';
+                    const appRoot = document.querySelector('.app-root-container');
+                    if (appRoot) appRoot.appendChild(overlayRoot);
+                    else document.body.appendChild(overlayRoot);
+                }
+                setInnerHTMLAndExecuteScripts(overlayRoot, preloadedSystemHtml, false);
+            }
+            console.log("[PageManager] ✅ Setup Page assigned DOM elements.");
+
+            //[ PRELOAD-MAIN-PAGES ]
+            if (config.mainPage) {
+                let fetchPromises = [];
+                for (const key in config.mainPage) {
+                    fetchPromises.push(
+                        fetchPage(`${config.mainPage[key].path}`, APP_VERSION)
+                            .then(html => htmlCache[key] = html)
+                            .catch(err => console.error(`Failed to preload ${key}:`, err))
+                    );
+                }
+                Promise.all(fetchPromises);
+            }
+            console.log("[PageManager] ✅ Preloaded layout, system, and main pages.");
+        },
+
+
+
+        setContentContainer: function (element) {
+            contentContainer = element;
+            console.log(`contentContainer = ${element}`);
+        },
+
+        // --- ระบบ Loading กลางของ Project ---
+        showLoading: function (text = "Loading...") {
+            const overlay = document.getElementById('global-loading-overlay');
+            const textEl = document.getElementById('global-loading-text');
+            if (overlay) {
+                if (textEl) textEl.textContent = text;
+                overlay.classList.remove('hidden');
+                void overlay.offsetWidth;
+                overlay.classList.remove('hidden-fade'); // เอาคลาสซ่อนออกแบบมี fade ออก
+            }
+        },
+
+        hideLoading: function () {
+            const overlay = document.getElementById('global-loading-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden-fade'); // สั่งให้เริ่ม fade out
+                setTimeout(() => {
+                    overlay.classList.add('hidden'); // ซ่อนจริงๆ หลัง fade จบ
+                }, 300);
+            }
+        },
+
+        // โหลดหน้าย่อย
+        loadPage: async function (pageKey) {
+            if (!contentContainer) return console.error("Content container not set!");
+
+            const route = configRoutes[pageKey];
+            if (!route) return console.error("Route not found:", pageKey);
+
+            const defaultTitle = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
+            this.console.setTitle(defaultTitle);
+
+            this.console.activeTop(route.top);
+
+            if (htmlCache[pageKey]) {
+                setInnerHTMLAndExecuteScripts(contentContainer, htmlCache[pageKey]);
+                return;
+            }
+
+            this.showLoading();
+            contentContainer.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #9ca3af;"></div>';
+
+            try {
+                const html = await fetchPage(`${route.path}`, APP_VERSION);
+                this.hideLoading();
+                if (html) {
+                    htmlCache[pageKey] = html;
+                    setInnerHTMLAndExecuteScripts(contentContainer, html);
+                }
+            } catch (e) {
+                contentContainer.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #ef4444;">Error loading page</div>';
+            }
+        },
+
+
+        // --- ระบบ Modal (ลูกผสมระหว่าง loadPage และ openIframe) ---
+        openModal: async function (pageKey, payload = null, onclose = null, showCloseBtn = true) {
+            const route = configRoutes[pageKey];
+            if (!route) return console.error("Route not found for modal:", pageKey);
+
+            // ใช้ x, y จาก route ถ้าไม่มีให้ default เป็น 90% (หรือถ้าเป็น 100 คือเต็มจอ)
+            const x = route.x !== undefined ? route.x : 90;
+            const y = route.y !== undefined ? route.y : 90;
+
+            currentModalOnClose = onclose;
+            currentModalResponse = {};
+
+            // ส่งค่าผ่าน window เพื่อให้ script ในหน้า Modal ดึงไปใช้ได้
+            window.currentModalPayload = payload;
+            window.currentModalResponse = currentModalResponse;
+
+            // ตรวจสอบหรือสร้าง Container สำหรับ Modal แบบไดนามิก
+            let container = document.getElementById('sys-modal-container');
+            let backdrop = document.getElementById('sys-modal-backdrop');
+
+            if (!container) {
+                const appRoot = document.querySelector('.app-root-container') || document.body;
+
+                // สร้าง Backdrop (z-index 35: สูงกว่า Login แต่ต่ำกว่า Iframe)
+                backdrop = document.createElement('div');
+                backdrop.id = 'sys-modal-backdrop';
+                backdrop.style.position = 'absolute';
+                backdrop.style.inset = '0';
+                backdrop.style.backgroundColor = 'rgba(0,0,0,0.6)';
+                backdrop.style.zIndex = '35';
+                backdrop.onclick = () => { this.closeModal(); };
+                appRoot.appendChild(backdrop);
+
+                // สร้าง Container สำหรับยัด HTML
+                container = document.createElement('div');
+                container.id = 'sys-modal-container';
+                container.style.position = 'absolute';
+                container.style.zIndex = '36';
+                container.style.backgroundColor = 'var(--theme-bg-app, #f8fafc)';
+                container.style.display = 'none';
+                container.style.flexDirection = 'column';
+                container.style.overflow = 'hidden';
+                container.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+                container.style.transition = 'all 0.3s ease';
+
+                // ปุ่มปิดลอยตัว (แชร์คลาส CSS จากปุ่มปิด Iframe)
+                const closeBtn = document.createElement('button');
+                closeBtn.id = 'btn-modal-close-float';
+                closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                closeBtn.className = 'btn-iframe-close-float';
+                closeBtn.onclick = () => { this.closeModal(); };
+                container.appendChild(closeBtn);
+
+                // Content Wrapper สำหรับใส่หน้าย่อย
+                const contentWrap = document.createElement('div');
+                contentWrap.id = 'sys-modal-content-wrap';
+                contentWrap.style.flexGrow = '1';
+                contentWrap.style.overflowY = 'auto';
+                contentWrap.style.width = '100%';
+                contentWrap.style.height = '100%';
+                contentWrap.style.position = 'relative';
+                container.appendChild(contentWrap);
+
+                appRoot.appendChild(container);
+            }
+
+            // จัดการการแสดงผลปุ่มปิด
+            const closeBtnEl = document.getElementById('btn-modal-close-float');
+            if (closeBtnEl) closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
+
+            // จัดการขนาดและตำแหน่ง
+            if (x === 100 && y === 100) {
+                container.style.width = '100%';
+                container.style.height = '100%';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.borderRadius = '0';
+                if (backdrop) backdrop.style.display = 'none';
+            } else {
+                container.style.width = `${x}%`;
+                container.style.height = `${y}%`;
+                container.style.top = `${(100 - y) / 2}%`;
+                container.style.left = `${(100 - x) / 2}%`;
+                container.style.borderRadius = 'var(--theme-radius, 1rem)';
+                if (backdrop) backdrop.style.display = 'block';
+            }
+
+            const contentWrap = document.getElementById('sys-modal-content-wrap');
+            contentWrap.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #9ca3af;"><div class="loading-ring-spin relative mx-auto mb-2" style="width:2rem;height:2rem;"></div>กำลังโหลด...</div>';
+
+            container.style.display = 'flex';
+            void container.offsetWidth; // Trigger reflow สำหรับ Animation
+            container.classList.add('fade-in');
+
+            try {
+                // โหลด HTML (ดึงจาก Cache ก่อน ถ้าไม่มีก็ fetch)
+                let html = htmlCache[pageKey];
+                if (!html) {
+                    this.showLoading();
+                    html = await fetchPage(`${route.path}`, APP_VERSION);
+                    this.hideLoading();
+                    if (html) {
+                        htmlCache[pageKey] = html;
+                    } else {
+                        throw new Error(`Failed to load ${route.path}`);
+                    }
+                }
+
+                // แปะ HTML เข้า Container และสั่งรัน Script ภายใน
+                setInnerHTMLAndExecuteScripts(contentWrap, html);
+
+                // รอ Script ในหน้านั้นประมวลผลเสร็จ แล้วเรียก callback onModalInit
+                setTimeout(() => {
+                    if (typeof window.onModalInit === 'function') {
+                        window.onModalInit(payload, currentModalResponse);
+                    }
+                }, 50);
+
+            } catch (e) {
+                console.error("Modal Error:", e);
+                contentWrap.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #ef4444;">เกิดข้อผิดพลาดในการโหลดหน้า</div>';
+            }
+        },
+
+        closeModal: function () {
+            const container = document.getElementById('sys-modal-container');
+            const backdrop = document.getElementById('sys-modal-backdrop');
+
+            if (container) {
+                container.style.display = 'none';
+                container.classList.remove('fade-in');
+                const contentWrap = document.getElementById('sys-modal-content-wrap');
+                if (contentWrap) contentWrap.innerHTML = ''; // ล้างหน้าจอทิ้ง
+            }
+            if (backdrop) {
+                backdrop.style.display = 'none';
+            }
+
+            // ทริกเกอร์ onclose callback ถ้ามีการแนบมาตอนเปิด
+            if (typeof currentModalOnClose === 'function') {
+                try {
+                    currentModalOnClose(currentModalResponse);
+                } catch (e) {
+                    console.error("Error executing modal onclose callback:", e);
+                }
+            }
+
+            // ล้างค่าทิ้งป้องกันการเรียกซ้ำซ้อน
+            currentModalOnClose = null;
+            currentModalResponse = null;
+            window.currentModalPayload = null;
+            window.currentModalResponse = null;
+            window.onModalInit = null;
+        },
+
+
+        // โหลด Iframe
+        openIframe: function (url, x = 0, y = 0, payload = null, onclose = null, showCloseBtn = true) {
+            const container = document.getElementById('iframe-container');
+            const iframe = document.getElementById('main-iframe');
+
+            const separator = url.includes('?') ? '&' : '?';
+            url = url + separator + 'v=' + APP_VERSION;
+
+            if (container && iframe) {
+                // เซฟใส่ตัวแปรกลางแทนการผูกกับ `this` 
+                currentIframeOnClose = onclose;
+                currentIframeResponse = {};
+
+                // 1. จัดการขนาดและตำแหน่ง
+                if (x === 0 && y === 0) {
+                    // Fullscreen
+                    container.classList.add('fullscreen');
+                } else {
+                    // Custom Size (จัดให้อยู่กึ่งกลาง)
+                    container.classList.remove('fullscreen');
+                    container.style.width = `${x}%`;
+                    container.style.height = `${y}%`;
+                    container.style.top = `${(100 - y) / 2}%`;
+                    container.style.left = `${(100 - x) / 2}%`;
+                }
+                // ควบคุมการแสดงปุ่มปิด
+                console.log(showCloseBtn);
+                const closeBtnEl = document.getElementById('btn-iframe-close-float');
+                if (closeBtnEl) {
+                    console.log("xxxxx");
+                    closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
+                }
+
+                // 2. ผูก Event ตอนโหลด Iframe เสร็จเพื่อเรียก oninit
+                iframe.onload = () => {
+                    try {
+                        if (iframe.contentWindow && typeof iframe.contentWindow.oninit === "function") {
+                            iframe.contentWindow.oninit(payload, currentIframeResponse);
+                        }
+                    } catch (e) {
+                        console.warn("Iframe oninit access blocked or missing.", e);
+                    }
+                };
+
+                // 3. โหลด URL และแสดงผล
+                iframe.src = url;
+                container.classList.add('show');
+
+                // 4. จัดการฉากหลังดำ (Backdrop) กรณีไม่เต็มจอ
+                let backdrop = document.getElementById('iframe-backdrop');
+                if (x !== 0 || y !== 0) {
+                    if (!backdrop) {
+                        backdrop = document.createElement('div');
+                        backdrop.id = 'iframe-backdrop';
+                        backdrop.style.position = 'absolute';
+                        backdrop.style.inset = '0';
+                        backdrop.style.backgroundColor = 'rgba(0,0,0,0.6)';
+                        backdrop.style.zIndex = '39'; // ให้อยู่ใต้ container (z-40)
+
+                        // กดฉากหลังแล้วปิด
+                        backdrop.onclick = () => { this.closeIframe(); };
+
+                        container.parentNode.insertBefore(backdrop, container);
+                    }
+                    backdrop.style.display = 'block';
+                } else {
+                    if (backdrop) backdrop.style.display = 'none';
+                }
+
+            } else if (contentContainer) {
+                // Fallback กรณีไม่มีโครงสร้าง Iframe แบบใหม่
+                contentContainer.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;" class="fade-in"></iframe>`;
+            }
+        },
+
+        closeIframe: function () {
+            console.log("closeIframe 1");
+            const container = document.getElementById('iframe-container');
+            const iframe = document.getElementById('main-iframe');
+            const backdrop = document.getElementById('iframe-backdrop');
+
+            if (container && iframe) {
+                console.log(JSON.stringify(currentIframeResponse));
+                container.classList.remove('show');
+                iframe.src = '';
+
+                // บังคับ "ลบ" Backdrop ออกจาก DOM ไปเลยเพื่อป้องกันปัญหาค้าง
+                if (backdrop) {
+                    backdrop.remove();
+                }
+
+                // ตรวจสอบและเรียกใช้งาน Callback ตอนปิด (อ่านจาก Scope นอกแทน this)
+                if (typeof currentIframeOnClose === 'function') {
+                    try {
+                        currentIframeOnClose(currentIframeResponse);
+                    } catch (e) {
+                        console.error("Error executing iframe onclose callback:", e);
+                    }
+                }
+
+                // เคลียร์ค่าทิ้ง
+                currentIframeOnClose = null;
+                currentIframeResponse = null;
+            }
+        },
+
+        // โหลดหน้า Login Overlay
+        loadLoginScreen: async function () {
+            try {
+                const path = appConfig.systemPage.login.path;
+                const res = await fetch(`${path}?v=${APP_VERSION}`);
+                if (res.ok) {
+                    const html = await res.text();
+                    let loginRoot = document.getElementById('login-overlay-root');
+                    if (!loginRoot) {
+                        loginRoot = document.createElement('div');
+                        loginRoot.id = 'login-overlay-root';
+                        loginRoot.style.position = 'absolute';
+                        loginRoot.style.inset = '0';
+                        loginRoot.style.zIndex = '30';
+                        loginRoot.style.pointerEvents = 'none';
+                        document.querySelector('.app-root-container').appendChild(loginRoot);
+                    }
+                    setInnerHTMLAndExecuteScripts(loginRoot, html, false);
+                    console.log("[PageManager] ✅ Login screen loaded.");
+                }
+            } catch (err) {
+                console.error("[PageManager] Failed to load login screen:", err);
+            }
+        },
+
+        // --- ระบบ Popup / Dialog ---
+        showPopup: function ({ type, header, message, image, onYes, onNo, onOk }) {
+            const overlay = document.getElementById('sys-popup-overlay');
+            const card = document.getElementById('sys-popup-card');
+            if (!overlay || !card) return console.error("System page not loaded yet!");
+
+            // ควบคุมเนื้อหา
+            document.getElementById('sys-popup-title').textContent = header || "";
+            document.getElementById('sys-popup-message').textContent = message || "";
+
+            const emojiEl = document.getElementById('sys-popup-emoji');
+            const imgEl = document.getElementById('sys-popup-img');
+            const iconContainer = document.getElementById('sys-popup-icon-container');
+
+            if (image) {
+                const isUrl = image.includes('/') || image.includes('http') || image.includes('.');
+                if (isUrl) {
+                    imgEl.src = image;
+                    imgEl.classList.remove('hidden');
+                    emojiEl.classList.add('hidden');
+                } else {
+                    emojiEl.textContent = image;
+                    emojiEl.classList.remove('hidden');
+                    imgEl.classList.add('hidden');
+                }
+            } else {
+                let defaultEmoji = "ℹ️";
+                if (type === 'complete') defaultEmoji = "✅";
+                else if (type === 'failed') defaultEmoji = "❌";
+                else if (type === 'confirm') defaultEmoji = "❓";
+
+                emojiEl.textContent = defaultEmoji;
+                emojiEl.classList.remove('hidden');
+                imgEl.classList.add('hidden');
+            }
+
+            const btnOk = document.getElementById('sys-popup-btn-ok');
+            const btnYes = document.getElementById('sys-popup-btn-yes');
+            const btnNo = document.getElementById('sys-popup-btn-no');
+
+            // ใช้ Inline CSS ควบคุมสี Theme แทน Tailwind classes
+            if (type === 'complete') {
+                iconContainer.style.backgroundColor = '#ecfdf5';
+                iconContainer.style.color = '#10b981';
+                btnOk.style.backgroundColor = '#059669';
+            } else if (type === 'failed') {
+                iconContainer.style.backgroundColor = '#fef2f2';
+                iconContainer.style.color = '#ef4444';
+                btnOk.style.backgroundColor = '#dc2626';
+            } else {
+                // Default (Info / Confirm)
+                iconContainer.style.backgroundColor = '#eff6ff';
+                iconContainer.style.color = '#3b82f6';
+                btnOk.style.backgroundColor = ''; // ใช้สีจาก CSS class หลัก
+                btnYes.style.backgroundColor = '';
+            }
+
+            // จัดการปุ่มกดตามประเภท
+            const actionsConfirm = document.getElementById('sys-popup-actions-confirm');
+            const actionsOk = document.getElementById('sys-popup-actions-ok');
+
+            if (type === 'confirm') {
+                actionsConfirm.classList.remove('hidden');
+                actionsOk.classList.add('hidden');
+
+                btnYes.onclick = () => { PageManager.hidePopup(); if (onYes) onYes(); };
+                btnNo.onclick = () => { PageManager.hidePopup(); if (onNo) onNo(); };
+            } else {
+                actionsConfirm.classList.add('hidden');
+                actionsOk.classList.remove('hidden');
+
+                btnOk.onclick = () => { PageManager.hidePopup(); if (onOk) onOk(); };
+            }
+
+            // แสดง Popup ด้วยคลาส show
+            overlay.classList.add('show');
+        },
+
+        hidePopup: function () {
+            const overlay = document.getElementById('sys-popup-overlay');
+            if (overlay) overlay.classList.remove('show');
+        },
+
+        showConfirm: function (header, message, image, onYes, onNo) {
+            this.showPopup({ type: 'confirm', header, message, image, onYes, onNo });
+        },
+
+        showOk: function (header, message, image, onOk) {
+            this.showPopup({ type: 'ok', header, message, image, onOk });
+        },
+
+        showFailed: function (header, message, image, onOk) {
+            this.showPopup({ type: 'failed', header, message, image, onOk });
+        },
+
+        showComplete: function (header, message, image, onOk) {
+            this.showPopup({ type: 'complete', header, message, image, onOk });
+        },
+
+        // --- ระบบ Top Message Pop (Toast) ---
+        showToast: function (message, icon) {
+            const overlay = document.getElementById('sys-toast-overlay');
+            const messageEl = document.getElementById('sys-toast-message');
+            const emojiEl = document.getElementById('sys-toast-emoji');
+            const imgEl = document.getElementById('sys-toast-img');
+
+            if (!overlay || !messageEl) return;
+
+            messageEl.textContent = message || "";
+
+            if (icon) {
+                const isUrl = icon.includes('/') || icon.includes('http') || icon.includes('.');
+                if (isUrl) {
+                    imgEl.src = icon;
+                    imgEl.classList.remove('hidden');
+                    emojiEl.classList.add('hidden');
+                } else {
+                    emojiEl.textContent = icon;
+                    emojiEl.classList.remove('hidden');
+                    imgEl.classList.add('hidden');
+                }
+            } else {
+                emojiEl.textContent = "🔔";
+                emojiEl.classList.remove('hidden');
+                imgEl.classList.add('hidden');
+            }
+
+            overlay.classList.add('show');
+
+            if (this._toastTimeout) clearTimeout(this._toastTimeout);
+            this._toastTimeout = setTimeout(() => {
+                this.hideToast();
+            }, 3000);
+        },
+
+        hideToast: function () {
+            const overlay = document.getElementById('sys-toast-overlay');
+            if (overlay) overlay.classList.remove('show');
+        },
+
+        // --- ระบบ Bottom Direct Link Popup ---
+        showDirectLink: function (url) {
+            const overlay = document.getElementById('sys-link-overlay');
+            const inputEl = document.getElementById('sys-link-input');
+
+            if (!overlay || !inputEl) return;
+
+            inputEl.value = url;
+
+            const btnCopy = document.getElementById('sys-link-btn-copy');
+            if (btnCopy) {
+                btnCopy.textContent = "Copy";
+                btnCopy.style.backgroundColor = "var(--color-primary-light, #eff6ff)";
+                btnCopy.style.color = "var(--color-primary, #2563eb)";
+            }
+
+            overlay.classList.add('show');
+            this._currentDirectLink = url;
+        },
+
+        hideDirectLink: function () {
+            const overlay = document.getElementById('sys-link-overlay');
+            if (overlay) overlay.classList.remove('show');
+        },
+
+        copyDirectLink: function () {
+            const inputEl = document.getElementById('sys-link-input');
+            if (!inputEl) return;
+
+            inputEl.select();
+            inputEl.setSelectionRange(0, 99999);
+
+            navigator.clipboard.writeText(inputEl.value).then(() => {
+                const btnCopy = document.getElementById('sys-link-btn-copy');
+                if (btnCopy) {
+                    btnCopy.textContent = "Copied!";
+                    btnCopy.style.backgroundColor = "#ecfdf5"; // emerald-50
+                    btnCopy.style.color = "#059669"; // emerald-600
+                    setTimeout(() => {
+                        btnCopy.textContent = "Copy";
+                        btnCopy.style.backgroundColor = "var(--color-primary-light, #eff6ff)";
+                        btnCopy.style.color = "var(--color-primary, #2563eb)";
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error("Could not copy link text:", err);
+            });
+        },
+
+        openDirectLink: function () {
+            if (this._currentDirectLink) {
+                window.open(this._currentDirectLink, '_blank');
+                this.hideDirectLink();
+            }
+        }
+    };
+})();

@@ -1,0 +1,633 @@
+<!-- 
+  CRM API Debug Page
+  หน้านี้ใช้สำหรับทดสอบการทำงานของ CrmApi และ System UI ทั้งหมดภายในแอป
+-->
+<style>
+    .debug-container {
+        padding: 1rem;
+        padding-bottom: 6rem;
+        /* pb-24 */
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background-color: #f8fafc;
+    }
+
+    .debug-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .debug-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .btn-back-home {
+        background-color: #e5e7eb;
+        color: #374151;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-back-home:hover {
+        background-color: #d1d5db;
+    }
+
+    .btn-back-home:active {
+        transform: scale(0.95);
+    }
+
+    .debug-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .debug-section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    .debug-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .debug-btn {
+        background-color: var(--color-primary, #2563eb);
+        color: #ffffff;
+        font-size: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .debug-btn:hover {
+        filter: brightness(0.9);
+    }
+
+    .debug-btn:active {
+        transform: scale(0.95);
+    }
+
+    .debug-btn-alt {
+        background-color: #0891b2;
+    }
+
+    /* Cyan */
+    .debug-btn-ui {
+        background-color: #4f46e5;
+        text-align: center;
+    }
+
+    /* Indigo */
+
+    .col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+
+    .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-clear-logs {
+        color: #ef4444;
+        font-size: 0.75rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .btn-clear-logs:hover {
+        text-decoration: underline;
+    }
+
+    .debug-log-area {
+        background-color: #111827;
+        color: #4ade80;
+        padding: 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        height: 16rem;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        border: 1px solid #1f2937;
+        margin: 0;
+    }
+
+    /* --- Global Data Inspector Styles --- */
+    .data-inspector-box {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .data-item {
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 1rem;
+    }
+
+    .data-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .data-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .data-key {
+        font-weight: 700;
+        color: #374151;
+        font-size: 0.875rem;
+    }
+
+    .btn-expand {
+        font-size: 0.625rem;
+        background: #e5e7eb;
+        color: #374151;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-expand:hover {
+        background: #d1d5db;
+    }
+
+    .data-value {
+        background: #111827;
+        color: #a7f3d0;
+        padding: 0.75rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+        font-size: 10px;
+        max-height: 150px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 0;
+    }
+
+    /* --- Expand Modal Styles --- */
+    .expand-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+    .expand-modal.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .expand-modal-content {
+        background: #1f2937;
+        width: 100%;
+        height: 100%;
+        border-radius: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .expand-modal-header {
+        padding: 1rem;
+        background: #111827;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #374151;
+    }
+
+    .expand-modal-title {
+        color: #fff;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .btn-close-modal {
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .expand-modal-body {
+        flex-grow: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        color: #a7f3d0;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 0;
+    }
+</style>
+
+<div class="debug-container">
+    <!-- Header -->
+    <div class="debug-header">
+        <h2 class="debug-title">CRM API Debugger</h2>
+        <button onclick="PageManager.loadPage('home')" class="btn-back-home">
+            Back to Home
+        </button>
+    </div>
+
+    <!-- Data Inspector Section -->
+    <div class="debug-section" style="margin-top: 0;">
+        <div class="log-header">
+            <h3 class="debug-section-title">Global Data Inspector (crmData)</h3>
+            <button onclick="refreshCrmData()" class="debug-btn"
+                style="padding: 0.25rem 0.75rem; width: auto; font-weight: bold;">
+                <i class="fa-solid fa-rotate-right"></i> Load Data
+            </button>
+        </div>
+        <div class="data-inspector-box" id="crm-data-list">
+            <p style="font-size: 12px; color: #6b7280; text-align: center; margin: 0;">Click "Load Data" to inspect
+                global.crmData</p>
+        </div>
+    </div>
+
+    <!-- API Test Buttons -->
+    <div class="debug-section">
+        <h3 class="debug-section-title">CRM API Actions (GET)</h3>
+        <div class="debug-grid">
+            <button onclick="testCrmApi('CrmApi.getInfo()', () => CrmApi.getInfo())" class="debug-btn">
+                1. getInfo
+            </button>
+            <button onclick="testCrmApi('CrmApi.getProfile()', () => CrmApi.getProfile())" class="debug-btn">
+                2. getProfile
+            </button>
+            <button onclick="testCrmApi('CrmApi.getAddress()', () => CrmApi.getAddress())" class="debug-btn">
+                3. getAddress
+            </button>
+            <button onclick="testCrmApi('CrmApi.getMarketData()', () => CrmApi.getMarketData())" class="debug-btn">
+                4. getMarketData
+            </button>
+            <button onclick="testCrmApi('CrmApi.getRewards()', () => CrmApi.getRewards())" class="debug-btn">
+                5. getRewards
+            </button>
+            <button
+                onclick="testCrmApi('CrmApi.getReward(id)', () => { const id = prompt('Enter Reward ID:', '1'); return id ? CrmApi.getReward(id) : Promise.reject('Cancelled'); })"
+                class="debug-btn debug-btn-alt">
+                6. getReward(id)
+            </button>
+            <button onclick="testCrmApi('CrmApi.getMyShippingRewards()', () => CrmApi.getMyShippingRewards(20,0))"
+                class="debug-btn">
+                7. getMyShippingRewards
+            </button>
+            <button onclick="testCrmApi('CrmApi.getMyCoupons()', () => CrmApi.getMyCoupons(20,0))" class="debug-btn">
+                8. getMyCoupons
+            </button>
+            <button
+                onclick="testCrmApi('CrmApi.getMyCoupon(code)', () => { const code = prompt('Enter Coupon Code:', 'CODE123'); return code ? CrmApi.getMyCoupon(code) : Promise.reject('Cancelled'); })"
+                class="debug-btn debug-btn-alt">
+                9. getMyCoupon(code)
+            </button>
+            <button onclick="testCrmApi('CrmApi.getEarnedPoints()', () => CrmApi.getEarnedPoints(20,0))"
+                class="debug-btn">
+                10. getEarnedPoints
+            </button>
+            <button onclick="testCrmApi('CrmApi.getDeductPoints()', () => CrmApi.getDeductPoints(20,0))"
+                class="debug-btn">
+                11. getDeductPoints
+            </button>
+            <button onclick="testCrmApi('CrmApi.getLeaderboard()', () => CrmApi.getLeaderboard('topspending'))"
+                class="debug-btn">
+                12. getLeaderboard
+            </button>
+        </div>
+    </div>
+
+    <!-- System UI Test Buttons -->
+    <div class="debug-section">
+        <h3 class="debug-section-title">System UI Test Actions</h3>
+        <div class="debug-grid">
+            <button onclick="testConfirmPopup()" class="debug-btn debug-btn-ui">
+                Confirm Yes/No
+            </button>
+            <button onclick="testOkPopup()" class="debug-btn debug-btn-ui">
+                OK Popup
+            </button>
+            <button onclick="testFailedPopup()" class="debug-btn debug-btn-ui">
+                Failed Popup
+            </button>
+            <button onclick="testCompletePopup()" class="debug-btn debug-btn-ui">
+                Complete Popup
+            </button>
+            <button onclick="testToast()" class="debug-btn debug-btn-ui col-span-2">
+                Top Message Pop (Toast)
+            </button>
+            <button onclick="testDirectLink()" class="debug-btn debug-btn-ui col-span-2">
+                Bottom Sheet Direct Link
+            </button>
+        </div>
+    </div>
+
+    <!-- Iframe Tester Section -->
+    <div class="debug-section">
+        <div class="log-header">
+            <h3 class="debug-section-title">Iframe Tester</h3>
+        </div>
+        <div
+            style="display: flex; flex-direction: column; gap: 0.75rem; background: #fff; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: #374151;">URL:</label>
+                <input type="text" id="iframe-test-url" value="page/system/iframe_test.html"
+                    style="width: 100%; border: 1px solid #ccc; padding: 0.375rem; border-radius: 0.25rem; font-size: 0.75rem; color: #1f2937;">
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" id="iframe-test-full" checked
+                    style="cursor: pointer; width: 1rem; height: 1rem;">
+                <label for="iframe-test-full"
+                    style="font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #374151;">Fullscreen (x=0, y=0)
+                    <br><span style="font-weight: 400; font-size: 0.625rem; color: #6b7280;">หากติ๊กออกจะเป็น x=90,
+                        y=90</span></label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: -0.25rem;">
+                <input type="checkbox" id="iframe-test-closebtn" checked
+                    style="cursor: pointer; width: 1rem; height: 1rem;">
+                <label for="iframe-test-closebtn"
+                    style="font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #374151;">Show Close Button
+                    <br><span
+                        style="font-weight: 400; font-size: 0.625rem; color: #6b7280;">หากติ๊กออกจะไม่สามารถกดปิดเองได้</span></label>
+            </div>
+
+            <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: #374151;">Payload (JSON string):</label>
+                <textarea id="iframe-test-payload" rows="2"
+                    style="width: 100%; border: 1px solid #ccc; padding: 0.375rem; border-radius: 0.25rem; font-size: 0.75rem; font-family: monospace; color: #1f2937;">{"message": "Hello from Debug", "userId": 123}</textarea>
+            </div>
+
+            <button onclick="testOpenIframe()" class="debug-btn debug-btn-ui"
+                style="margin-top: 0.25rem; padding: 0.75rem; font-size: 0.875rem;">
+                <i class="fa-solid fa-window-restore"></i> Test openIframe
+            </button>
+        </div>
+    </div>
+
+    <!-- Response Logs -->
+    <div class="debug-section">
+        <div class="log-header">
+            <h3 class="debug-section-title">Response Logs</h3>
+            <button onclick="clearLogs()" class="btn-clear-logs">Clear</button>
+        </div>
+        <pre id="debug-logs" class="debug-log-area">[System] Debugger loaded. Click any button to test...</pre>
+    </div>
+</div>
+
+<!-- Expand Modal for JSON -->
+<div id="expand-modal" class="expand-modal">
+    <div class="expand-modal-content">
+        <div class="expand-modal-header">
+            <h3 class="expand-modal-title" id="expand-modal-title">Key Name</h3>
+            <button class="btn-close-modal" onclick="closeExpandModal()">Close</button>
+        </div>
+        <pre class="expand-modal-body" id="expand-modal-body"></pre>
+    </div>
+</div>
+
+<script>
+    // -----------------------------------------
+    // 1. Logger System
+    // -----------------------------------------
+    function log(title, data) {
+        const logsEl = document.getElementById('debug-logs');
+        if (!logsEl) return;
+        const time = new Date().toLocaleTimeString();
+        let text = `\n--- [${time}] ${title} ---`;
+        if (data !== undefined) {
+            text += `\n${JSON.stringify(data, null, 2)}`;
+        }
+        logsEl.innerHTML += text;
+        logsEl.scrollTop = logsEl.scrollHeight;
+    }
+
+    function clearLogs() {
+        const logsEl = document.getElementById('debug-logs');
+        if (logsEl) {
+            logsEl.innerHTML = '[System] Logs cleared.';
+        }
+    }
+
+    // -----------------------------------------
+    // 2. Data Inspector System
+    // -----------------------------------------
+    function refreshCrmData() {
+        const container = document.getElementById('crm-data-list');
+        container.innerHTML = '';
+
+        // อ่านค่าจาก global data
+        const data = window.crmData || {};
+
+        if (Object.keys(data).length === 0) {
+            container.innerHTML = '<p style="font-size: 12px; color: #6b7280; text-align: center; margin: 0;">No data found in global.crmData</p>';
+            return;
+        }
+
+        for (const [key, value] of Object.entries(data)) {
+            const isObj = typeof value === 'object' && value !== null;
+            const displayValue = isObj ? JSON.stringify(value, null, 2) : String(value);
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'data-item';
+
+            itemDiv.innerHTML = `
+                <div class="data-header">
+                    <span class="data-key">[ ${key} ]</span>
+                    <button class="btn-expand" onclick="openExpandModal('${key}')"><i class="fa-solid fa-expand"></i> Expand</button>
+                </div>
+                <pre class="data-value">${escapeHtml(displayValue)}</pre>
+            `;
+            container.appendChild(itemDiv);
+        }
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function openExpandModal(key) {
+        const data = window.crmData || {};
+        const value = data[key];
+        const isObj = typeof value === 'object' && value !== null;
+        const displayValue = isObj ? JSON.stringify(value, null, 2) : String(value);
+
+        document.getElementById('expand-modal-title').textContent = `[ ${key} ]`;
+        document.getElementById('expand-modal-body').textContent = displayValue;
+        document.getElementById('expand-modal').classList.add('show');
+    }
+
+    function closeExpandModal() {
+        document.getElementById('expand-modal').classList.remove('show');
+    }
+
+    // -----------------------------------------
+    // 3. CRM API Wrapper Tester
+    // -----------------------------------------
+    async function testCrmApi(name, apiFunction) {
+        log(`Calling ${name}...`);
+        try {
+            const res = await apiFunction();
+            log(`[SUCCESS] ${name}`, res);
+        } catch (err) {
+            if (err === 'Cancelled') {
+                log(`[CANCELLED] ${name}`);
+            } else {
+                log(`[ERROR] ${name}`, err.message || err);
+            }
+        }
+    }
+
+    // -----------------------------------------
+    // 4. System UI Tester
+    // -----------------------------------------
+    function testConfirmPopup() {
+        PageManager.showConfirm(
+            "Confirm Action",
+            "Are you sure you want to test the yes/no popup? This will log your choice.",
+            "❓",
+            () => log("Confirm Dialog", "User clicked YES"),
+            () => log("Confirm Dialog", "User clicked NO")
+        );
+    }
+
+    function testOkPopup() {
+        PageManager.showOk(
+            "Information",
+            "This is a standard OK dialog popup showing simple details.",
+            "ℹ️",
+            () => log("OK Dialog", "User clicked OK")
+        );
+    }
+
+    function testFailedPopup() {
+        PageManager.showFailed(
+            "Failed Status",
+            "The requested action has failed due to network timeout.",
+            "❌",
+            () => log("Failed Dialog", "User closed failed popup")
+        );
+    }
+
+    function testCompletePopup() {
+        PageManager.showComplete(
+            "Action Completed",
+            "Congratulations! Your action was processed successfully.",
+            "🎉",
+            () => log("Complete Dialog", "User acknowledged complete popup")
+        );
+    }
+
+    function testToast() {
+        PageManager.showToast("Success: Settings saved successfully!", "⭐");
+        log("Top Toast", "Toast triggered with custom icon");
+    }
+
+    function testDirectLink() {
+        PageManager.showDirectLink("https://www.google.com");
+        log("Direct Link", "Bottom sheet triggered for URL: https://www.google.com");
+    }
+
+    // -----------------------------------------
+    // 5. Iframe Tester
+    // -----------------------------------------
+    function initIframeTest() {
+        const savedUrl = localStorage.getItem('debug_iframe_url');
+        if (savedUrl) document.getElementById('iframe-test-url').value = savedUrl;
+    }
+
+    // โหลดค่า URL ล่าสุดเมื่อเปิดหน้า
+    initIframeTest();
+
+    function testOpenIframe() {
+        const url = document.getElementById('iframe-test-url').value;
+        const isFull = document.getElementById('iframe-test-full').checked;
+        const showCloseBtn = document.getElementById('iframe-test-closebtn').checked;
+        const payloadStr = document.getElementById('iframe-test-payload').value;
+
+        // จำค่าล่าสุดไว้
+        localStorage.setItem('debug_iframe_url', url);
+
+        let payload = null;
+        try {
+            if (payloadStr.trim()) {
+                payload = JSON.parse(payloadStr);
+            }
+        } catch (e) {
+            alert('Invalid JSON payload');
+            return;
+        }
+
+        // กำหนดขนาด
+        let x = isFull ? 0 : 90;
+        let y = isFull ? 0 : 90;
+
+        log(`[IFRAME OPEN] Opening...`, { url, x, y, payload, showCloseBtn });
+
+        // ทดสอบเรียกใช้งาน openIframe
+        PageManager.openIframe(url, x, y, payload, (response) => {
+            log(`[IFRAME CLOSED] Callback Triggered!`, response);
+        }, showCloseBtn);
+    }
+</script>

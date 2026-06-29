@@ -1,0 +1,305 @@
+<style>
+    .page-container {
+        padding: 1rem;
+        padding-bottom: 5rem;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background-color: #f9fafb;
+    }
+
+    .user-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        padding: 1.25rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 9999px;
+        border: 2px solid #e5e7eb;
+        object-fit: cover;
+        background: #f3f4f6;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+    }
+
+    .user-tier {
+        font-size: 0.625rem;
+        font-weight: 700;
+        color: #a16207;
+        background: #fef9c3;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    .user-phone {
+        font-size: 0.625rem;
+        color: #9ca3af;
+    }
+
+    .progress-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        padding: 1.25rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .progress-next {
+        font-size: 0.625rem;
+        color: #9ca3af;
+    }
+
+    .progress-next span {
+        font-weight: 700;
+        color: #4b5563;
+    }
+
+    .progress-track {
+        width: 100%;
+        background: #f3f4f6;
+        border-radius: 9999px;
+        height: 0.5rem;
+        margin-bottom: 0.5rem;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        background-color: var(--color-primary);
+        height: 0.5rem;
+        border-radius: 9999px;
+        transition: width 1s ease-in-out;
+        width: 0%;
+    }
+
+    .progress-desc {
+        font-size: 0.625rem;
+        color: #6b7280;
+        text-align: center;
+    }
+
+    .menu-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid #f9fafb;
+        transition: background 0.2s;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        text-align: left;
+    }
+
+    .menu-btn:hover {
+        background: #f9fafb;
+    }
+
+    .menu-btn:active {
+        background: #f3f4f6;
+    }
+
+    .menu-btn:last-child {
+        border-bottom: none;
+    }
+
+    .menu-btn-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .menu-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .icon-history {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+    }
+
+    .icon-inventory {
+        background: #fdf2f8;
+        color: #db2777;
+    }
+
+    .icon-logout {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .menu-text {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .menu-text.text-logout {
+        color: #ef4444;
+    }
+
+    .menu-arrow {
+        width: 1rem;
+        height: 1rem;
+        color: #d1d5db;
+    }
+</style>
+
+<div class="page-container">
+
+    <!-- User Card -->
+    <div class="user-card">
+        <img id="prof-avatar" class="user-avatar" src=""
+            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='" />
+        <div class="user-info">
+            <h2 id="prof-name" class="user-name">Loading...</h2>
+            <div class="user-meta">
+                <span id="prof-tier" class="user-tier">Member</span>
+                <span id="prof-phone" class="user-phone">---</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Progress -->
+    <div class="progress-card">
+        <div class="progress-header">
+            <span class="progress-title">Tier Progress</span>
+            <span class="progress-next">Next: <span id="prof-next-tier">Gold</span></span>
+        </div>
+        <div class="progress-track">
+            <div id="prof-progress-bar" class="progress-fill"></div>
+        </div>
+        <p id="prof-progress-text" class="progress-desc">Spend ฿5,000 more to upgrade</p>
+    </div>
+
+    <!-- Menus -->
+    <div class="menu-card">
+        <button onclick="PageManager.loadPage('history')" class="menu-btn">
+            <div class="menu-btn-left">
+                <div class="menu-icon icon-history">📜</div>
+                <span class="menu-text">Transaction History</span>
+            </div>
+            <svg class="menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+
+        <button onclick="PageManager.loadPage('inventory')" class="menu-btn">
+            <div class="menu-btn-left">
+                <div class="menu-icon icon-inventory">🎒</div>
+                <span class="menu-text">My Inventory / Coupons</span>
+            </div>
+            <svg class="menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+
+        <button onclick="logout()" class="menu-btn group" style="background-color: transparent;">
+            <div class="menu-btn-left">
+                <div class="menu-icon icon-logout">🚪</div>
+                <span class="menu-text text-logout">Log Out</span>
+            </div>
+        </button>
+    </div>
+</div>
+
+<script>
+    (() => {
+        async function loadProfile() {
+            let uData = window.crmData?.user;
+            let cData = window.crmData?.crmUser;
+
+            if (!cData) {
+                try {
+                    await CrmApi.getProfile();
+                    cData = window.crmData.crmUser;
+                    uData = window.crmData.user;
+                } catch (e) { console.warn(e); }
+            }
+
+            if (cData) {
+                document.getElementById('prof-name').textContent = cData.displayName || "Unknown User";
+                document.getElementById('prof-phone').textContent = cData.phone || "No Phone";
+                if (cData.pictureUrl) document.getElementById('prof-avatar').src = cData.pictureUrl;
+
+                const tierName = uData?.tier?.name || "Member";
+                document.getElementById('prof-tier').textContent = tierName;
+
+                // รอ DOM อัปเดตเพื่อให้ CSS Transition ทำงาน
+                setTimeout(() => {
+                    document.getElementById('prof-progress-bar').style.width = '45%';
+                }, 100);
+            }
+        }
+
+        window.logout = function () {
+            PageManager.showConfirm("Log Out", "Are you sure you want to log out?", "❓", () => {
+                if (window.Utility) Utility.logout();
+                else window.location.reload();
+            });
+        };
+
+        loadProfile();
+    })();
+</script>

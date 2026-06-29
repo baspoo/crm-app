@@ -1,0 +1,267 @@
+
+
+
+โอเคร เรามาผลิตของจริงกันเลย
+
+สรุปโครงสร้างตามที่เราได้คุยกันมา
+
+1.index.html
+ทำหน้าที่เป็นหน้าหลัก ไม่แสดงผลอะไรเลย เป็น Hub สำหรับทำทุกอย่างตามที่เราคุยกันอยู่
+โหลด config ขึ้นมาสำหรับใช้ภายใน app ทั้งหมดนี้
+นี้คือไฟล์ "res/config.json" ให้โหลดไว้เป็น setting หลักของ app
+{
+    "server": {
+        "SERVERURL": "https://aws-bug-parse-gamification.thelastbug.co",
+        "APPID": "bug",
+        "KEY": "bug"
+    },
+    "systemPage": {
+        "loading": {
+            "path": "page/loading.html",
+            "anim": "fade-in"
+        },
+        "console": {
+            "path": "page/console.html",
+            "anim": "none"
+        },
+        "popup": {
+            "path": "page/popup.html",
+            "anim": "fade-moveup"
+        }
+    },
+    "mainPage": {
+        "home": {
+            "path": "page/home.html",
+            "anim": "fade-in"
+        },
+        "leaderboard": {
+            "path": "page/leaderboard.html",
+            "anim": "fade-in"
+        },
+        "getpoint": {
+            "path": "page/getpoint.html",
+            "anim": "fade-in"
+        },
+        "redeem": {
+            "path": "page/redeem.html",
+            "anim": "fade-in"
+        },
+        "profile": {
+            "path": "page/profile.html",
+            "anim": "fade-in"
+        }
+    },
+    "subPage": {
+        "history": {
+            "path": "page/history.html",
+            "anim": "fade-in"
+        },
+        "inventory": {
+            "path": "page/inventory.html",
+            "anim": "fade-in"
+        }
+    }
+}
+
+load script js เข้ามาเก็บไว้ อย่าลืมใส่ ?v=date.now
+[
+    "res/appApi.js" , 
+    "res/crmApi.js" , 
+    "res/app.js" ,
+    "res/pageManager.js"
+]
+
+appApi : sdk สำหรับติดต่อ server ของฉัน เป็น script กลาง ห้ามเอาของเฉพาะโปรเจ็ค crm เข้าไปใส่ ฉันจะเก็บไว้ใช้ยาวๆกับงานอื่นๆ เช่น callApi , callApiInternal จะใช้ crmApi เข้ามาเรียกใช้เป็นหลัก 
+crmApi : เป็น api ตัวเสริมปรับแต่งสำหรับ crm โดยเฉพาะ และ function ทุกอย่างของ crm เช่น login , redeem , getreward มีเฉพาะ apiและเก็บ current data เท่านั้น 
+จัดการ state , function , model schema ทุกอย่างของแอฟ crm นี้
+pageManager : จัดการระบบ page ทั้งหมด
+
+
+
+ทำการ await app.init(); เพื่อเช็คทุกอย่าง login? getAppData? getTheme? แต่ตอนนี้แค่ awiat 1sec แล้ว return เลย เราจะมาทำกันภายหลัง
+เพื่อ init เสร็จ เปิด mainConsole ขึ้นมาเป็น หน้าหลัก เริ่มต้น
+
+
+2. mainConsole.html
+หน้าหลักในการควบคุมทั้งแอฟ มี nevigate บนล่าง เมื่อหน้านี้สร้างเสร็จ ให้ทำการ เปิด home menu เป็นหน้าแรกเพื่อไม่ให้หน้าแรกตอนเปิดมันว่างเปล่่า
+
+3. demoPage.html เอาไปใช้ demo สำหรับ page ที่จะเปิดขึ้นมา ดูว่าเปิดได้ไหม มีปุ่มเพื่อเรียกไปหา app
+
+4. demoSubPage.html
+
+--- สร้าง css สำหรับทุกหน้าใช้ร่วมกัน ยกเว้นของ iframe ที่จะมีของตัวเองเต็มยศ ---
+
+5. demoIframePage.html
+
+
+ฉันจะยังไม่ทำ app.js แยกออกมา แต่ให้แต่ละหน้ารับผิดชอบ js ของตัวเองไปก่อนเพราะยากต่อการจัดการในตอนนี้
+แต่ให้ทุกหน้า ทำ template สำหรับ ui ที่ต้องแก้ไข เพื่อให้ js ดึงค่าไปแก้ อย่า ให้ js พ่น div เข้าไปเอง มันจะเปลี่ยนสไตล์ยาก 
+ให้ js ของแต่ละหน้า จัดการ function ของแต่ละหน้าไปเอง แต่เรียก api จาก crmApi ไปใช้
+
+สร้าง ทุกหน้า ขึ้นมาใหม่ ยกเว้น appApi.js ใช้ของเดิมของฉัน และเติม function test สำหรับให้แต่ละหน้า สามารถลองเรียกฟังชั่นใน crmApi ว่ามาถึงไหม และสามารถดึงค่าจาก crmApi พวก currentData ไปแสดงผลได้ไหม
+สร้าง element สำหรับ test เยอะๆ พวก dropdown / grid item / btn / textbox / สกอบาร์ / panel
+เพื่อทดสอบ template ที่ซ่อนไว้ และ ถูกเปลี่ยนจาก js ภายในเพจ 
+
+เติมคำอธิบายให้ฉัน จะได้เข้าใจว่ามันทำงานยังไง สำหรับเรียนรู้ และวางแผนสำหรับทำต่อไป
+
+ส่งออกมาทุกคริป เพื่อให้ฉัน ก๊อปปี้ไปใช้ได้เลย
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+ฉันต้องการทำระบบเปลี่ยนธีมแอป เปลี่ยนมูดของแอปเลยทุกๆหน้า
+ให้มีสไตล์ตาม theme ที่ฉันกำหนดค่าไว้ โดยให้ทุกๆหน้าอ้างอิงสไตล์จากตัวหลัก
+
+ต้องการทำ Global Override
+เอาไว้ที่ style.css เป็น ไฟล์ CSS หลักของแอป 
+แล้วเขียน CSS ดั้งเดิมเข้าไปทำการ "หักดิบ" ครอบทับคลาสเดิม
+
+
+เช่น
+/* บังคับปุ่มทุกตัวในแอปให้กลายเป็นสไตล์ใหม่ทันที */
+button, .btn, [role="button"] {
+    border: 3px solid #000000 !important; /* บังคับใส่เส้นขอบสีดำหนา */
+    box-shadow: 4px 4px 0px #000000 !important; /* บังคับใส่เงาสีดำแบบเหลี่ยม */
+    border-radius: 8px !important; /* ปรับความโค้งตามต้องการ */
+    transition: all 0.2s ease;
+}
+
+/* เอฟเฟกต์ตอนเอาเมาส์ไปวาง (Hover) */
+button:hover, .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000000 !important;
+}
+
+/* บังคับการ์ด หรือกล่องเนื้อหาต่างๆ ในแอป */
+.card, .box, div[class*="shadow"] {
+    border: 3px solid #000000 !important;
+    box-shadow: 6px 6px 0px #000000 !important;
+    border-radius: 12px !important;
+    background-color: #ffffff !important;
+}
+อะไรแบบนี้
+
+และให้ทุก css style ของทุกหน้านำ style หลักของ Global ไปใช้
+สั่งให้เบราว์เซอร์มองข้ามคลาส flat เก่าๆ ที่กระจายอยู่ทุกหน้า แล้วดึงเอาสไตล์ Master ตัวนี้ไปพ่นทับทันที แอปจะเปลี่ยนมู้ดพร้อมกันทุก
+
+ต้องสามารถรองรับการ 
+
+ฟอร์นตัวหนังสือ
+เปลี่ยนสีหลัก สีรอง
+ขนาด
+เปลี่ยนสีตัวหนังสือหลัก รอง
+เส้น Border
+ความโค้ง
+ปุ่ม
+สกอร์บาร์
+checkok
+ratio btn
+textbox
+dropdown
+การ์ด1 ,การ์ด2, การ์ด3
+เงา
+เกเดี้ยนสี
+และทุกๆอย่าง
+รองรับ design style Neobrutalism ,  Modern Retro , Flat, Modern , ความเป็นกระจก, 
+
+
+สรุปคือ ฉันสามารถมาแก้ที่ Global  style.css ที่เดียว ทุกๆหน้าจะถูกนำไป apply ทันที
+
+
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+หน้า Home ให้แสดงเป็น layout ไถ่จากบนลงล่าง
+ส่วนหัวให้นำ herader ไปใส่ crmData.marketData.
+
+crmData
+{
+    "crmUser": {
+        "user": {
+            "id": 1746,
+            "lineUserId": "U725afddef5ad6a779ac46fba4f314cb4",
+            "displayName": "Benz. 🏀",
+            "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+            "email": "",
+            "phone": "092****966",
+            "phoneVerified": 1,
+            "points": 20,
+            "storeName": "Reflexstudio",
+            "memberSince": "2026-06-23T14:50:48.000Z",
+            "logoUrl": null
+        }
+    },
+    "marketData": {
+        "storeInfo": {
+            "storeName": "Reflexstudio",
+            "conditionURL": null,
+            "logoURL": null,
+            "storeCoverURL": "https://assets.mookept.com/store_covers/1777536006933-c5bf7acd426cf1984ab4e67d61aba2ef.png",
+            "primaryColor": "#b6d1fb",
+            "secondaryColor": "#f59e0b",
+            "themeId": null
+        },
+        "banners": {
+            "marketBanners": [
+                {
+                    "id": 30,
+                    "name": "QR Hunt",
+                    "description": "สเเกนล่าเเต้ม เก็บให้ครบ 4 จุด รับคะเเนนพิเศษไปเลย! ",
+                    "type": "promotion",
+                    "imageUrl": "https://assets.mookept.com/banners/1779426057883-19e39c93a0bd436b9a837c938a412cb0.png",
+                    "bannerUrl": "action:@iframe=StreamingAssets/form/QRhunt.html|100|100|%",
+                    "displayOrder": 0,
+                    "startDate": "2026-05-15T07:12:00.000Z",
+                    "endDate": "2026-06-29T07:12:00.000Z",
+                    "createdAt": "2026-05-15T07:14:06.000Z",
+                    "updatedAt": "2026-05-27T04:57:54.000Z"
+                },
+                {
+                    "id": 29,
+                    "name": "Gacha Box",
+                    "description": "เปิดปุ๊บ ลุ้นปั๊บ! เกมกล่องสุ่มสุดมันส์ ลุ้นรับรางวัลพิเศษ!",
+                    "type": "promotion",
+                    "imageUrl": "https://assets.mookept.com/banners/1778583364791-6242d4a7e923ef32b7c8036e495c2921.png",
+                    "bannerUrl": "action:@game=game_gacha_crm_wtf",
+                    "displayOrder": 2,
+                    "startDate": "2026-05-07T08:31:00.000Z",
+                    "endDate": "2026-06-30T08:31:00.000Z",
+                    "createdAt": "2026-05-07T08:34:47.000Z",
+                    "updatedAt": "2026-05-27T04:58:05.000Z"
+                }
+            ]
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

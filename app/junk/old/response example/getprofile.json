@@ -1,0 +1,143 @@
+{
+    "result": {
+        "code": 200,
+        "message": "OK",
+        "data": {
+            "crmUser": {
+                "user": {
+                    "id": 1102,
+                    "lineUserId": "U13ce7cd85dc3a7ad026c0878621932d5",
+                    "displayName": "Benz. 🏀",
+                    "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+                    "email": "myemail_12051@1moby.com",
+                    "phone": "092****966",
+                    "phoneVerified": 1,
+                    "points": 1563,
+                    "storeName": "Mookept.shop (demo)",
+                    "memberSince": "2025-11-27T04:12:45.000Z",
+                    "logoUrl": "https://assets.mookept.com/store_logos/1772527140564-a16834c478e05f88e1d3ed14acc72462.jpg",
+                    "tier": {
+                        "id": 4,
+                        "name": "Diamond",
+                        "level": 5,
+                        "color": "#d45cf5",
+                        "icon": null,
+                        "description": "Event Perks & VIP Treatment",
+                        "benefits": [
+                            "Free VIP Upgrades at Onedrink!-sponsored local events (music festivals, skate jams).",
+                            "Meet-and-Greet priority passes for brand ambassador/artist appearances.",
+                            "A permanent 15% discount on all apparel"
+                        ]
+                    },
+                    "customFields": {
+                        "gender": "male",
+                        "birthday": "1990-01-21T00:00:00",
+                        "fav1": {
+                            "name": "bas555",
+                            "type": "เครื่องบิน",
+                            "date": "2026-02-16",
+                            "kind": "555555",
+                            "createdAt": 1773744953
+                        },
+                        "fav2": {},
+                        "fav3": {
+                            "name": "aaqqq",
+                            "type": "รถยนต์",
+                            "date": "2026-03-19",
+                            "kind": "",
+                            "createdAt": 1773745020
+                        },
+                        "favimage1": "https://assets.mookept.com/profile_fields/22/1102/1771397529176-981fcc8ea5b0b28a4ad3221b26c79b8f.jpg",
+                        "favimage2": null,
+                        "favimage3": "https://assets.mookept.com/profile_fields/22/1102/1774320359781-ca5677366d19f6f927d250770b744862.jpg",
+                        "consentnotif": false
+                    }
+                },
+                "statistics": {
+                    "points": {
+                        "available": 1563,
+                        "totalEarned": 3011,
+                        "pending": 59,
+                        "redeemed": 694,
+                        "apiDeducted": 752,
+                        "expiringSoon": {
+                            "total": 0,
+                            "nextBatch": null,
+                            "batches": []
+                        }
+                    },
+                    "spending": {
+                        "total": 396109.27,
+                        "currency": "THB"
+                    },
+                    "orders": {
+                        "total": 86,
+                        "approved": 81,
+                        "pending": 5,
+                        "byMarketplace": {
+                            "own_channel": {
+                                "count": 41,
+                                "spending": 395761.27,
+                                "points": 2629
+                            },
+                            "shopee": {
+                                "count": 1,
+                                "spending": 348,
+                                "points": 2
+                            },
+                            "point_assign": {
+                                "count": 45,
+                                "spending": 0,
+                                "points": 380
+                            }
+                        }
+                    }
+                },
+                "userAddresses": [
+                    {
+                        "id": 41,
+                        "contactPerson": "Ritichai",
+                        "addressLine1": "315 หมู่6",
+                        "addressLine2": null,
+                        "subdistrict": "ป่าสัก",
+                        "district": "เชียงแสน",
+                        "province": "เชียงราย",
+                        "postalCode": "57150",
+                        "contactPhone": "0922574966",
+                        "isDefault": true,
+                        "createdAt": "2025-12-22T18:24:36.000Z",
+                        "updatedAt": "2026-03-10T09:32:50.000Z"
+                    },
+                    {
+                        "id": 53,
+                        "contactPerson": "John Doe  777",
+                        "addressLine1": "123 Main Street",
+                        "addressLine2": "Building A, Floor 5",
+                        "subdistrict": "หัวหมาก",
+                        "district": "บางกะปิ",
+                        "province": "กรุงเทพมหานคร",
+                        "postalCode": "10240",
+                        "contactPhone": "0812345678",
+                        "isDefault": false,
+                        "createdAt": "2026-03-10T09:11:16.000Z",
+                        "updatedAt": "2026-04-20T02:36:13.000Z"
+                    },
+                    {
+                        "id": 32,
+                        "contactPerson": "Jane Updated2",
+                        "addressLine1": "456 Updated Street",
+                        "addressLine2": "Building A, Floor 5",
+                        "subdistrict": "ฉิมพลี",
+                        "district": "ตลิ่งชัน",
+                        "province": "กรุงเทพมหานคร",
+                        "postalCode": "10999",
+                        "contactPhone": "0812345678",
+                        "isDefault": false,
+                        "createdAt": "2025-11-28T06:33:30.000Z",
+                        "updatedAt": "2026-04-21T15:01:58.000Z"
+                    }
+                ]
+            }
+        }
+    }
+}

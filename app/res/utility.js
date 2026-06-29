@@ -1,0 +1,289 @@
+
+(function (global) {
+    'use strict';
+
+    const params = new URLSearchParams(window.location.search);
+
+    global.TYPES = {
+        marketplace: {
+            shopee: 'shopee',
+            lazada: 'lazada',
+            tiktok: 'tiktok'
+        }
+    };
+
+
+    window.addEventListener('keydown', (e) => {
+        // ดักจับ Event F2 เพื่อเปิดหน้า Debug
+        if (e.key === 'F6') {
+            e.preventDefault();
+            if (PageManager) {
+                PageManager.loadPage('debug');
+            }
+        }
+
+        if (e.key === 'F4') {
+            e.preventDefault();
+            sessionStorage.setItem('VERSION', Date.now());
+            location.reload();
+        }
+    });
+
+
+
+    // 2. ฟังก์ชันหลักของ CRM
+    global.Utility = {
+
+
+        awake: async function () {
+            //Tittle
+            document.title = crmData.storeInfo.storeName;
+        },
+
+        getDomainOrSubdomain: function () {
+            const host = window.location.hostname.toLowerCase();
+
+            if (host.includes("reflex")) {
+                // https://nike.reflex-crm.co
+                const parts = host.split(".");
+                if (host.includes("localhost") || parts.length < 3) {
+                    return null;
+                }
+                return parts[0]; // subdomain เช่น nike
+            }
+            else {
+                return window.location.origin; // https://crm.nike.com
+            }
+        },
+
+        checkAppId: async function () {
+
+
+
+            console.log("Utility.checkAppId");
+            //return "crm_platform";
+
+            //** 1.มี accessToken เส้นใหญ่ไฟกระพริบ เข้าไปเลย ไม่ต้องเช็คอะไรแล้ว (สำหรับ DEV เทสเอง) */
+            const accessToken = params.get('accessToken');
+            const uid = params.get('uid');
+            if (accessToken) {
+                return params.get('appid'); // ถ้ามาอย่างถูกต้อง มันจะมี appid มาเอง *ถ้าไม่มีก็ไม่ต้องสนใจ..  ปล่อยมันพัง มาแปลก?
+            }
+
+            //** 2.ดึง subdomain และ appid จาก url หน้านี้*/
+            const mysubDomain = this.getDomainOrSubdomain();
+            const myappid = params.get('appid');
+            if (!myappid && !mysubDomain) {
+                //** ไม่มีอะไรสักอย่าง ถีบออกไปหน้า landing page.... */
+                window.location.href = "https://reflexstudio.co/";
+                return null;
+            }
+
+            //** 3.ดึง subdomain และ appid จากหน้า linelogin */
+            let appOk = true;
+            let pageContent = null;
+            const appId = sessionStorage.getItem('CRM_APPID');
+            const subDomain = sessionStorage.getItem('CRM_SUBDOMAIN');
+
+            //** 4.ไม่มี  appId จบตรงนี้เลย.... กลับไป login ใหม่*/
+            if (!appId) {
+                appOk = false;
+                console.log("[CHECKAPPID] not has appid");
+                pageContent = "NOT HAS APPID";
+            }
+            //** 5.มี subDomain แต่ไม่ตรงกัน มาไง? ไม่ผ่าน..ถีบไป login */
+            if (mysubDomain && subDomain && mysubDomain !== subDomain) {
+                appOk = false;
+                console.log("[CHECKAPPID] not has subdomain");
+                pageContent = `NOT HAS SUBDOMAIN ${mysubDomain} != ${subDomain}`;
+            }
+            //** 6.มี appid มาครบ ทั้งหน้านี้และได้จาก login แต่ดันไม่ตรงกัน.. กลับไป login ใหม่ */
+            if (myappid && appId && myappid !== appId) {
+                appOk = false;
+                console.log("[CHECKAPPID] not match appid");
+                pageContent = "NOT MATCH APPID";
+            }
+            //** 7.ไม่มี payload สำหรับ store แปลกๆ... กลับไป login ใหม่ */
+            if (!sessionStorage.getItem('LIFF_PAYLOAD')) {
+                appOk = false;
+                console.log("[CHECKAPPID] not has payload");
+                pageContent = "NOT HAS PAYLOAD";
+            }
+
+            //** 8.มีครบทุกอย่าง แต่หมดเวลา.... กลับไป login ใหม่ */
+            let now = Date.now();
+            let lastLogin = parseInt(sessionStorage.getItem('LIFF_UNIX') || 0);
+            let timeout = (lastLogin + 60000 * 60) < now; // 60 นาที.
+            if (timeout && !uid) {
+                appOk = false;
+                console.log("[CHECKAPPID] timeout");
+                pageContent = "TIMEOUT";
+            }
+
+            if (appOk) {
+                console.log("[CHECKAPPID] success");
+                return appId;
+            }
+            else {
+                this.confirmRedirectTologin(pageContent);
+                return null;
+            }
+        },
+
+        startApp: async function () {
+
+
+            if (crmData.user) {
+                // first time popup!..
+            }
+
+            // เปิดหน้าแรก
+            PageManager.console.visible(true);
+            PageManager.loadPage('home');
+
+            this.applyGlobalTheme();
+
+        },
+
+        // --- ระบบตั้งค่า Global Background & Theme ---
+        applyGlobalTheme: function () {
+            const root = document.documentElement;
+            // ดึงข้อมูลการตั้งค่ามาจาก API หรือ Payload
+            const initData = crmData?.marketData?.initializeData || crmData?.initializeData;
+
+            if (initData) {
+                // อัปเดตสีหลักและสีรอง (ถ้ามี)
+                if (initData.primaryColor) {
+                    root.style.setProperty('--theme-primary', initData.primaryColor);
+                }
+                if (initData.secondaryColor) {
+                    root.style.setProperty('--theme-secondary', initData.secondaryColor);
+                }
+
+                // อัปเดตพื้นหลังของแอป (Solid Color หรือ Gradient)
+                if (initData.bgColor) {
+                    root.style.setProperty('--theme-bg-color', initData.bgColor);
+                }
+
+                // อัปเดตรูปภาพพื้นหลังของแอป (ถ้ามี)
+                if (initData.customAssets && initData.customAssets.bgImg) {
+                    root.style.setProperty('--theme-bg-image', `url('${initData.customAssets.bgImg}')`);
+                } else {
+                    root.style.setProperty('--theme-bg-image', 'none');
+                }
+            }
+            console.log("[Utility] Global Theme Applied.");
+        },
+
+        getAssetPath: function (id) {
+            var assets = crmData.initializeData?.customAssets || {};
+            if (assets.hasOwnProperty(id)) {
+                console.log(`by server ${id}`);
+                return assets[id];
+            }
+            if (appConfig.resPath.hasOwnProperty(id)) {
+                console.log(`by default ${id} : ${appConfig.resPath[id]}`);
+                return appConfig.resPath[id];
+            }
+            return null;
+        },
+
+        /** @returns {MarketReward} */
+        getReward: function (id) {
+            var rewards = crmData.marketData?.rewards || [];
+            const reward = rewards.find(t => t.id == id);
+            if (reward) {
+                return reward;
+            }
+            return null;
+        },
+        /** @returns {TierData} */
+        getTier: function (id) {
+            var tiers = crmData.marketData?.tiers || [];
+            const tier = tiers.find(t => t.id == id);
+            if (tier) {
+                return tier;
+            }
+            return null;
+        },
+        /** @returns {MarketBanner} */
+        getBanner: function (id) {
+            var marketBanners = crmData.marketData?.banners?.marketBanners || [];
+            const banner = marketBanners.find(t => t.id == id);
+            if (banner) {
+                return banner;
+            }
+            return null;
+        },
+        /** @returns {GameCampaignData} */
+        getGameCampaign: function (gameId) {
+            var gameCampaigns = crmData.marketData?.gameCampaigns || [];
+            const game = gameCampaigns.find(t => t.gameId == gameId);
+            if (game) {
+                return game;
+            }
+            return null;
+        },
+
+
+
+
+
+        confirmRedirectTologin: async function (because) {
+            PageManager.showOk(
+                "Something went wrong",
+                "Action: '" + because + "'\nPlease re-login and try again",
+                null,
+                () => {
+                    this.redirectTologin();
+                });
+        },
+        redirectTologin: async function () {
+            let redirectLogin = sessionStorage.getItem('CRM_REDIRECTLOGIN');
+            if (!redirectLogin || redirectLogin == "undefined" || redirectLogin == "null" || redirectLogin == "") {
+                console.error("CRM_REDIRECTLOGIN IS NULL");
+
+
+                //** ดูจาก URL หน้าเว็ปเท่านั้นมี appid ไหม ถ้ามีกลับไปแบบมี ถ้าไม่มี กลับไปตรงๆได้เลย */
+                const myappid = params.get('appid');
+                const hasAppId = myappid && myappid !== "undefined" && myappid !== "null";
+
+                //** goto login
+                const url = new URL(window.location.href);               // https://yourpath/?appid=my_appid
+                let start = url.pathname.replace("/app", "");
+                let loginPath = start.endsWith('/')             // loginPath = linelogin.html          
+                    ? start + "linelogin.html"
+                    : start + "/linelogin.html";
+                if (hasAppId) {
+                    redirectLogin = (url.origin + loginPath + url.search); // https://yourpath/linelogin.html?appid=my_appid
+                }
+                else {
+                    redirectLogin = (url.origin + loginPath);              // https://yourpath/linelogin.html
+                }
+            }
+            this.logout();
+            console.log("Redirect to Login Page:", redirectLogin);
+            setTimeout(() => {
+                window.location.replace(redirectLogin);
+            }, 100);
+        },
+        logout: async function () {
+            //** ลบข้อมูลการ login*/
+            sessionStorage.removeItem('LIFF_UNIX');
+            sessionStorage.removeItem('LIFF_PAYLOAD');
+            sessionStorage.removeItem('CRM_REDIRECTLOGIN');
+            sessionStorage.removeItem('CRM_APPID');
+            sessionStorage.removeItem('CRM_SUBDOMAIN');
+
+        },
+
+
+
+
+
+
+
+    };
+
+
+})(window);

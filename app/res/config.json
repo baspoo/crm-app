@@ -1,0 +1,100 @@
+{
+    "EDITORKEY": "e52f861c8b3d4a9e70125c6f81a3d4b79e0f2142c6a8b0d3e5f7192a34bc6e8d90f12a34b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2",
+    "server": {
+        "BUNDLEID": "crm_platform",
+        "SERVERURL": "https://aws-bug-parse-gamification.thelastbug.co",
+        "APPID": "bug",
+        "KEY": "bug"
+    },
+    "systemPage": {
+        "login": {
+            "path": "page/system/login.html",
+            "anim": "fade-in"
+        },
+        "console": {
+            "path": "page/system/console.html",
+            "anim": "none"
+        },
+        "system": {
+            "path": "page/system/systempage.html"
+        },
+        "condition": {
+            "path": "page/system/condition.html"
+        },
+        "debug": {
+            "path": "page/system/debug.html"
+        }
+    },
+    "mainPage": {
+        "home": {
+            "path": "page/main/home.html",
+            "anim": "fade-in"
+        },
+        "leaderboard": {
+            "path": "page/main/leaderboard.html",
+            "anim": "fade-in"
+        },
+        "getpoint": {
+            "path": "page/main/getpoint.html",
+            "anim": "fade-in",
+            "top": true
+        },
+        "redeem": {
+            "path": "page/main/redeem.html",
+            "anim": "fade-in",
+            "top": true
+        },
+        "profile": {
+            "path": "page/main/profile.html",
+            "anim": "fade-in"
+        }
+    },
+    "subPage": {
+        "history": {
+            "path": "page/sub/history.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "inventory": {
+            "path": "page/sub/inventory.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "uploadSlip": {
+            "path": "page/sub/uploadslip.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "uploadSlipHelp": {
+            "path": "page/sub/uploadsliphelp.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "linkmarket": {
+            "path": "page/sub/linkmarket.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "linkmarketHelp": {
+            "path": "page/sub/linkmarketHelp.html",
+            "anim": "fade-in",
+            "full": true
+        }
+    },
+    "resPath": {
+        "pointIcon": "page/assets/icon/icon_point.png",
+        "staminaIcon": "page/assets/icon/icon_stamina.png",
+        "addressHeader": "page/assets/header/address.png",
+        "lazadaHeader": "page/assets/header/lazada.png",
+        "shopeeHeader": "page/assets/header/shopee.png",
+        "tiktokHeader": "page/assets/header/tiktok.png",
+        "pointHeader": "page/assets/header/point.png",
+        "rewardHeader": "page/assets/header/reward.png",
+        "rankHeader": "page/assets/header/rank.png",
+        "uploadHeader": "page/assets/header/upload.png",
+        "dailycheckinHeader": "page/assets/header/dailycheckin.png",
+        "qrhuntHeader": "page/assets/header/qrhunt.png",
+        "referralHeader": "page/assets/header/referral.png",
+        "topcolorHeader": "page/assets/header/topcolor.png"
+    }
+}
