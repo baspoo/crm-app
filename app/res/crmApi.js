@@ -242,6 +242,26 @@
                 return null;
             }
         },
+        updateProfile: async function (profile) {
+            /** @type { ResponseData } */
+            const res = await AppApi.callApiInternal('crm_updateProfile', { profile: profile });
+            if (res.result.code == 200) {
+                currentData.crmUser = res.result.data.crmUser;
+                return currentData.crmUser;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+        updateProfileCustomFields: async function (customFields) {
+            /** @type { ResponseData } */
+            const profile = {
+                [TYPES.profileFields.customFields]: customFields
+            }
+            return await this.updateProfile(profile);
+        },
+
 
 
         //** Address **/
@@ -293,6 +313,20 @@
                 return null;
             }
         },
+        onRemoveAddress: async function (id) {
+            /** @type { ResponseData } */
+            const res = await AppApi.callApiInternal('crm_removeAddresses', { id: id });
+            if (res.result.code == 200) {
+                await this.getAddress();
+                return true;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+
 
         //** Market Data **/
         getMarketData: async function () {
@@ -330,6 +364,28 @@
             if (res.result.code == 200) {
                 currentData.rewards[id] = res.result.data.reward;
                 return currentData.rewards[id];
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+        onRedeemReward: async function (rewardId, quantity, addressId) {
+            /** @type { ResponseData } */
+            const body = {
+                rewardId: rewardId,
+                quantity: quantity
+            };
+            if (addressId)
+                body.addressId = addressId;
+            const res = await AppApi.callApiInternal('crm_redeemReward', body);
+            if (res.result.code == 200) {
+
+                if (res.result.data.points)
+                    currentData.crmUser.user.points = res.result.data.points;
+
+                return true;
             }
             else {
                 this.onfailed(res);
@@ -437,6 +493,75 @@
                 return null;
             }
         },
+
+
+        onGetOneTimeToken: async function () {
+            /** @type { ResponseData } */
+            const res = await AppApi.callApiInternal('crm_getOnetimeToken', {});
+            if (res.result.code == 200) {
+                return res.result.data.token;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+
+        //** Game **
+        /** @returns {GotoGameData} */
+        onGotoGame: async function (gameId) {
+            /** @type { ResponseData } */
+            const res = await AppApi.callApiInternal('crm_gotoGameCampaign', { gameId: gameId });
+            if (res.result.code == 200) {
+                return res.result.data;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+        /** @returns {GachaData} */
+        onOpenGacha: async function (gameId) {
+            const prepair = { gameId: gameId };
+            const res = await AppApi.callApiInternal('crm_prepairGacha', prepair);
+            if (res.result.code == 200) {
+                var token = res.result.data.token;
+                if (token) {
+                    var payload = {};
+                    payload.gameId = gameId;
+                    payload.token = token;
+                    const res = await AppApi.callApiInternal('crm_openGacha', payload);
+                    if (res.result.code == 200) {
+                        return res.result.data;
+                    }
+                    else {
+                        this.onfailed(res);
+                        return null;
+                    }
+                }
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+        /** @returns {List<GachaData>} */
+        onGetGachaRate: async function (gameId) {
+            const res = await AppApi.callApiInternal('crm_getGachaRate', { gameId: gameId });
+            if (res.result.code == 200) {
+                return res.result.data;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+
+
+
 
 
 

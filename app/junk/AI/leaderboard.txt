@@ -1,0 +1,497 @@
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+
+==================================================================================================
+
+
+[## Requirement ##]
+ออกแบบหน้า Leaderboard ให้สวยงามแสดง topspending ตาม response ให้ดูสวยงามตามหลัก design.
+ปรับรูปแบบให้สวยงาม ให้เข้ากับ mood & tone ของ app 
+ดึงภาพส่วนหัวจาก Utility.getAssetPath("leaderboardTopSpendDefault"); 
+layout ที่ออกแบบไว้ตอนนี้ใช้ได้แล้ว
+
+หากใน response มีการส่ง games และในนั้นมี array ชื่อ games[] แสดงว่ามีเกมที่กำลังร่วมแคมเปญอยู่
+ให้เพิ่มปุ่มลูกศร ซ้ายขวา เพื่อให้ผู้ใช้สามารถเลื่อนดูเกมได้
+และปรับรูปแบบให้สวยงาม ให้เข้ากับ mood & tone ของ app 
+ดึงภาพส่วนหัวจาก Utility.getAssetPath("leaderboardTopGameDefault"); 
+โดยตารางของเกมะแตกต่างจาก topspending คือให้เป็นตารางเรียงลำดับ 1-N ไปเลย ไม่มี top 3 ที่สวยงามเด่นเหมือน topspending 
+ทุกเกมจะ render เหมือนกัน 
+
+โดยสามารถดึงข้อมูลเกมมาดูได้จาก
+const game = Utility.getgame("game_mobirun");
+เพื่อนำมาแสดงผลประกอบหน้า game leaderboard ให้สวยงาม
+โครงสร้างข้อมูลคือ
+interface GameCampaignData {
+    gameId: string;
+    model?: string;
+    url?: string;
+    icon?: string;
+    image?: string;
+    leaderboardCoverImage?: string;
+    assets?: Record<string, string>;
+    type: string; // "game" | "gacha"
+    source: string; // "bundle" | "webmodal"
+    name: string;
+    description?: string;
+    contactCampaign?: string;
+    redeemRewardId?: string;
+    startAt: number; // unix timestamp
+    endAt: number; // unix timestamp
+    leaderboard: boolean;
+    enable: boolean;
+}
+
+กรณีข้อมูลแนบรูป cover ของ leaderboard มาให้แล้ว ให้นำไปแสดงได้เลย
+game.leaderboardCoverImage
+หากยังไม่มีให้ใช้ Utility.getAssetPath("leaderboardTopGameDefault"); 
+
+
+response
+{
+    "result": {
+        "code": 200,
+        "message": "OK",
+        "data": {
+            "leaderboard": {
+                "topspending": [
+                    {
+                        "rank": 1,
+                        "userId": 1102,
+                        "totalSpending": 396109.27,
+                        "totalOrders": 81,
+                        "totalPointsEarned": 3011,
+                        "memberSince": "2025-11-27T04:12:45.000Z",
+                        "lastOrderDate": "2026-02-06T11:06:20.000Z",
+                        "tier": {
+                            "id": 4,
+                            "name": "Diamond",
+                            "level": 5,
+                            "color": "#d45cf5",
+                            "icon": "https://assets.mookept.com/tiers/1770608829809-b87992339ae26dc987a8ded8ae68c074.png"
+                        },
+                        "displayName": "Benz. 🏀",
+                        "phone": "0922574966",
+                        "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE"
+                    },
+                    {
+                        "rank": 2,
+                        "userId": 44,
+                        "totalSpending": 4999,
+                        "totalOrders": 5,
+                        "totalPointsEarned": 39,
+                        "memberSince": "2024-11-24T02:21:44.000Z",
+                        "lastOrderDate": "2025-01-15T10:16:00.000Z",
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "Lin Kritiyanee",
+                        "phone": "0655636624",
+                        "pictureUrl": "https://profile.line-scdn.net/0hXOF0htn_B2BrSRYfi0B5HxsZBApIOF5yRn9LBltMX1ZUeBQyR3tJDlceC1AGe0IzQS4fDl4bXFZnWnAGdR_7VGx5WlFXcEM1QC1Nhw"
+                    },
+                    {
+                        "rank": 3,
+                        "userId": 688,
+                        "totalSpending": 3000,
+                        "totalOrders": 1,
+                        "totalPointsEarned": 20,
+                        "memberSince": "2025-07-09T03:13:12.000Z",
+                        "lastOrderDate": null,
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "ZaiiPcrp",
+                        "phone": "0845041754",
+                        "pictureUrl": "https://profile.line-scdn.net/0htsM5nx2MK1xgTDVYQt1VYhAcKDZDPXJOHiwxal1MJWladTldTyhlbVIfdD5bdTlZHn9lOlZKIT9CGBh_O3k-WT0uATAreShLGS8fMiwKFDYFOQ8LPm8mWScSAmsLOmxZJGolVBIzFiUbfAxcOys-XTIoJSRfDghjLRtHCmV-Rd8PTlwJTStjPVRMcWjc"
+                    },
+                    {
+                        "rank": 4,
+                        "userId": 471,
+                        "totalSpending": 2751,
+                        "totalOrders": 2,
+                        "totalPointsEarned": 17,
+                        "memberSince": "2025-04-25T08:48:27.000Z",
+                        "lastOrderDate": "2024-07-25T05:17:00.000Z",
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "Champ",
+                        "phone": "0817151382",
+                        "pictureUrl": "https://profile.line-scdn.net/0hK1AHM0ssFB5sMQRlg6lqYRxhF3RPQE0MFAMIfwllHywDAlIaEAJcfQxlTCxYVVVNQwdYL1A2TipgImN4cmfoKmsBSS9QBlRJQFNf-Q"
+                    },
+                    {
+                        "rank": 5,
+                        "userId": 606,
+                        "totalSpending": 2641,
+                        "totalOrders": 2,
+                        "totalPointsEarned": 16,
+                        "memberSince": "2025-06-05T07:40:43.000Z",
+                        "lastOrderDate": "2024-07-15T08:48:00.000Z",
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "Poom Ratthapon",
+                        "phone": "0845388251",
+                        "pictureUrl": "https://profile.line-scdn.net/0hro7dzbZ2LUAaHTmR6X1TP2pNLio5bHRSYX82LyYVdnImfjkXNX1nIC4fISRyf2oUNi5rIS0cdXIWDlomBEvRdB0tc3cjL2gePnpqpg"
+                    },
+                    {
+                        "rank": 6,
+                        "userId": 570,
+                        "totalSpending": 2500,
+                        "totalOrders": 1,
+                        "totalPointsEarned": 16,
+                        "memberSince": "2025-05-21T03:45:23.000Z",
+                        "lastOrderDate": null,
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "Pam",
+                        "phone": "0954195426",
+                        "pictureUrl": "https://profile.line-scdn.net/0h_W1i56iFAHgcEBDC1wV-B2xAAxI_YVlqOHZISX0SXk4pIE8vNSZLHXsXWUtyJEInNnJOGClDDEAQA3ceAkb8TBsgXUkgJ0AvMHJLnw"
+                    },
+                    {
+                        "rank": 7,
+                        "userId": 690,
+                        "totalSpending": 2500,
+                        "totalOrders": 1,
+                        "totalPointsEarned": 16,
+                        "memberSince": "2025-07-09T06:27:25.000Z",
+                        "lastOrderDate": null,
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "P MKT 🟢 [ Work ]",
+                        "phone": "0968097420",
+                        "pictureUrl": "https://profile.line-scdn.net/0hrnqc-YJJLUFcGjN6_lpTfyxKLit_a3RTc3RicGFJcnZmLWISeC9hdD4YcSYzI2lCc39rdWobJHZ-bAxfJToyTBtjJS1jUANeeQFnYzdvBAYgQjYUE30ndBp_Og46YT5vOAVjfBwfJBIfcBxEOSlgVTljcBYeUm8QbE1BF1koQ8IzGFoUcX1lIGgad3Xg"
+                    },
+                    {
+                        "rank": 8,
+                        "userId": 693,
+                        "totalSpending": 2500,
+                        "totalOrders": 1,
+                        "totalPointsEarned": 16,
+                        "memberSince": "2025-07-09T06:28:09.000Z",
+                        "lastOrderDate": null,
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "May 🌻",
+                        "phone": "0968715695",
+                        "pictureUrl": "https://profile.line-scdn.net/0hd_lW3IqjO3BBLiV-uj5FTjF-OBpiX2JiZBohHnMoNUF5GHgkbRxwRSR9MhB0Si4naUkhRiF5MBVjWyt9Lw8uFzZsExw6exR-aRU8SipnHkgicHt2EAoHfhd1LjoFGQM6GE0HcQZoIkg-QRwvDDcDeHd5AkciHXV6anlXJkQcVfMuLEwlbElzEXUuYUT9"
+                    },
+                    {
+                        "rank": 9,
+                        "userId": 1218,
+                        "totalSpending": 2430,
+                        "totalOrders": 6,
+                        "totalPointsEarned": 315,
+                        "memberSince": "2026-03-04T05:00:54.000Z",
+                        "lastOrderDate": null,
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "MIND(Leave29Jun)",
+                        "phone": "0946471167",
+                        "pictureUrl": "https://profile.line-scdn.net/0hDDGQ4qHpG2t6KAQoDuJkPAdtFQYNBh0jAksHCV8oFlpeSA85FBoDBVZ9EVMDTFo-Rh4BWQoqQwgAByNeDg0QTT1BERoXGgpBHzYEdid_QghSSlh6MTsDDjtDI14_EVtiETgTdBxIJzAcTj1rJhUuRAxcDi8Oeh19Jgo"
+                    },
+                    {
+                        "rank": 10,
+                        "userId": 605,
+                        "totalSpending": 347,
+                        "totalOrders": 1,
+                        "totalPointsEarned": 2,
+                        "memberSince": "2025-06-05T07:31:04.000Z",
+                        "lastOrderDate": "2024-07-24T17:17:00.000Z",
+                        "tier": {
+                            "id": 2,
+                            "name": "Sliver",
+                            "level": 2,
+                            "color": "#4ec686",
+                            "icon": "https://assets.mookept.com/tiers/1770608802598-a3ce0787a4134775a9ae306b23e23a5e.png"
+                        },
+                        "displayName": "Pam",
+                        "phone": "0954195426",
+                        "pictureUrl": "https://profile.line-scdn.net/0h_W1irByDAHgcEBDC1wV-B2xAAxI_YVlqOHZISX0SXk4pIE8vNSZLHXsXWUtyJEInNnJOGClDDEAQA3ceAkb8TBsgXk8lIkUmOHdHng"
+                    }
+                ],
+                "games": {
+                    "game_mobirun": [
+                        {
+                            "statId": "MPd0enmBz5",
+                            "displayName": "Bestติอิ้ง",
+                            "score": 17750,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "UXxlXdft8a",
+                            "displayName": "9Night",
+                            "score": 7280,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "xVzJ6LqzVe",
+                            "displayName": "Benz. 🏀",
+                            "score": 6220,
+                            "profile": {
+                                "lineUserId": "U13ce7cd85dc3a7ad026c0878621932d5",
+                                "id": 1102,
+                                "displayName": "Benz. 🏀",
+                                "pictureUrl": "https://profile.line-scdn.net/0htsXfjH3rK1xlHzcqdIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+                                "email": "myemail_12051@1moby.com",
+                                "phone": "092****966",
+                                "gender": "male",
+                                "birthday": "1/12/2025",
+                                "customFields": {
+                                    "consentnotif": false
+                                }
+                            }
+                        },
+                        {
+                            "statId": "r62zSVaJEk",
+                            "displayName": "Baspoo",
+                            "score": 5920,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "RHZfKUxxMP",
+                            "displayName": "JIU",
+                            "score": 5010,
+                            "profile": {
+                                "lineUserId": "Ucc77cd84c7178f26d4f2d58ee7da56dd",
+                                "id": 1215,
+                                "displayName": "JIU",
+                                "pictureUrl": "https://profile.line-scdn.net/0hoU3sRVZMMHoOCiEJkRtPLTJPPhd5JDYydm16GygNPRgjaXMuMW15SCwLaEkiaXR4Njl_G38IPkgm",
+                                "email": "",
+                                "phone": "099****300"
+                            }
+                        },
+                        {
+                            "statId": "oYv5FNcQkV",
+                            "displayName": "ชะชะชะ",
+                            "score": 4280,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "OIHQvIUSw6",
+                            "displayName": "suphatest",
+                            "score": 3980,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "KJfIjnsS5u",
+                            "displayName": "mink",
+                            "score": 3930,
+                            "profile": {
+                                "lineUserId": "Uec3344f2f1f2051145905b687717b3da",
+                                "id": 1228,
+                                "displayName": "mink",
+                                "pictureUrl": "https://profile.line-scdn.net/0h7KBp65o2aGR_CXek-bcXMwJMZgkIJ24sBzsgCwkKZFcAOiY7RG1wUlpdYVxWMXswR2onBA4KYVECJnQ6NTNwXDlxRhEKQ3UuCjgkVz9-SyxRfUx0AAlJBjxPMxEAMHx7RAROVwdOcAITUS5EPhdfWi90TycsSW0uChA",
+                                "email": "realknimx261@gmail.com",
+                                "phone": "099****869",
+                                "customFields": {
+                                    "gender": "หญิง​",
+                                    "birthday": "2002-10-11T00:00:00"
+                                }
+                            }
+                        },
+                        {
+                            "statId": "rImyvEQvWv",
+                            "displayName": "jiu",
+                            "score": 3910,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "5rdjO8IPdu",
+                            "displayName": "Kuy",
+                            "score": 3880,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "EaE1kmdYlo",
+                            "displayName": "Icy",
+                            "score": 3700,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "q7WJ7cLaLV",
+                            "displayName": "May",
+                            "score": 3530,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "iHWXXqkVsC",
+                            "displayName": "AAA",
+                            "score": 3310,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "f8tEfUdYzP",
+                            "displayName": "Benz. 🏀",
+                            "score": 3300,
+                            "profile": {
+                                "lineUserId": "U725afddef5ad6a779ac46fba4f314cb4",
+                                "id": 1522,
+                                "displayName": "Benz. 🏀",
+                                "pictureUrl": "https://profile.line-scdn.net/0htsXfM92aK1xlHzc5qIJUCxhaJTESMS0UHSsxOhIdcjhOfGkMDi5jaEIXIWwbfzgDDnBhORcddDtNMBFCKwIDR0dNCzkWVwhOPnoGeAkaJxw1TjYDGg0EORJtcAsAe3B6MHATXiZHdDI1V21XLnwyWEZAHSsyXxtSXBE",
+                                "email": "",
+                                "phone": "092****966"
+                            }
+                        },
+                        {
+                            "statId": "PDys89XZoX",
+                            "displayName": "ชะชะชะชะชะ",
+                            "score": 3060,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "92G6hO6BKP",
+                            "displayName": "Tty",
+                            "score": 2940,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "iD38J4GNw1",
+                            "displayName": "Measoay",
+                            "score": 2880,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "BdYiVHWyD6",
+                            "displayName": "Iceaenge",
+                            "score": 2850,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "RGPwGbAMId",
+                            "displayName": "Oil",
+                            "score": 2720,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "lPuOjbjJYO",
+                            "displayName": "Mana",
+                            "score": 2600,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "MGVLlqn8XV",
+                            "displayName": "Balas",
+                            "score": 2540,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "Ti70ybaGpO",
+                            "displayName": "พุทธิภณ อุสาวะริน",
+                            "score": 2490,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "gjIDiFVGim",
+                            "displayName": "หกหฟ",
+                            "score": 2300,
+                            "profile": {}
+                        },
+                        {
+                            "statId": "3pgYlP2AFh",
+                            "displayName": "Rixkaaxn🧸✨",
+                            "score": 2190,
+                            "profile": {
+                                "lineUserId": "Uacbf997540051ed1e339eadf3354fa23",
+                                "id": 1545,
+                                "displayName": "Rixkaaxn🧸✨",
+                                "pictureUrl": "https://profile.line-scdn.net/0hcMmgkKjIPGJQHiPx9BZDNS1bMg8nMDoqKHp3AXEbYlF7fChhPit6BXxMNwAoJiwzP3l3BnxMMAJ4MXhLEDApfWlgCVMddH59OCNyQDBYHQAJTSVQagEWAjAfBRR4Un5jKB8wTRNpPhYPeiwzET57RSdFFwQhKTtzLzA",
+                                "email": "",
+                                "phone": "090****436",
+                                "customFields": {
+                                    "consentnotif": true
+                                }
+                            }
+                        },
+                        {
+                            "statId": "L8UJ9WsNj4",
+                            "displayName": "Fnz",
+                            "score": 2060,
+                            "profile": {}
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+
+ป้องกันรูปภาพโปรไฟล์ที่ไม่สามารถโหลดได้ ให้สร้างรูป defualt เอาไปใส่แทน
+
+
+
+
+

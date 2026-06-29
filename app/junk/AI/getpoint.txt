@@ -1,0 +1,125 @@
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+
+==================================================================================================
+
+
+[## Requirement ##]
+สร้างหน้าสำหรับรับ GetPoint 
+ประกอบด้วย
+1. upload slip ocr 
+panel ส่วนของการอัพโหลดรูปจะสลิปใบเสร็จ ทำให้ดูออกและเข้าใจง่าย กดเพื่อเปิดหน้าอัพโหลดรูปภาพ
+ด้วยคำสั่ง pageManger.openModal("uploadslip");
+มุมบนขวาจะมีปุ่ม help กดเพื่อเปิดหน้าสอนและอธิบายวิธีการใช้งาน
+ด้วยคำสั่ง pageManger.openModal("uploadslip_howto");
+** กรณีกด uploadslip ครั้งแรกจะถามว่าต้องการเรียนรู้ก่อนไหม "เรียนรู้เพิ่ม" หรือ "เริ่มใช้งาน" **  หากเรียนรุ้เพิ่มให้เปิดหน้า how to
+เก็บค่าไว้ใน localstoreage ครุ้งต่อไปไม่ถามอีกแล้ว
+
+
+2. เชื่อมต่อ marketplace
+panel ส่วนของการเชื่อมต่อ marketplace ทำให้ดูออกและเข้าใจง่าย กดเพื่อเปิดหน้าเชื่อมต่อ marketplace  
+แสดงผล ทั้ง 3 platform ดูว่าร้านค้าได้เชื่อมต่อกับ platform ไหนไว้บ้าง และ ตัว user เชื่อมต่อกับ platform ที่เปิดไว้อันไหนบ้าง
+โดยดูสถานะว่าเชื่อมต่อแล้วหรือยัง
+หากยังไม่เชื่อมต่อให้แสดงปุ่มกดเพื่อเชื่อมต่อ
+หากเชื่อมต่อแล้วให้แสดง icon 
+
+const platforms = [
+    TYPES.marketplace.shopee,
+    TYPES.marketplace.tiktok,
+    TYPES.marketplace.lazada
+];
+ดึงค่าออกมาดูจาก function นี้
+const connect = Utility.getMarketplace(platforms);
+{
+    "shopee" : {
+        "count": 1,
+        "spending": 348,
+        "points": 2
+    },
+    "lazada" : null
+}
+จากตัวอย่าง
+shopee : ค่าที่ส่งมาแสดงว่าร้านค้าเชื่อมต่อแล้ว  และ user ก็ได้เชื่อมต่อแล้วเช่นกัน แสดงสถานะเชื่อมต่อ และปุ่มกดเพื่อเชื่อมต่อได้
+lazada : ค่าที่ส่งมาแสดงว่าร้านค้าเชื่อมต่อแล้ว  แต่ user ยังไม่ได้เชื่อมต่อ แสดงสะานถยังไม่เชื่อมต่อ เปิดปุ่มให้สามารถกดเชื่อมต่อได้
+tiktok : ค่าที่ส่งมาแสดงว่าร้านค้า ยังไม่ได้เชื่อมต่อกับ platform นี้ ให้ทำ disable ไว้ ไม่สามารถกดเพื่อเชื่อมต่อได้
+
+ดึง icon มาจาก path นี้ ทั้ง 3 platform
+Utility.getAssetPath("platformLazada"); 
+Utility.getAssetPath("platformShopee"); 
+Utility.getAssetPath("platformTiktok"); 
+
+เมื่อกดแต่ละ platform เพื่อทำการเชื่อต่อจะเปิดหน้าย่อยออกมาให้เข้าไปเชื่อมต่อ
+const marketplace = "shopee";
+pageManger.openModal("linkmarketplace", {marketplace : marketplace} , function(res)=>{
+    if(res && res.success){
+        await crmApi.getProfile();
+        // refresh interface ui this page.... //
+    }
+});
+
+มุมบนขวาจะมีปุ่ม help กดเพื่อเปิดหน้าสอนและอธิบายวิธีการใช้งาน
+pageManger.openModal("linkmarketplace_howto");
+
+
+
+
+
+
+
+ 
+
+
+
+
+3. motivation feature 
+3.1 daily checkin
+3.2 referral code / invite code
+3.3 qr hunter
+
+const dailyCheckin = Utility.getGamifyFeatures(TYPES.gamifyFeatures.dailyCheckin);
+const referralCode = Utility.getGamifyFeatures(TYPES.gamifyFeatures.referralCode);
+const qrHunt = Utility.getGamifyFeatures(TYPES.gamifyFeatures.qrHunt);
+
+
+
+
+
+
+      

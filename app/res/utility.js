@@ -9,8 +9,28 @@
             shopee: 'shopee',
             lazada: 'lazada',
             tiktok: 'tiktok'
+        },
+        profileFields: {
+            email: 'email',
+            customFields: 'customFields',
+            displayName: 'displayName',
+            pictureUrl: 'pictureUrl'
+        },
+        customFields: {
+            gender: 'gender',
+            birthday: 'birthday',
+            consent_notif: 'consentnotif'
+        },
+        gamifyFeatures: {
+            dailyCheckin: 'dailyCheckin',
+            referralCode: 'referralCode',
+            qrHunt: 'qrHunt'
         }
     };
+
+
+
+
 
 
     window.addEventListener('keydown', (e) => {
@@ -225,7 +245,31 @@
             return null;
         },
 
+        getMarketplace: function (platforms) {
+            const marketplace = {}
+            platforms.forEach(platform => {
+                const linked = crmData.user.statistics.orders.byMarketplace[marketplace] != null;
+                const storeConnect = crmData.marketData.marketplaces.find(t => t.name === marketplace && t.connected) != null;
+                if (storeConnect) {
+                    marketplace[platform] = linked;
+                }
+            });
+            return marketplace;
+        },
 
+        getGamifyFeatures: function (feature) {
+            const marketData = crmData.marketData;
+            if (feature === TYPES.gamifyFeatures.dailyCheckin) {
+                return marketData.enableDailyCheckIn;
+            }
+            if (feature === TYPES.gamifyFeatures.referralCode) {
+                return marketData.enableReferralCode;
+            }
+            if (feature === TYPES.gamifyFeatures.qrHunt) {
+                return marketData.enableQRHunt;
+            }
+            return false;
+        },
 
 
 

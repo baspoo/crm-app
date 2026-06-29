@@ -908,7 +908,8 @@
                 }
             ],
             "enableDailyCheckIn": true,
-            "enableReferralCode": true
+            "enableReferralCode": true,
+            "enableQRHunt": true
         }
     }
 }

@@ -1,311 +1,848 @@
 <style>
-    .page-container {
-        padding: 1rem;
-        padding-bottom: 5rem;
+    /* ==========================================
+       Leaderboard Page Styles
+       รองรับ Global Override Theme จาก style.css
+       ========================================== */
+    .lb-page-container {
+        padding: 0;
+        padding-bottom: 6rem;
         width: 100%;
         height: 100%;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
-        background-color: #f8fafc;
+        background-color: transparent;
+        /* เอาพื้นหลังออก เพื่อใช้พื้นหลังจาก index.html */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 
-    .page-header {
+    .lb-page-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* 1. Header Banner & Nav */
+    .lb-cover-wrapper {
+        width: 100%;
+        height: var(--cover-height, 130px);
+        /* ปรับความสูงจาก pageSetting */
+        flex-shrink: 0;
+        background: transparent;
+        /* ถอดสีฟ้าออก เพื่อไม่ให้ไปปนกับรูปปก */
+        position: relative;
+        border-bottom-left-radius: 1.5rem;
+        border-bottom-right-radius: 1.5rem;
+        box-shadow: var(--theme-shadow, 0 4px 10px -2px rgba(0, 0, 0, 0.1));
+        overflow: hidden;
+        z-index: 10;
+        transition: all 0.4s ease;
+    }
+
+    .lb-cover-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        /* ไล่สีดำอ่อนๆ เฉพาะด้านล่างเพื่อให้อ่านข้อความออก โดยไม่มีสีอื่นเจือปน */
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 90%);
+        pointer-events: none;
+    }
+
+    .lb-cover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.5s ease;
+    }
+
+    /* Cover Navigation */
+    .lb-cover-nav {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .cat-nav-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        outline: none;
+    }
+
+    .cat-nav-btn:active {
+        transform: scale(0.9);
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .cat-info {
         text-align: center;
-        padding: 1rem 0;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        flex-grow: 1;
+        padding: 0 0.5rem;
     }
 
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1f2937;
+    .lb-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.2;
     }
 
-    .page-subtitle {
-        font-size: 0.75rem;
-        color: #6b7280;
+    .lb-subtitle {
+        font-size: 0.7rem;
+        font-weight: 500;
+        opacity: 0.9;
+        margin-top: 0.15rem;
     }
 
-    .podium-container {
+    /* Cover Dots Pagination */
+    .lb-cover-dots {
+        position: absolute;
+        bottom: 0.6rem;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 0.35rem;
+        z-index: 20;
+    }
+
+    .lb-dot {
+        width: 0.35rem;
+        height: 0.35rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transition: all 0.3s;
+    }
+
+    .lb-dot.active {
+        background: white;
+        width: 1rem;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 3. Podium Section (Top Spenders) */
+    .lb-podium-container {
         display: flex;
         justify-content: center;
         align-items: flex-end;
-        gap: 0.5rem;
-        margin-bottom: 2rem;
-        height: 10rem;
+        /* จัดเรียงให้อยู่ฐานเดียวกัน */
+        gap: 1rem;
+        margin: 1.5rem 1rem 1rem 1rem;
+        /* นำ height ออกเพื่อให้สามารถขยายตามขนาดภาพ Avatar ที่ใหญ่ขึ้นได้อย่างอิสระ */
+        animation: fadeIn 0.5s ease forwards;
+        flex-shrink: 0;
     }
 
     .podium-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 6rem;
+        width: 28%;
         position: relative;
-        transition: transform 0.2s;
+        z-index: 10;
     }
 
-    .podium-item .rank-badge {
+    .podium-item.rank-1 {
+        z-index: 20;
+        width: 36%;
+        margin-bottom: 0;
+    }
+
+    .podium-avatar-wrap {
+        position: relative;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .podium-avatar {
+        width: 4.5rem;
+        /* ขยายขนาดภาพอันดับ 2 และ 3 */
+        height: 4.5rem;
+        border-radius: 9999px;
+        border: 3px solid var(--theme-bg-card, #ffffff);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+        background-color: var(--theme-bg-app, #f3f4f6);
+    }
+
+    .podium-item.rank-1 .podium-avatar {
+        width: 6.5rem;
+        /* ขยายขนาดภาพอันดับ 1 ให้ใหญ่และโดดเด่น */
+        height: 6.5rem;
+        border-color: var(--color-rank1, #facc15);
+        border-width: 4px;
+        box-shadow: 0 6px 15px var(--color-rank1, #facc15);
+    }
+
+    .podium-item.rank-2 .podium-avatar {
+        border-color: var(--color-rank2, #94a3b8);
+    }
+
+    .podium-item.rank-3 .podium-avatar {
+        border-color: var(--color-rank3, #d97706);
+    }
+
+    .podium-badge {
         position: absolute;
-        top: -0.75rem;
-        right: 0;
+        bottom: -0.5rem;
+        left: 50%;
+        transform: translateX(-50%);
         width: 1.5rem;
         height: 1.5rem;
         border-radius: 9999px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.8rem;
+        font-weight: 900;
         color: #ffffff;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        z-index: 10;
+        border: 2px solid var(--theme-bg-card, #ffffff);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 15;
     }
 
-    .podium-item .rank-badge.rank-1 {
-        background-color: #facc15;
+    .podium-item.rank-1 .podium-badge {
+        background-color: var(--color-rank1, #facc15);
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.1rem;
+        bottom: -0.75rem;
     }
 
-    .podium-item .rank-badge.rank-2 {
-        background-color: #9ca3af;
+    .podium-item.rank-2 .podium-badge {
+        background-color: var(--color-rank2, #94a3b8);
     }
 
-    .podium-item .rank-badge.rank-3 {
-        background-color: #d97706;
+    .podium-item.rank-3 .podium-badge {
+        background-color: var(--color-rank3, #d97706);
     }
 
-    .podium-item .avatar-slot {
-        width: 4rem;
-        height: 4rem;
-        border-radius: 9999px;
-        border: 4px solid #ffffff;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        object-fit: cover;
-        margin-bottom: 0.5rem;
-        background-color: #e5e7eb;
+    /* ไอคอน Tier แนบมุมขวาล่างของโปรไฟล์ใน Podium */
+    .podium-tier-icon {
+        position: absolute;
+        bottom: 0;
+        right: -0.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        object-fit: contain;
+        padding: 1.5px;
+        z-index: 25;
+        display: none;
     }
 
-    .podium-item .avatar-slot.border-1 {
-        border-color: #facc15;
+    .podium-item.rank-1 .podium-tier-icon {
+        width: 1.8rem;
+        height: 1.8rem;
+        bottom: 0.25rem;
+        right: -0.25rem;
     }
 
-    .podium-item .name-slot {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #1f2937;
+    .podium-name {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
         width: 100%;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin-top: 0.25rem;
     }
 
-    .podium-item .point-slot {
-        font-size: 0.625rem;
+    .podium-pts {
+        font-size: 0.7rem;
         font-weight: 700;
-        color: var(--color-primary);
-        background-color: var(--color-primary-light);
-        padding: 0.125rem 0.5rem;
+        color: var(--theme-primary, #2563eb);
+        background-color: var(--theme-primary-light, #eff6ff);
+        padding: 0.15rem 0.5rem;
         border-radius: 9999px;
         margin-top: 0.25rem;
     }
 
-    .podium-item .podium-base {
-        width: 100%;
-        background: linear-gradient(to top, #e5e7eb, #f3f4f6);
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
-        margin-top: 0.5rem;
-        height: 0;
-        transition: height 0.5s ease-out;
-    }
-
-    .rank-list-container {
-        background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
-        padding: 0.5rem;
+    /* 4. Flat List Section */
+    .lb-list-container {
+        margin: 0.5rem 0.75rem 1rem 0.75rem;
+        background: var(--theme-bg-card, #ffffff);
+        border-radius: var(--theme-radius, 1rem);
+        box-shadow: var(--theme-shadow, 0 2px 8px rgba(0, 0, 0, 0.03));
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        animation: fadeIn 0.5s ease forwards;
     }
 
-    .rank-list-item {
+    .lb-list-item {
+        padding: 0.5rem 0.75rem;
         display: flex;
         align-items: center;
-        padding: 0.75rem;
-        border-radius: 0.75rem;
-        transition: background 0.2s;
+        border-bottom: 1px solid var(--theme-border-color, #f1f5f9);
+        transition: background-color 0.2s ease;
     }
 
-    .rank-list-item:hover {
-        background: #f9fafb;
+    .lb-list-item:active {
+        background-color: var(--theme-bg-app, #f8fafc);
     }
 
-    .rank-list-item .rank-slot {
+    .lb-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-rank-badge {
         width: 1.5rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: var(--theme-text-muted, #94a3b8);
         text-align: center;
-        color: #9ca3af;
-        font-weight: 700;
-        font-size: 0.875rem;
-        margin-right: 0.75rem;
+        margin-right: 0.25rem;
+        flex-shrink: 0;
     }
 
-    .rank-list-item .avatar-slot {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 9999px;
+    /* Medal icons for Rank 1-3 in Game mode */
+    .list-rank-medal {
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: white;
+        font-weight: 900;
+        font-size: 0.75rem;
+        margin-right: 0.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-rank-medal.r1 {
+        background-color: var(--color-rank1, #facc15);
+    }
+
+    .list-rank-medal.r2 {
+        background-color: var(--color-rank2, #94a3b8);
+    }
+
+    .list-rank-medal.r3 {
+        background-color: var(--color-rank3, #d97706);
+    }
+
+    .list-avatar-wrap {
+        position: relative;
+        margin-right: 0.6rem;
+        flex-shrink: 0;
+    }
+
+    .list-avatar {
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
         object-fit: cover;
-        margin-right: 0.75rem;
-        background-color: #e5e7eb;
+        background-color: var(--theme-bg-app, #f3f4f6);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
     }
 
-    .rank-list-item .info-col {
+    .list-tier-icon {
+        position: absolute;
+        bottom: -0.1rem;
+        right: -0.1rem;
+        width: 0.85rem;
+        height: 0.85rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        object-fit: contain;
+        padding: 1px;
+        z-index: 10;
+        display: none;
+    }
+
+    .list-info {
         flex-grow: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
-    .rank-list-item .name-slot {
-        font-size: 0.875rem;
+    .list-name {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .list-score-col {
+        text-align: right;
+        flex-shrink: 0;
+        margin-left: 0.5rem;
+    }
+
+    .list-score-val {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--theme-primary, #2563eb);
+        line-height: 1.1;
+    }
+
+    .list-score-label {
+        font-size: 0.55rem;
         font-weight: 700;
-        color: #1f2937;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        color: var(--theme-text-muted, #9ca3af);
+        text-transform: uppercase;
+        margin-top: 0.1rem;
     }
 
-    .rank-list-item .tier-slot {
-        font-size: 0.625rem;
-        color: #6b7280;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-top: 0.125rem;
+    /* States */
+    .lb-section {
+        display: none;
+    }
+
+    .lb-section.active {
         display: block;
     }
 
-    .rank-list-item .point-slot {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #374151;
+    .empty-state {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        color: var(--theme-text-muted, #9ca3af);
+        font-size: 0.8rem;
+        background: transparent;
+        margin: 1.5rem 1rem;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 
-<div class="page-container">
-    <div class="page-header">
-        <h2 class="page-title">Top Spenders</h2>
-        <p class="page-subtitle">Hall of fame for our best customers</p>
+<div class="lb-page-container">
+
+    <!-- 1. Cover Banner & Category Navigation -->
+    <div class="lb-cover-wrapper">
+        <img id="lb-cover-img" src="" alt="Leaderboard Cover" class="lb-cover-img" onerror="this.style.opacity='0.5'">
+
+        <div class="lb-cover-nav" id="lb-cover-nav">
+            <button class="cat-nav-btn" id="btn-cat-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="cat-info">
+                <h2 id="lb-page-title" class="lb-title" data-i18n="pageTitle">Leaderboard</h2>
+                <p id="lb-page-subtitle" class="lb-subtitle" data-i18n="pageSub">Hall of fame for top users</p>
+            </div>
+            <button class="cat-nav-btn" id="btn-cat-next"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <div class="lb-cover-dots" id="lb-dots-container">
+            <!-- Dots will be injected via JS -->
+        </div>
     </div>
 
-    <!-- Top 3 Podium Container -->
-    <div id="podium-container" class="podium-container">
-        <!-- JS จะยัด Rank 2, 1, 3 ลงที่นี่ -->
+    <!-- 2. Top Spender Section -->
+    <div id="section-topspender" class="lb-section active">
+        <div id="ts-podium-container" class="lb-podium-container">
+            <!-- Podium injected via JS -->
+        </div>
+        <div id="ts-list-container" class="lb-list-container">
+            <!-- List injected via JS -->
+        </div>
     </div>
 
-    <!-- Rank List Container (Rank 4+) -->
-    <div id="rank-list-container" class="rank-list-container">
-        <!-- JS จะยัด Template ลงตรงนี้ -->
+    <!-- 3. Game Leaderboard Section (1-N List) -->
+    <div id="section-game" class="lb-section">
+        <div class="lb-list-container mt-3" id="game-list-container">
+            <!-- Game List injected via JS -->
+        </div>
     </div>
+
 </div>
 
 <!-- ================= TEMPLATES ================= -->
 
-<!-- Template สำหรับ Top 3 (Podium) -->
-<template id="tpl-podium-item">
+<!-- Template: Podium Item (Top Spender 1-3) -->
+<template id="tpl-podium">
     <div class="podium-item">
-        <div class="rank-badge">1</div>
-        <img class="avatar-slot" src="" />
-        <div class="name-slot">Name</div>
-        <div class="point-slot">0</div>
-        <div class="podium-base"></div>
+        <div class="podium-avatar-wrap">
+            <img class="podium-avatar" src="" />
+            <div class="podium-badge"></div>
+            <img class="podium-tier-icon" src="" alt="Tier" />
+        </div>
+        <div class="podium-name">Name</div>
+        <div class="podium-pts">0 <span class="pts-label">Pts</span></div>
     </div>
 </template>
 
-<!-- Template สำหรับ Rank 4 เป็นต้นไป -->
-<template id="tpl-rank-list-item">
-    <div class="rank-list-item">
-        <div class="rank-slot">4</div>
-        <img class="avatar-slot" src="" />
-        <div class="info-col">
-            <div class="name-slot">Name</div>
-            <span class="tier-slot">Tier</span>
+<!-- Template: List Item (Flat List) -->
+<template id="tpl-list-item">
+    <div class="lb-list-item">
+        <!-- Will show either .list-rank-badge OR .list-rank-medal -->
+        <div class="list-rank-badge">4</div>
+        <div class="list-avatar-wrap">
+            <img class="list-avatar" src="" />
+            <img class="list-tier-icon" src="" alt="Tier" />
         </div>
-        <div class="point-slot">0</div>
+        <div class="list-info">
+            <div class="list-name">Name</div>
+        </div>
+        <div class="list-score-col">
+            <div class="list-score-val">0</div>
+            <div class="list-score-label">Points</div>
+        </div>
     </div>
 </template>
 
 <script>
     (() => {
-        const podiumContainer = document.getElementById('podium-container');
-        const listContainer = document.getElementById('rank-list-container');
-        const tplPodium = document.getElementById('tpl-podium-item');
-        const tplList = document.getElementById('tpl-rank-list-item');
+        // ==========================================
+        // 1. PAGE SETTINGS
+        // ==========================================
+        const pageSetting = {
+            // ความสูงของส่วน Cover Header ด้านบน
+            coverHeight: "100px",
+            // สีของ Rank 1-3 สามารถปรับเปลี่ยนตามธีมของแบรนด์ได้
+            rankColors: {
+                rank1: "#facc15", // สีทอง
+                rank2: "#94a3b8", // สีเงิน
+                rank3: "#d97706"  // สีทองแดง
+            },
+            // ภาพปกสำรอง หากระบบไม่พบภาพจาก Asset หรือ API
+            defaultSpendBanner: "https://images.unsplash.com/photo-1555529733-0e670560f7e1?q=80&w=800&auto=format&fit=crop",
+            defaultGameBanner: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop"
+        };
 
-        async function loadLeaderboard() {
-            let data = window.crmData?.leaderboard?.topspending;
-            if (!data) {
+        // Base64 SVG สำหรับรูปโปรไฟล์ที่สวยงามดูเป็นมืออาชีพ กรณีรูปภาพไม่โหลด
+        const FALLBACK_AVATAR = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+
+        // ==========================================
+        // 2. LANGUAGE DICTIONARY
+        // ==========================================
+        const i18nDict = {
+            Th: {
+                pageTitle: "ฮอลล์ออฟเฟม",
+                pageSub: "อันดับนักช้อปยอดเยี่ยม",
+                pageSubGame: "Game Leaderboard",
+                tabTopSpender: "ยอดนักช้อป",
+                ptsStr: "บาท", // สำหรับ Topsending
+                scoreStr: "คะแนน", // สำหรับ Games
+                emptyStr: "ยังไม่มีข้อมูลในขณะนี้"
+            },
+            En: {
+                pageTitle: "Hall of Fame",
+                pageSub: "Top spenders ranking",
+                pageSubGame: "Game Leaderboard",
+                tabTopSpender: "Top Spenders",
+                ptsStr: "THB",
+                scoreStr: "Score",
+                emptyStr: "No data available at the moment."
+            }
+        };
+
+        let currentLang = 'Th';
+        let leaderboardData = null;
+        let tabItems = [];
+        let currentTabIndex = 0;
+
+        // DOM Elements
+        const elCoverImg = document.getElementById('lb-cover-img');
+        const elTitle = document.getElementById('lb-page-title');
+        const elSubtitle = document.getElementById('lb-page-subtitle');
+        const elSecTopSpender = document.getElementById('section-topspender');
+        const elSecGame = document.getElementById('section-game');
+
+        // Templates
+        const tplPodium = document.getElementById('tpl-podium');
+        const tplList = document.getElementById('tpl-list-item');
+
+        // ==========================================
+        // 3. INITIALIZATION
+        // ==========================================
+        async function init() {
+            // Apply Rank Colors to CSS Variables
+            const root = document.documentElement;
+            root.style.setProperty('--color-rank1', pageSetting.rankColors.rank1);
+            root.style.setProperty('--color-rank2', pageSetting.rankColors.rank2);
+            root.style.setProperty('--color-rank3', pageSetting.rankColors.rank3);
+
+            if (window.crmData && window.crmData.language === 'En') currentLang = 'En';
+            applyLanguage();
+
+            // Set Cover Height จาก pageSetting
+            elCoverImg.parentElement.style.setProperty('--cover-height', pageSetting.coverHeight);
+
+            // ดึงข้อมูล Leaderboard
+            if (window.crmData && window.crmData.leaderboard) {
+                leaderboardData = window.crmData.leaderboard;
+            } else {
                 try {
-                    const lbRes = await CrmApi.getLeaderboard('topspending');
-                    data = lbRes?.topspending;
+                    if (window.PageManager) PageManager.showLoading();
+                    if (window.CrmApi) {
+                        leaderboardData = await CrmApi.getLeaderboard('topspending');
+                    }
+                    if (window.PageManager) PageManager.hideLoading();
                 } catch (e) {
-                    listContainer.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 1rem 0; font-size: 0.75rem;">Failed to load ranking</div>';
-                    return;
+                    if (window.PageManager) PageManager.hideLoading();
+                    console.error("Failed to fetch leaderboard", e);
                 }
             }
 
-            if (!Array.isArray(data)) {
-                data = Array.from({ length: 10 }, (_, i) => ({
-                    rank: i + 1,
-                    displayName: `Player ${i + 1}`,
-                    totalSpending: Math.floor(Math.random() * 50000),
-                    tier: { name: 'Gold' }
-                })).sort((a, b) => b.totalSpending - a.totalSpending);
-                data.forEach((d, i) => d.rank = i + 1);
+            if (!leaderboardData) {
+                showEmptyState(document.getElementById('ts-list-container'));
+                return;
             }
 
-            renderLeaderboard(data);
+            // เตรียมข้อมูลหมวดหมู่ (Tabs) สำหรับสลับแสดงผล
+            tabItems = [{
+                id: 'topspending',
+                type: 'topspending',
+                name: i18nDict[currentLang].tabTopSpender,
+                cover: getAssetPathSecure("topspendingHeader") || getAssetPathSecure("leaderboardTopSpendDefault") || pageSetting.defaultSpendBanner
+            }];
+
+            if (leaderboardData.games && typeof leaderboardData.games === 'object') {
+                Object.keys(leaderboardData.games).forEach(gameId => {
+                    let gameName = gameId;
+                    let coverUrl = getAssetPathSecure("leaderboardTopGameDefault") || pageSetting.defaultGameBanner;
+
+                    if (window.Utility && typeof Utility.getGameCampaign === 'function') {
+                        const gameObj = Utility.getGameCampaign(gameId);
+                        if (gameObj) {
+                            gameName = gameObj.name || gameId;
+                            if (gameObj.leaderboardCoverImage) coverUrl = gameObj.leaderboardCoverImage;
+                        }
+                    }
+                    tabItems.push({ id: gameId, type: 'game', name: gameName, cover: coverUrl });
+                });
+            }
+
+            buildNav();
+            switchTab(0);
         }
 
-        function renderLeaderboard(list) {
+        function applyLanguage() {
+            const dict = i18nDict[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        // ==========================================
+        // 4. NAVIGATION (ARROWS & DOTS ON COVER)
+        // ==========================================
+        function buildNav() {
+            const dotsContainer = document.getElementById('lb-dots-container');
+            dotsContainer.innerHTML = '';
+
+            // หากมีแค่หน้าเดียวให้ซ่อนลูกศร
+            if (tabItems.length <= 1) {
+                document.getElementById('btn-cat-prev').style.display = 'none';
+                document.getElementById('btn-cat-next').style.display = 'none';
+                return;
+            }
+
+            // สร้างจุดไข่ปลา
+            tabItems.forEach((_, idx) => {
+                const dot = document.createElement('div');
+                dot.className = 'lb-dot';
+                dot.id = `lb-dot-${idx}`;
+                dotsContainer.appendChild(dot);
+            });
+
+            // ผูก Event ลูกศร
+            document.getElementById('btn-cat-prev').onclick = () => switchTab(currentTabIndex - 1);
+            document.getElementById('btn-cat-next').onclick = () => switchTab(currentTabIndex + 1);
+        }
+
+        function switchTab(index) {
+            if (index < 0) index = tabItems.length - 1;
+            if (index >= tabItems.length) index = 0;
+            currentTabIndex = index;
+
+            // อัปเดตจุดไข่ปลา
+            document.querySelectorAll('.lb-dot').forEach(d => d.classList.remove('active'));
+            const activeDot = document.getElementById(`lb-dot-${index}`);
+            if (activeDot) activeDot.classList.add('active');
+
+            const tab = tabItems[index];
+
+            // อัปเดตข้อความบน Cover
+            elTitle.innerText = tab.name;
+            elSubtitle.innerText = tab.type === 'topspending' ? i18nDict[currentLang].pageSub : i18nDict[currentLang].pageSubGame;
+            elCoverImg.src = tab.cover;
+
+            // สลับการแสดงผล Layout ย่อย
+            if (tab.type === 'topspending') {
+                elSecTopSpender.classList.add('active');
+                elSecGame.classList.remove('active');
+                renderTopSpender();
+            } else {
+                elSecTopSpender.classList.remove('active');
+                elSecGame.classList.add('active');
+                renderGameLeaderboard(tab.id);
+            }
+        }
+
+        function getAssetPathSecure(key) {
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                return Utility.getAssetPath(key);
+            }
+            if (window.appData && window.appData.customAssets && window.appData.customAssets[key]) {
+                return window.appData.customAssets[key];
+            }
+            return null;
+        }
+
+        // ==========================================
+        // 5. RENDER FUNCTIONS
+        // ==========================================
+        function showEmptyState(container) {
+            container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box-open text-3xl mb-3 opacity-50"></i><br>${i18nDict[currentLang].emptyStr}</div>`;
+        }
+
+        function setupAvatar(imgElement, sourceUrl) {
+            imgElement.onerror = function () {
+                this.src = FALLBACK_AVATAR;
+                this.style.backgroundColor = "#e2e8f0";
+            };
+            imgElement.src = sourceUrl || FALLBACK_AVATAR;
+        }
+
+        // --- Render Top Spenders (Podium + Flat List) ---
+        function renderTopSpender() {
+            const list = leaderboardData.topspending || [];
+            const podiumContainer = document.getElementById('ts-podium-container');
+            const listContainer = document.getElementById('ts-list-container');
+
             podiumContainer.innerHTML = '';
             listContainer.innerHTML = '';
 
-            // --- จัดการ Top 3 ---
-            const top3 = [list[1], list[0], list[2]].filter(Boolean);
+            if (list.length === 0) {
+                showEmptyState(listContainer);
+                return;
+            }
 
+            // จัดเรียง rank และแบ่ง Top 3
+            const sortedList = [...list].sort((a, b) => (a.rank || 0) - (b.rank || 0));
+            const top3 = [sortedList[1], sortedList[0], sortedList[2]].filter(Boolean);
+
+            // Render Podium
             top3.forEach(item => {
                 const clone = tplPodium.content.cloneNode(true);
-                clone.querySelector('.name-slot').textContent = item.displayName;
-                clone.querySelector('.point-slot').textContent = (item.totalSpending || 0).toLocaleString();
-                clone.querySelector('.rank-badge').textContent = item.rank;
-                if (item.pictureUrl) clone.querySelector('.avatar-slot').src = item.pictureUrl;
+                const rootItem = clone.querySelector('.podium-item');
 
-                const badge = clone.querySelector('.rank-badge');
-                const base = clone.querySelector('.podium-base');
-                const avatar = clone.querySelector('.avatar-slot');
+                clone.querySelector('.podium-name').textContent = item.displayName || "Unknown";
+                clone.querySelector('.podium-pts').innerHTML = `${(item.totalSpending || 0).toLocaleString()} <span class="pts-label">${i18nDict[currentLang].ptsStr}</span>`;
+                clone.querySelector('.podium-badge').textContent = item.rank;
+                setupAvatar(clone.querySelector('.podium-avatar'), item.pictureUrl);
 
-                if (item.rank === 1) { badge.classList.add('rank-1'); avatar.classList.add('border-1'); setTimeout(() => base.style.height = '60px', 50); }
-                if (item.rank === 2) { badge.classList.add('rank-2'); setTimeout(() => base.style.height = '40px', 50); }
-                if (item.rank === 3) { badge.classList.add('rank-3'); setTimeout(() => base.style.height = '20px', 50); }
+                // Tier Icon เล็กๆ แปะบนโปรไฟล์มุมขวาล่าง
+                if (item.tier?.icon) {
+                    const tierIconEl = clone.querySelector('.podium-tier-icon');
+                    tierIconEl.src = item.tier.icon;
+                    tierIconEl.style.display = 'block';
+                }
+
+                // Add class for styling specific ranks
+                if (item.rank === 1) rootItem.classList.add('rank-1');
+                if (item.rank === 2) rootItem.classList.add('rank-2');
+                if (item.rank === 3) rootItem.classList.add('rank-3');
 
                 podiumContainer.appendChild(clone);
             });
 
-            // --- จัดการ Rank 4+ ---
-            const others = list.slice(3);
+            // Render Flat List สำหรับ Rank 4 เป็นต้นไป
+            const others = sortedList.slice(3);
             others.forEach(item => {
                 const clone = tplList.content.cloneNode(true);
-                clone.querySelector('.rank-slot').textContent = item.rank;
-                clone.querySelector('.name-slot').textContent = item.displayName;
-                clone.querySelector('.tier-slot').textContent = item.tier?.name || 'Member';
-                clone.querySelector('.point-slot').textContent = (item.totalSpending || 0).toLocaleString();
-                if (item.pictureUrl) clone.querySelector('.avatar-slot').src = item.pictureUrl;
+                clone.querySelector('.list-rank-badge').textContent = item.rank;
+                clone.querySelector('.list-name').textContent = item.displayName || "Unknown";
+
+                // นำ Tier Icon ไปแปะแนบรูป Avatar เพื่อประหยัดพื้นที่แนวตั้ง
+                if (item.tier?.icon) {
+                    const tierIconEl = clone.querySelector('.list-tier-icon');
+                    tierIconEl.src = item.tier.icon;
+                    tierIconEl.style.display = 'block';
+                }
+
+                clone.querySelector('.list-score-val').textContent = (item.totalSpending || 0).toLocaleString();
+                clone.querySelector('.list-score-label').textContent = i18nDict[currentLang].ptsStr;
+                setupAvatar(clone.querySelector('.list-avatar'), item.pictureUrl);
 
                 listContainer.appendChild(clone);
             });
         }
 
-        loadLeaderboard();
+        // --- Render Game Leaderboard (Flat List 1-N Only) ---
+        function renderGameLeaderboard(gameId) {
+            const listContainer = document.getElementById('game-list-container');
+            listContainer.innerHTML = '';
+
+            const list = leaderboardData.games[gameId] || [];
+
+            if (list.length === 0) {
+                showEmptyState(listContainer);
+                return;
+            }
+
+            const sortedList = [...list].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+            sortedList.forEach((item, idx) => {
+                const rank = item.index || (idx + 1);
+                const clone = tplList.content.cloneNode(true);
+
+                const rankBadge = clone.querySelector('.list-rank-badge');
+
+                // เปลี่ยนเป็น Medal Icon สำหรับ Top 3
+                if (rank <= 3) {
+                    const medal = document.createElement('div');
+                    medal.className = `list-rank-medal r${rank}`;
+                    medal.textContent = rank;
+                    rankBadge.parentNode.replaceChild(medal, rankBadge);
+                } else {
+                    rankBadge.textContent = rank;
+                }
+
+                clone.querySelector('.list-name').textContent = item.displayName || "Unknown";
+
+                clone.querySelector('.list-score-val').textContent = (item.score || 0).toLocaleString();
+                clone.querySelector('.list-score-label').textContent = i18nDict[currentLang].scoreStr;
+
+                const picUrl = item.profile?.pictureUrl || item.pictureUrl;
+                setupAvatar(clone.querySelector('.list-avatar'), picUrl);
+
+                listContainer.appendChild(clone);
+            });
+        }
+
+        init();
     })();
 </script>

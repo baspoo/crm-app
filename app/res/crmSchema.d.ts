@@ -263,6 +263,14 @@ interface GameCampaignData {
     leaderboard: boolean;
     enable: boolean;
 }
+interface GotoGameData {
+    sessionId?: string;
+    gameURL?: string;
+    gameId?: string;
+    statId?: string;
+    token?: string;
+    newUser: boolean;
+}
 
 interface MarketData {
     initializeData?: InitializeData;
