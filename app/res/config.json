@@ -114,9 +114,9 @@
     "resPath": {
         "pointIcon": "page/assets/icon/icon_point.png",
         "staminaIcon": "page/assets/icon/icon_stamina.png",
-        "platformLazada": "page/assets/platform/lazada.png",
-        "platformShopee": "page/assets/platform/shopee.png",
-        "platformTiktok": "page/assets/platform/tiktok.png",
+        "lazadaPlatform": "page/assets/platform/lazada.png",
+        "shopeePlatform": "page/assets/platform/shopee.png",
+        "tiktokPlatform": "page/assets/platform/tiktok.png",
         "addressHeader": "page/assets/header/address.png",
         "lazadaHeader": "page/assets/header/lazada.png",
         "shopeeHeader": "page/assets/header/shopee.png",

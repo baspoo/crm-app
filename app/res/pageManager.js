@@ -44,6 +44,11 @@ window.PageManager = (function () {
         _getFooter: () => document.getElementById('console-footer'),
         _getTitle: () => document.getElementById('console-page-title'),
 
+        updateConsole: function () {
+            if (window.updateConsoleHeader && typeof window.updateConsoleHeader === 'function')
+                window.updateConsoleHeader();
+        },
+
         visible: function (show) {
             this.activeTop(show);
             this.activeBot(show);
@@ -52,16 +57,19 @@ window.PageManager = (function () {
         activeTop: function (show) {
             const el = this._getHeader();
             if (el) el.style.display = show ? '' : 'none';
+            this.updateConsole();
         },
 
         activeBot: function (show) {
             const el = this._getFooter();
             if (el) el.style.display = show ? '' : 'none';
+            this.updateConsole();
         },
 
         setTitle: function (titleText) {
             const el = this._getTitle();
             if (el) el.textContent = titleText;
+            this.updateConsole();
         }
     };
 
@@ -180,8 +188,8 @@ window.PageManager = (function () {
             if (!route) return console.error("Route not found for modal:", pageKey);
 
             // ใช้ x, y จาก route ถ้าไม่มีให้ default เป็น 90% (หรือถ้าเป็น 100 คือเต็มจอ)
-            const x = route.x !== undefined ? route.x : 90;
-            const y = route.y !== undefined ? route.y : 90;
+            const x = route.full ? 100 : (route.x !== undefined ? route.x : 90);
+            const y = route.full ? 100 : (route.y !== undefined ? route.y : 90);
 
             currentModalOnClose = onclose;
             currentModalResponse = {};
@@ -288,7 +296,7 @@ window.PageManager = (function () {
                 // รอ Script ในหน้านั้นประมวลผลเสร็จ แล้วเรียก callback onModalInit
                 setTimeout(() => {
                     if (typeof window.onModalInit === 'function') {
-                        window.onModalInit(payload, currentModalResponse);
+                        window.onInit(payload, currentModalResponse);
                     }
                 }, 50);
 
@@ -356,21 +364,20 @@ window.PageManager = (function () {
                     container.style.left = `${(100 - x) / 2}%`;
                 }
                 // ควบคุมการแสดงปุ่มปิด
-                console.log(showCloseBtn);
+
                 const closeBtnEl = document.getElementById('btn-iframe-close-float');
                 if (closeBtnEl) {
-                    console.log("xxxxx");
                     closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
                 }
 
                 // 2. ผูก Event ตอนโหลด Iframe เสร็จเพื่อเรียก oninit
                 iframe.onload = () => {
                     try {
-                        if (iframe.contentWindow && typeof iframe.contentWindow.oninit === "function") {
-                            iframe.contentWindow.oninit(payload, currentIframeResponse);
+                        if (iframe.contentWindow && typeof iframe.contentWindow.onInit === "function") {
+                            iframe.contentWindow.onInit(payload, currentIframeResponse);
                         }
                     } catch (e) {
-                        console.warn("Iframe oninit access blocked or missing.", e);
+                        console.warn("Iframe onInit access blocked or missing.", e);
                     }
                 };
 

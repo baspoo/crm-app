@@ -488,8 +488,9 @@
             applyConsoleLanguage();
 
             // อัปเดต Point Value
-            if (window.crmData && window.crmData.user) {
-                document.getElementById('ui-points').textContent = (window.crmData.user.points || 0).toLocaleString();
+            if (window.Utility) {
+                console.log(Utility.getPoints());
+                document.getElementById('ui-points').textContent = Utility.getPoints().toLocaleString();
             }
 
             // โหลดไอคอน Point แบบไดนามิก

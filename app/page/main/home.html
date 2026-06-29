@@ -751,7 +751,7 @@
             // ข้อมูลทั่วไป
             document.getElementById('ui-prof-avatar').src = user.pictureUrl || "";
             document.getElementById('ui-prof-name').innerText = user.displayName || "Unknown";
-            document.getElementById('ui-prof-points').innerText = (user.points || 0).toLocaleString();
+            document.getElementById('ui-prof-points').innerText = Utility.getPoints().toLocaleString();
 
             // การแสดงผล Tier / Rank
             let tier = {};
@@ -794,8 +794,6 @@
                 // พยายามดึงภาพผ่าน Utility ของระบบ
                 if (window.Utility && typeof window.Utility.getAssetPath === 'function') {
                     iconPath = window.Utility.getAssetPath("pointIcon");
-                } else if (window.appData && window.appData.customAssets && window.appData.customAssets.pointIcon) {
-                    iconPath = window.appData.customAssets.pointIcon;
                 }
 
                 if (iconPath) {

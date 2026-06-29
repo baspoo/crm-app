@@ -123,3 +123,35 @@ const qrHunt = Utility.getGamifyFeatures(TYPES.gamifyFeatures.qrHunt);
 
 
       
+-----------------------------------------------------------------------------------------
+
+
+
+
+นี้คือหน้า page เดิมใช้สำหรับเปิดใน iframe ที่ใช้งานไม่ได้แล้ว
+ให้เปลี่ยนเป็นระบบใหม่ทั้งหมด  สำหรับนำไป inner เข้าหน้าหลักเหมือนกับหน้าอื่นๆ ในโปรเจ็คใหม่นี้ 
+วิเคาะห์การทำงานเดิมของหน้านี้และเปลี่ยน โครงสร้างให้สามารภทำงานได้เหมือนเดิม โดยใช้ระบบเรียก api ใหม่
+เปลี่ยนโครงสร้าง css สร้าง pageSetting สำหรับตั้งค่า และอื่นๆที่จำเป็น
+
+ใช้ Utility.getAssetPath("xxxxxx"); สำหรับ load image path โดยใช้ key เดิม
+
+
+รับค่าเข้าด้วย window.onInit แบบนี้ และเก็บ response เอาไว้เป็น ref สำหรับส่งค่ากลับ
+window.onInit = function(payload, response) {
+    console.log("ได้รับ Payload:", payload);
+    // เซ็ตข้อมูลกลับได้ผ่าน response
+    response.status = "ok";
+};
+
+
+
+
+
+
+
+
+
+
+
+
+

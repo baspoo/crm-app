@@ -12,7 +12,7 @@ fide-in / fide-out / zoom-in / zoom-out / slide-right / slide-left / popup / pop
 
 
 
-window.onModalInit = function(payload, response) {
+window.onInit = function(payload, response) {
     console.log("ได้รับ Payload:", payload);
     // เซ็ตข้อมูลกลับได้ผ่าน response
     response.status = "ok";

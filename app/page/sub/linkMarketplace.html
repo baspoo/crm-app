@@ -1,0 +1,447 @@
+<style>
+    /* ==========================================
+       Link Marketplace Scoped Styles
+       ========================================== */
+    #link-market-page {
+        width: 100%;
+        min-height: 100%;
+        background-color: #f8fafc;
+        position: relative;
+        padding-bottom: 3rem;
+    }
+
+    /* Input Focus */
+    #link-market-page .input-focus {
+        transition: all 0.3s ease;
+    }
+
+    #link-market-page .input-focus:focus {
+        transform: translateY(-2px);
+        border-color: var(--theme-primary, #3b82f6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Button Interactions */
+    #link-market-page .btn-active {
+        transition: all 0.2s ease;
+        background-color: var(--theme-primary, #2563eb);
+        color: #ffffff;
+    }
+
+    #link-market-page .btn-active:active {
+        transform: scale(0.98);
+    }
+
+    #link-market-page .btn-active:hover {
+        filter: brightness(0.9);
+    }
+
+    /* Modal Animation */
+    #link-market-page .modal-enter {
+        animation: lmModalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes lmModalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
+
+<div id="link-market-page">
+
+    <!-- Top Bar (Optional: สำหรับกดกลับกรณีเปิดเป็น Full Page) -->
+    <div class="px-5 py-4 flex items-center justify-between absolute top-0 left-0 w-full z-20">
+        <button onclick="closeLinkMarketPage()"
+            class="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 transition-colors">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white border-b border-gray-100 shadow-sm relative">
+        <img id="lm-headerImage" src="" alt="Marketplace Banner"
+            class="w-full h-auto block transition-opacity duration-500 opacity-0 min-h-[120px] object-cover"
+            onerror="this.src='https://via.placeholder.com/800x250?text=Marketplace+Connection'; this.classList.remove('opacity-0')"
+            onload="this.classList.remove('opacity-0')">
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="max-w-xl mx-auto px-5 mt-8 relative z-10">
+
+        <!-- Info Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800" data-i18n="title">ยืนยันคำสั่งซื้อ</h1>
+            <p class="text-gray-500 mt-2 text-sm leading-relaxed">
+                <span data-i18n="subtitle1">เชื่อมต่อบัญชีเพื่อรับคะแนนสะสมพิเศษ</span> <br>
+                <span data-i18n="subtitle2">จากคำสั่งซื้อสินค้าผ่านช่องทาง</span>
+                <span id="lm-marketplaceName" class="font-bold"
+                    style="color: var(--theme-primary, #3b82f6);">Marketplace</span>
+            </p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-[2.5rem] p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div class="space-y-6">
+
+                <!-- Order ID Input -->
+                <div>
+                    <label for="lm-orderId" class="block text-sm font-bold text-slate-700 mb-2 ml-1"
+                        data-i18n="orderIdLabel">
+                        หมายเลขคำสั่งซื้อ (Order ID)
+                    </label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-hashtag text-sm"></i>
+                        </div>
+                        <input type="text" id="lm-orderId" data-i18n-placeholder="orderIdPlaceholder"
+                            placeholder="กรอกหมายเลขคำสั่งซื้อ"
+                            class="input-focus w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-slate-800 placeholder:text-slate-400 font-medium">
+                    </div>
+                </div>
+
+                <!-- Zipcode Input -->
+                <div>
+                    <label for="lm-zipcode" class="block text-sm font-bold text-slate-700 mb-2 ml-1"
+                        data-i18n="zipcodeLabel">
+                        รหัสไปรษณีย์ (Zipcode)
+                    </label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-location-dot text-sm"></i>
+                        </div>
+                        <input type="number" id="lm-zipcode" pattern="[0-9]*" inputmode="numeric"
+                            data-i18n-placeholder="zipcodePlaceholder" placeholder="กรอกรหัสไปรษณีย์จัดส่ง"
+                            class="input-focus w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-slate-800 placeholder:text-slate-400 font-medium">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button id="lm-submitBtn"
+                        class="btn-active w-full shadow-lg shadow-blue-500/20 py-4 px-6 rounded-2xl font-bold flex items-center justify-center space-x-2">
+                        <span id="lm-submitText" data-i18n="submitBtn">ส่งข้อมูลรับแต้ม</span>
+                        <i id="lm-submitIcon" class="fa-solid fa-paper-plane"></i>
+                        <i id="lm-submitLoader" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal (Hidden by default) -->
+    <div id="lm-resultModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl modal-enter relative">
+
+            <!-- Decor bg -->
+            <div class="absolute top-0 left-0 w-full h-24 bg-slate-50 opacity-50"
+                style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 16px 16px;">
+            </div>
+
+            <div class="p-8 text-center relative z-10">
+                <!-- Icon Area -->
+                <div id="lm-modalIcon" class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full">
+                    <!-- Dynamic Icon -->
+                </div>
+
+                <h3 id="lm-modalTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
+                <p id="lm-modalMessage" class="text-slate-500 text-sm leading-relaxed"></p>
+
+                <!-- Highlight Box (แสดงเฉพาะตอนรอดำเนินการ) -->
+                <div id="lm-modalHighlightBox" class="hidden mt-5 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                    <div class="flex items-center space-x-3 text-left">
+                        <i class="fa-solid fa-circle-info text-amber-500 text-lg flex-shrink-0"></i>
+                        <p id="lm-modalHighlightText" class="text-amber-800 font-semibold text-sm leading-tight"></p>
+                    </div>
+                </div>
+
+                <button id="lm-modalCloseBtn" data-i18n="modalCloseBtn"
+                    class="mt-8 w-full py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 transition-colors active:scale-95 shadow-md">
+                    ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            defaultMarketplace: 'lazada',
+            icons: {
+                success: { class: "bg-emerald-100 text-emerald-600", html: '<i class="fa-solid fa-check text-4xl"></i>' },
+                pending: { class: "bg-blue-100 text-blue-600", html: '<i class="fa-solid fa-hourglass-half text-3xl"></i>' },
+                failed: { class: "bg-rose-100 text-rose-600", html: '<i class="fa-solid fa-xmark text-4xl"></i>' }
+            }
+        };
+
+        const i18n = {
+            Th: {
+                title: "ยืนยันคำสั่งซื้อ",
+                subtitle1: "เชื่อมต่อบัญชีเพื่อรับคะแนนสะสมพิเศษ",
+                subtitle2: "จากคำสั่งซื้อสินค้าผ่านช่องทาง",
+                orderIdLabel: "หมายเลขคำสั่งซื้อ (Order ID)",
+                orderIdPlaceholder: "กรอกหมายเลขคำสั่งซื้อ",
+                zipcodeLabel: "รหัสไปรษณีย์ (Zipcode)",
+                zipcodePlaceholder: "กรอกรหัสไปรษณีย์จัดส่ง",
+                submitBtn: "ส่งข้อมูลรับแต้ม",
+                sendingBtn: "กำลังส่งข้อมูล...",
+                modalSuccessTitle: "เชื่อมต่อสำเร็จ",
+                modalSuccessMsg: "เชื่อมต่อบัญชีและตรวจสอบหมายเลขคำสั่งซื้อถูกต้องเรียบร้อยแล้ว",
+                modalPendingTitle: "กำลังดำเนินการ",
+                modalPendingMsg: "ได้รับคำขอการเชื่อมต่อแล้ว สถานะจะเปลี่ยนเป็นเชื่อมต่อแล้วเมื่อดำเนินการเสร็จสิ้น",
+                modalPendingHighlight: "อาจใช้ระยะเวลาดำเนินการภายใน 7 วัน",
+                modalErrorTitle: "เกิดข้อผิดพลาด",
+                modalErrorMsg: "ไม่สามารถดำเนินการได้ในขณะนี้ กรุณาตรวจสอบข้อมูลหรือลองใหม่อีกครั้ง",
+                modalCloseBtn: "ตกลง",
+                toastError: "กรุณากรอกข้อมูลให้ครบถ้วน"
+            },
+            En: {
+                title: "Confirm Order",
+                subtitle1: "Connect your account to earn reward points",
+                subtitle2: "from your order via",
+                orderIdLabel: "Order ID",
+                orderIdPlaceholder: "Enter your Order ID",
+                zipcodeLabel: "Zipcode",
+                zipcodePlaceholder: "Enter shipping zipcode",
+                submitBtn: "Submit",
+                sendingBtn: "Sending...",
+                modalSuccessTitle: "Connection Successful",
+                modalSuccessMsg: "Your account has been connected and the order ID verified successfully.",
+                modalPendingTitle: "Processing",
+                modalPendingMsg: "Connection request received. Status will update once processing is complete.",
+                modalPendingHighlight: "Processing may take up to 7 days.",
+                modalErrorTitle: "An Error Occurred",
+                modalErrorMsg: "Unable to process at this time. Please check your information and try again.",
+                modalCloseBtn: "OK",
+                toastError: "Please fill in all required fields"
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentMarketplace = pageSetting.defaultMarketplace;
+        let currentLang = 'Th';
+        let latestFinalStatus = 'failed';
+        let refResponse = null; // เก็บ Reference ของ Response สำหรับส่งกลับตอนปิด
+
+        // ==========================================
+        // 3. UI ELEMENTS
+        // ==========================================
+        const els = {
+            headerImg: document.getElementById('lm-headerImage'),
+            marketName: document.getElementById('lm-marketplaceName'),
+            orderId: document.getElementById('lm-orderId'),
+            zipcode: document.getElementById('lm-zipcode'),
+            submitBtn: document.getElementById('lm-submitBtn'),
+            submitText: document.getElementById('lm-submitText'),
+            submitIcon: document.getElementById('lm-submitIcon'),
+            submitLoader: document.getElementById('lm-submitLoader'),
+
+            modal: document.getElementById('lm-resultModal'),
+            modalTitle: document.getElementById('lm-modalTitle'),
+            modalMessage: document.getElementById('lm-modalMessage'),
+            modalIcon: document.getElementById('lm-modalIcon'),
+            modalHighlightBox: document.getElementById('lm-modalHighlightBox'),
+            modalHighlightText: document.getElementById('lm-modalHighlightText'),
+            modalCloseBtn: document.getElementById('lm-modalCloseBtn')
+        };
+
+        // ==========================================
+        // 4. CORE FUNCTIONS
+        // ==========================================
+        function applyLanguage() {
+            const dict = i18n[currentLang] || i18n['Th'];
+            document.querySelectorAll('#link-market-page [data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.querySelectorAll('#link-market-page [data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) el.placeholder = dict[key];
+            });
+        }
+
+        function setupInitialUI(marketplace) {
+            currentMarketplace = marketplace || pageSetting.defaultMarketplace;
+
+            // Set Text
+            els.marketName.textContent = currentMarketplace.charAt(0).toUpperCase() + currentMarketplace.slice(1);
+
+            // Set Header Image by getting path from Utility
+            if (window.Utility && typeof window.Utility.getAssetPath === 'function') {
+                const headerPath = Utility.getAssetPath(`${currentMarketplace}Header`);
+                if (headerPath) {
+                    els.headerImg.src = headerPath;
+                }
+            }
+        }
+
+        function setLoading(isLoading) {
+            const dict = i18n[currentLang];
+            if (isLoading) {
+                els.submitBtn.disabled = true;
+                els.submitBtn.style.opacity = '0.8';
+                els.submitText.textContent = dict.sendingBtn;
+                els.submitIcon.classList.add('hidden');
+                els.submitLoader.classList.remove('hidden');
+            } else {
+                els.submitBtn.disabled = false;
+                els.submitBtn.style.opacity = '1';
+                els.submitText.textContent = dict.submitBtn;
+                els.submitIcon.classList.remove('hidden');
+                els.submitLoader.classList.add('hidden');
+            }
+        }
+
+        function showToast(msg) {
+            if (window.PageManager && typeof PageManager.showToast === 'function') {
+                PageManager.showToast(msg, "⚠️");
+            } else {
+                alert(msg);
+            }
+        }
+
+        function showResultPopup(status) {
+            const dict = i18n[currentLang];
+            els.modalHighlightBox.classList.add('hidden');
+
+            let config = pageSetting.icons.failed;
+
+            if (status === 'success') {
+                config = pageSetting.icons.success;
+                els.modalTitle.textContent = dict.modalSuccessTitle;
+                els.modalMessage.textContent = dict.modalSuccessMsg;
+            } else if (status === 'pending') {
+                config = pageSetting.icons.pending;
+                els.modalTitle.textContent = dict.modalPendingTitle;
+                els.modalMessage.textContent = dict.modalPendingMsg;
+                els.modalHighlightText.textContent = dict.modalPendingHighlight;
+                els.modalHighlightBox.classList.remove('hidden');
+            } else {
+                config = pageSetting.icons.failed;
+                els.modalTitle.textContent = dict.modalErrorTitle;
+                els.modalMessage.textContent = dict.modalErrorMsg;
+            }
+
+            // Set Icon
+            els.modalIcon.className = `w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full shadow-inner ${config.class}`;
+            els.modalIcon.innerHTML = config.html;
+
+            // Show Modal
+            els.modal.classList.remove('hidden');
+        }
+
+        // ==========================================
+        // 5. EVENT LISTENERS & INTEGRATION
+        // ==========================================
+
+        // ฟังก์ชันรับค่าเมื่อถูกเปิดผ่าน PageManager.openModal() หรือ iframe oninit
+        window.onInit = window.onModalInit = function (payload, response) {
+            console.log("[LinkMarketplace] onInit Payload:", payload);
+
+            // เก็บ reference สำหรับส่งค่ากลับ
+            refResponse = response;
+
+            // ตรวจสอบภาษา
+            if (window.crmData && window.crmData.language) {
+                currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+            }
+            applyLanguage();
+
+            // ตรวจสอบว่าส่ง marketplace มาหรือไม่
+            let marketType = pageSetting.defaultMarketplace;
+            if (payload && payload.marketplace) {
+                marketType = payload.marketplace;
+            }
+            setupInitialUI(marketType);
+        };
+
+        // Submit Data
+        els.submitBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const orderId = els.orderId.value.trim();
+            const zipcode = els.zipcode.value.trim();
+
+            if (!orderId || !zipcode) {
+                showToast(i18n[currentLang].toastError);
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                // เรียกใช้ CRM API
+                const linkStatus = await CrmApi.linkmarketplace(currentMarketplace, orderId, zipcode);
+
+                // ตรวจสอบเงื่อนไขตามระบบเดิม
+                if (linkStatus === "confirm") {
+                    latestFinalStatus = 'success';
+                } else if (linkStatus) {
+                    latestFinalStatus = 'pending';
+                } else {
+                    latestFinalStatus = 'failed';
+                }
+
+                showResultPopup(latestFinalStatus);
+
+            } catch (error) {
+                console.error("[LinkMarketplace] Error:", error);
+                latestFinalStatus = 'failed';
+                showResultPopup('failed');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Close Modal & Send Data Back
+        els.modalCloseBtn.addEventListener('click', function () {
+            els.modal.classList.add('hidden');
+
+            // เซ็ตค่า Response กลับไป
+            if (refResponse) {
+                refResponse.status = latestFinalStatus;
+                refResponse.orderId = els.orderId.value.trim();
+            }
+
+            closeLinkMarketPage();
+        });
+
+        // ฟังก์ชันสำหรับปิดหน้า (รองรับทั้งเปิดแบบ Modal และ Subpage)
+        window.closeLinkMarketPage = function () {
+            if (window.PageManager) {
+                // สมมติว่าเปิดแบบ Modal
+                if (typeof PageManager.closeModal === 'function' && document.getElementById('sys-modal-container')?.style.display !== 'none') {
+                    PageManager.closeModal();
+                } else {
+                    // สมมติว่าเปิดแบบ LoadPage
+                    PageManager.loadPage('home');
+                }
+            }
+        };
+
+        // รองรับการแสดงผลกรณีเทสเปิดหน้านี้ตรงๆ (Standalone)
+        if (!window.PageManager) {
+            setTimeout(() => {
+                if (!els.marketName.textContent || els.marketName.textContent === 'Marketplace') {
+                    setupInitialUI('lazada');
+                    applyLanguage();
+                }
+            }, 500);
+        }
+
+    })();
+</script>

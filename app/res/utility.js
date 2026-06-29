@@ -195,6 +195,10 @@
             console.log("[Utility] Global Theme Applied.");
         },
 
+        getPoints: function () {
+            var points = crmData?.crmUser?.user?.points || 0;
+            return points;
+        },
         getAssetPath: function (id) {
             var assets = crmData.initializeData?.customAssets || {};
             if (assets.hasOwnProperty(id)) {
