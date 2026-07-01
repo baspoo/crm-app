@@ -98,7 +98,7 @@ PageManager.openModal("qecode");
 
 
 [# PROFILE MENU #] 
-ถัดลงมา widget ส่วนแสดงปุ่ม menu ที่มีปุ่ม 4 ปุ่มเรียงกัน 
+ถัดลงมา widget ส่วนแสดงปุ่ม menu ที่มีปุ่ม 4 ปุ่มเรียงกันจากซ้ายไปขวา แถวเดียวกัน
 เรียงลำดับจากบนไปล่าง
 เรียก function นี้สำหรับเปิด modal
 PageManager.openModal("inventory");
@@ -289,5 +289,49 @@ function customWidget(widgetId, html){
    // widgetId : "custom-widget-1" | "custom-widget-2" | "custom-widget-3"   
     
 }
+
+
+----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+ปรับปรุง
+
+1. โปรไฟล์ปรับรูปโปรไฟล์ให้ใหญ่ขึ้นอีก และ ทะลุออกไปนอกกรอบ panel profile ทำให้ดูสวยงาม จัดเรียง layout ptofile ใหม่ ให้ดูมืออาชีพ ทันสมัย สวยงาม แบ่งสัดส่วนชัดเจน
+
+2. widget ส่วนแสดงปุ่ม menu ที่มีปุ่ม 4 ปุ่มเรียงกันจากซ้ายไปขวา แถวเดียวกัน
+
+3. my point ต้องแสดงข้อมูลให้เป็ระเบียบ สวยงามกว่านี้ เป็นระเบียบกว่านี้ ตอนนี้เข้าใจยากมาก ช่วยตีความและปรับ design ux ให้ใหม่  จัด layout ให้เป็นระเบียบ
+โดยให้ point ตอนนี้เด่นที่สุด ตามด้วย spending / total order ใส่ไอคอนไว้หน้า header ทั้ง 2 อัน จัด มาจิ้น แบบ 
+
+ฝั่งซ้าย (ใหญ่)
+header
+[icon] POINT_VALUE
+
+ฝั่งขวา (เล็กลง ให้แสดง 2 ค่าพอ)
+[icon] header
+SPEND_VALUE 
+
+[icon] header
+ORDER_VALUE 
+
+
+4. Membership Tier ปรับการดึง next และ now มาจาก function นี้แทน จะได้ค่าตอนนี้และค่าที่ต้องการนำไปแสดงผลได้ โดยส่ง nextTier เข้าไป
+type =  "total_spending ยอดซื้อทั้งหมด" หรือ "order_count" ยอดออเดอร์ทั้งหมด ให้แสดงผลประเภท require เอาไว้ด้วย
+const require = Utility.getRequireTier(nextTier);
+{
+    type : "total_spending",  ( "total_spending" , "order_count" )
+    current : 600,
+    require : 1000
+}
+
+5. ย้าย referral ไปไว้ด้านบน POINT ดีกว่า
+ 
+6. ปรับการออกแบบ design ux/ui ให้ดูทัยสมัย มืออาชีพ น่าใช้งาน ไม่จืด ตกแต่งตามความเหมาะสม
+
 
 

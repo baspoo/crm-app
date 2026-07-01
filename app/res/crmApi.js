@@ -170,7 +170,7 @@
                     currentData.crmUser = result.crmUser;
                     currentData.serverTime = result.serverTime;
                     currentData.publicKey = result.publicKey;
-                    currentData.daily = result.daily;
+                    currentData.daily = result.dailyData;
                     console.log(JSON.stringify(currentData));
 
                     AppApi._handleLoginResponse(res);

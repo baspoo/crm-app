@@ -55,6 +55,7 @@
             sessionStorage.setItem('VERSION', Date.now());
             location.reload();
         }
+        
     });
 
 
@@ -231,6 +232,34 @@
                 return tier == undefined ? tiers[0] : tiers.find(x => x.level > tier.level);
             }
             return null;
+        },
+        getRequireTier: function (tier) {
+            if (!this.isTierReady() || !tier || !tier.rules || tier.rules.length == 0) return 0;
+            const rule = tier.rules[0];
+            const stats = crmData.crmUser?.statisticsData || crmData.crmUser?.statistics || {};
+            const spend = stats.spending?.total || 0;
+            const orders = stats.orders?.total || 0;
+            if(rule.ruleType === "total_spending"){
+                return {
+                    type : rule.ruleType,
+                    current : spend,
+                    require : rule.value
+                };
+            }
+            else if(rule.ruleType === "order_count"){
+                return {
+                    type : rule.ruleType,
+                    current : orders,
+                    require : rule.value
+                };
+            }
+            else{
+                return {
+                    type : "none",
+                    current : 0,
+                    require : 0
+                };
+            }
         },
         isMaxTier: function (tier) {
             if (!this.isTierReady()) return false;
