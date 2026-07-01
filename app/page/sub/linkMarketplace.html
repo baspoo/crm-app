@@ -1,6 +1,6 @@
 <style>
     /* ==========================================
-       Link Marketplace Scoped Styles
+       Link Marketplace Scoped Styles (Pure CSS)
        ========================================== */
     #link-market-page {
         width: 100%;
@@ -8,36 +8,256 @@
         background-color: #f8fafc;
         position: relative;
         padding-bottom: 3rem;
+        font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+        box-sizing: border-box;
     }
 
-    /* Input Focus */
-    #link-market-page .input-focus {
+    #link-market-page *,
+    #link-market-page *::before,
+    #link-market-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* --- Top Bar --- */
+    .lm-topbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 20;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .lm-back-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 50%;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s;
+        outline: none;
+    }
+
+    .lm-back-btn:hover {
+        color: #2563eb;
+    }
+
+    /* --- Header Image --- */
+    .lm-header-wrap {
+        width: 100%;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f3f4f6;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .lm-header-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: opacity 0.5s ease;
+        opacity: 0;
+        min-height: 120px;
+        object-fit: cover;
+    }
+
+    .lm-header-img.lm-loaded {
+        opacity: 1;
+    }
+
+    /* --- Main Content --- */
+    .lm-main-content {
+        max-width: 36rem;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+        margin-top: 2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .lm-info-section {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .lm-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .lm-subtitle {
+        color: #6b7280;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.625;
+    }
+
+    .lm-market-name {
+        font-weight: 700;
+        color: var(--theme-primary, #3b82f6);
+    }
+
+    /* --- Form Card --- */
+    .lm-form-card {
+        background-color: #ffffff;
+        border-radius: 2.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        border: 1px solid #f3f4f6;
+    }
+
+    @media (min-width: 640px) {
+        .lm-form-card {
+            padding: 2rem;
+        }
+    }
+
+    .lm-space-y-6>*+* {
+        margin-top: 1.5rem;
+    }
+
+    /* --- Inputs --- */
+    .lm-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        margin-left: 0.25rem;
+    }
+
+    .lm-input-relative {
+        position: relative;
+    }
+
+    .lm-input-icon {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        padding-left: 1rem;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+        color: #94a3b8;
+    }
+
+    .lm-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 2.75rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        outline: none;
+        color: #1e293b;
+        font-weight: 500;
+        font-family: inherit;
+        font-size: 1rem;
         transition: all 0.3s ease;
     }
 
-    #link-market-page .input-focus:focus {
+    .lm-input::placeholder {
+        color: #94a3b8;
+    }
+
+    .lm-input:focus {
         transform: translateY(-2px);
         border-color: var(--theme-primary, #3b82f6);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(59, 130, 246, 0.1);
+        background-color: #ffffff;
     }
 
-    /* Button Interactions */
-    #link-market-page .btn-active {
-        transition: all 0.2s ease;
+    /* --- Submit Button --- */
+    .lm-submit-wrap {
+        padding-top: 1rem;
+    }
+
+    .lm-submit-btn {
+        width: 100%;
         background-color: var(--theme-primary, #2563eb);
         color: #ffffff;
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2), 0 4px 6px -4px rgba(59, 130, 246, 0.1);
+        font-family: inherit;
+        font-size: 1rem;
     }
 
-    #link-market-page .btn-active:active {
+    .lm-submit-btn:active {
         transform: scale(0.98);
     }
 
-    #link-market-page .btn-active:hover {
+    .lm-submit-btn:hover {
         filter: brightness(0.9);
     }
 
-    /* Modal Animation */
-    #link-market-page .modal-enter {
+    .lm-submit-btn:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+
+    .lm-spin {
+        animation: lmSpin 1s linear infinite;
+    }
+
+    @keyframes lmSpin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* --- Utility --- */
+    .lm-hidden {
+        display: none !important;
+    }
+
+    /* --- Result Modal --- */
+    .lm-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .lm-modal-card {
+        background-color: #ffffff;
+        border-radius: 2.5rem;
+        width: 100%;
+        max-width: 24rem;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        position: relative;
         animation: lmModalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
@@ -52,120 +272,227 @@
             transform: scale(1) translateY(0);
         }
     }
+
+    .lm-modal-decor {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6rem;
+        background-color: #f8fafc;
+        opacity: 0.5;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 16px 16px;
+        pointer-events: none;
+    }
+
+    .lm-modal-content {
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    .lm-modal-icon-wrap {
+        width: 5rem;
+        height: 5rem;
+        margin: 0 auto 1.5rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .lm-icon-success {
+        background-color: #d1fae5;
+        color: #059669;
+    }
+
+    .lm-icon-pending {
+        background-color: #dbeafe;
+        color: #2563eb;
+    }
+
+    .lm-icon-failed {
+        background-color: #ffe4e6;
+        color: #e11d48;
+    }
+
+    .lm-icon-success i {
+        font-size: 2.25rem;
+    }
+
+    .lm-icon-pending i {
+        font-size: 1.875rem;
+    }
+
+    .lm-icon-failed i {
+        font-size: 2.25rem;
+    }
+
+    .lm-modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .lm-modal-msg {
+        color: #64748b;
+        font-size: 0.875rem;
+        line-height: 1.625;
+        margin: 0;
+    }
+
+    .lm-modal-highlight {
+        margin-top: 1.25rem;
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 1rem;
+        padding: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        text-align: left;
+    }
+
+    .lm-modal-highlight-icon {
+        color: #f59e0b;
+        font-size: 1.125rem;
+        flex-shrink: 0;
+        margin-top: 0.125rem;
+    }
+
+    .lm-modal-highlight-text {
+        color: #92400e;
+        font-weight: 600;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .lm-modal-btn {
+        margin-top: 2rem;
+        width: 100%;
+        padding: 1rem;
+        background-color: #1e293b;
+        color: #ffffff;
+        font-weight: 700;
+        border-radius: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        font-family: inherit;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .lm-modal-btn:hover {
+        background-color: #0f172a;
+    }
+
+    .lm-modal-btn:active {
+        transform: scale(0.95);
+    }
 </style>
 
 <div id="link-market-page">
 
-    <!-- Top Bar (Optional: สำหรับกดกลับกรณีเปิดเป็น Full Page) -->
-    <div class="px-5 py-4 flex items-center justify-between absolute top-0 left-0 w-full z-20">
-        <button onclick="closeLinkMarketPage()"
-            class="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center text-slate-600 hover:text-blue-600 transition-colors">
+    <!-- Top Bar -->
+    <div class="lm-topbar">
+        <button onclick="closeLinkMarketPage()" class="lm-back-btn">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
     </div>
 
     <!-- Header Image Section -->
-    <div class="w-full bg-white border-b border-gray-100 shadow-sm relative">
-        <img id="lm-headerImage" src="" alt="Marketplace Banner"
-            class="w-full h-auto block transition-opacity duration-500 opacity-0 min-h-[120px] object-cover"
-            onerror="this.src='https://via.placeholder.com/800x250?text=Marketplace+Connection'; this.classList.remove('opacity-0')"
-            onload="this.classList.remove('opacity-0')">
+    <div class="lm-header-wrap">
+        <img id="lm-headerImage" src="" alt="Marketplace Banner" class="lm-header-img"
+            onerror="this.src='page/assets/header/dummy.png'; this.classList.add('lm-loaded')"
+            onload="this.classList.add('lm-loaded')">
     </div>
 
     <!-- Main Content Area -->
-    <div class="max-w-xl mx-auto px-5 mt-8 relative z-10">
+    <div class="lm-main-content">
 
         <!-- Info Section -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="title">ยืนยันคำสั่งซื้อ</h1>
-            <p class="text-gray-500 mt-2 text-sm leading-relaxed">
+        <div class="lm-info-section">
+            <h1 class="lm-title" data-i18n="title">ยืนยันคำสั่งซื้อ</h1>
+            <p class="lm-subtitle">
                 <span data-i18n="subtitle1">เชื่อมต่อบัญชีเพื่อรับคะแนนสะสมพิเศษ</span> <br>
                 <span data-i18n="subtitle2">จากคำสั่งซื้อสินค้าผ่านช่องทาง</span>
-                <span id="lm-marketplaceName" class="font-bold"
-                    style="color: var(--theme-primary, #3b82f6);">Marketplace</span>
+                <span id="lm-marketplaceName" class="lm-market-name">Marketplace</span>
             </p>
         </div>
 
         <!-- Form Card -->
-        <div class="bg-white rounded-[2.5rem] p-6 sm:p-8 shadow-sm border border-gray-100">
-            <div class="space-y-6">
+        <div class="lm-form-card">
+            <div class="lm-space-y-6">
 
                 <!-- Order ID Input -->
                 <div>
-                    <label for="lm-orderId" class="block text-sm font-bold text-slate-700 mb-2 ml-1"
-                        data-i18n="orderIdLabel">
+                    <label for="lm-orderId" class="lm-label" data-i18n="orderIdLabel">
                         หมายเลขคำสั่งซื้อ (Order ID)
                     </label>
-                    <div class="relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <div class="lm-input-relative">
+                        <div class="lm-input-icon">
                             <i class="fa-solid fa-hashtag text-sm"></i>
                         </div>
                         <input type="text" id="lm-orderId" data-i18n-placeholder="orderIdPlaceholder"
-                            placeholder="กรอกหมายเลขคำสั่งซื้อ"
-                            class="input-focus w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-slate-800 placeholder:text-slate-400 font-medium">
+                            placeholder="กรอกหมายเลขคำสั่งซื้อ" class="lm-input">
                     </div>
                 </div>
 
                 <!-- Zipcode Input -->
                 <div>
-                    <label for="lm-zipcode" class="block text-sm font-bold text-slate-700 mb-2 ml-1"
-                        data-i18n="zipcodeLabel">
+                    <label for="lm-zipcode" class="lm-label" data-i18n="zipcodeLabel">
                         รหัสไปรษณีย์ (Zipcode)
                     </label>
-                    <div class="relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <div class="lm-input-relative">
+                        <div class="lm-input-icon">
                             <i class="fa-solid fa-location-dot text-sm"></i>
                         </div>
                         <input type="number" id="lm-zipcode" pattern="[0-9]*" inputmode="numeric"
                             data-i18n-placeholder="zipcodePlaceholder" placeholder="กรอกรหัสไปรษณีย์จัดส่ง"
-                            class="input-focus w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none text-slate-800 placeholder:text-slate-400 font-medium">
+                            class="lm-input">
                     </div>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="pt-4">
-                    <button id="lm-submitBtn"
-                        class="btn-active w-full shadow-lg shadow-blue-500/20 py-4 px-6 rounded-2xl font-bold flex items-center justify-center space-x-2">
+                <div class="lm-submit-wrap">
+                    <button id="lm-submitBtn" class="lm-submit-btn">
                         <span id="lm-submitText" data-i18n="submitBtn">ส่งข้อมูลรับแต้ม</span>
                         <i id="lm-submitIcon" class="fa-solid fa-paper-plane"></i>
-                        <i id="lm-submitLoader" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                        <i id="lm-submitLoader" class="fa-solid fa-circle-notch lm-spin lm-hidden"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Result Modal (Hidden by default) -->
-    <div id="lm-resultModal"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl modal-enter relative">
+    <!-- Result Modal -->
+    <div id="lm-resultModal" class="lm-modal-overlay lm-hidden">
+        <div class="lm-modal-card">
 
-            <!-- Decor bg -->
-            <div class="absolute top-0 left-0 w-full h-24 bg-slate-50 opacity-50"
-                style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 16px 16px;">
-            </div>
+            <div class="lm-modal-decor"></div>
 
-            <div class="p-8 text-center relative z-10">
+            <div class="lm-modal-content">
                 <!-- Icon Area -->
-                <div id="lm-modalIcon" class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full">
+                <div id="lm-modalIcon" class="lm-modal-icon-wrap">
                     <!-- Dynamic Icon -->
                 </div>
 
-                <h3 id="lm-modalTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
-                <p id="lm-modalMessage" class="text-slate-500 text-sm leading-relaxed"></p>
+                <h3 id="lm-modalTitle" class="lm-modal-title"></h3>
+                <p id="lm-modalMessage" class="lm-modal-msg"></p>
 
-                <!-- Highlight Box (แสดงเฉพาะตอนรอดำเนินการ) -->
-                <div id="lm-modalHighlightBox" class="hidden mt-5 bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                    <div class="flex items-center space-x-3 text-left">
-                        <i class="fa-solid fa-circle-info text-amber-500 text-lg flex-shrink-0"></i>
-                        <p id="lm-modalHighlightText" class="text-amber-800 font-semibold text-sm leading-tight"></p>
-                    </div>
+                <!-- Highlight Box -->
+                <div id="lm-modalHighlightBox" class="lm-modal-highlight lm-hidden">
+                    <i class="fa-solid fa-circle-info lm-modal-highlight-icon"></i>
+                    <p id="lm-modalHighlightText" class="lm-modal-highlight-text"></p>
                 </div>
 
-                <button id="lm-modalCloseBtn" data-i18n="modalCloseBtn"
-                    class="mt-8 w-full py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-900 transition-colors active:scale-95 shadow-md">
+                <button id="lm-modalCloseBtn" data-i18n="modalCloseBtn" class="lm-modal-btn">
                     ตกลง
                 </button>
             </div>
@@ -181,9 +508,9 @@
         const pageSetting = {
             defaultMarketplace: 'lazada',
             icons: {
-                success: { class: "bg-emerald-100 text-emerald-600", html: '<i class="fa-solid fa-check text-4xl"></i>' },
-                pending: { class: "bg-blue-100 text-blue-600", html: '<i class="fa-solid fa-hourglass-half text-3xl"></i>' },
-                failed: { class: "bg-rose-100 text-rose-600", html: '<i class="fa-solid fa-xmark text-4xl"></i>' }
+                success: { class: "lm-icon-success", html: '<i class="fa-solid fa-check"></i>' },
+                pending: { class: "lm-icon-pending", html: '<i class="fa-solid fa-hourglass-half"></i>' },
+                failed: { class: "lm-icon-failed", html: '<i class="fa-solid fa-xmark"></i>' }
             }
         };
 
@@ -236,7 +563,7 @@
         let currentMarketplace = pageSetting.defaultMarketplace;
         let currentLang = 'Th';
         let latestFinalStatus = 'failed';
-        let refResponse = null; // เก็บ Reference ของ Response สำหรับส่งกลับตอนปิด
+        let refResponse = null;
 
         // ==========================================
         // 3. UI ELEMENTS
@@ -277,13 +604,11 @@
 
         function setupInitialUI(marketplace) {
             currentMarketplace = marketplace || pageSetting.defaultMarketplace;
-
-            // Set Text
             els.marketName.textContent = currentMarketplace.charAt(0).toUpperCase() + currentMarketplace.slice(1);
 
-            // Set Header Image by getting path from Utility
             if (window.Utility && typeof window.Utility.getAssetPath === 'function') {
                 const headerPath = Utility.getAssetPath(`${currentMarketplace}Header`);
+                console.log(headerPath);
                 if (headerPath) {
                     els.headerImg.src = headerPath;
                 }
@@ -294,16 +619,14 @@
             const dict = i18n[currentLang];
             if (isLoading) {
                 els.submitBtn.disabled = true;
-                els.submitBtn.style.opacity = '0.8';
                 els.submitText.textContent = dict.sendingBtn;
-                els.submitIcon.classList.add('hidden');
-                els.submitLoader.classList.remove('hidden');
+                els.submitIcon.classList.add('lm-hidden');
+                els.submitLoader.classList.remove('lm-hidden');
             } else {
                 els.submitBtn.disabled = false;
-                els.submitBtn.style.opacity = '1';
                 els.submitText.textContent = dict.submitBtn;
-                els.submitIcon.classList.remove('hidden');
-                els.submitLoader.classList.add('hidden');
+                els.submitIcon.classList.remove('lm-hidden');
+                els.submitLoader.classList.add('lm-hidden');
             }
         }
 
@@ -317,7 +640,7 @@
 
         function showResultPopup(status) {
             const dict = i18n[currentLang];
-            els.modalHighlightBox.classList.add('hidden');
+            els.modalHighlightBox.classList.add('lm-hidden');
 
             let config = pageSetting.icons.failed;
 
@@ -330,39 +653,30 @@
                 els.modalTitle.textContent = dict.modalPendingTitle;
                 els.modalMessage.textContent = dict.modalPendingMsg;
                 els.modalHighlightText.textContent = dict.modalPendingHighlight;
-                els.modalHighlightBox.classList.remove('hidden');
+                els.modalHighlightBox.classList.remove('lm-hidden');
             } else {
                 config = pageSetting.icons.failed;
                 els.modalTitle.textContent = dict.modalErrorTitle;
                 els.modalMessage.textContent = dict.modalErrorMsg;
             }
 
-            // Set Icon
-            els.modalIcon.className = `w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full shadow-inner ${config.class}`;
+            els.modalIcon.className = `lm-modal-icon-wrap ${config.class}`;
             els.modalIcon.innerHTML = config.html;
-
-            // Show Modal
-            els.modal.classList.remove('hidden');
+            els.modal.classList.remove('lm-hidden');
         }
 
         // ==========================================
         // 5. EVENT LISTENERS & INTEGRATION
         // ==========================================
 
-        // ฟังก์ชันรับค่าเมื่อถูกเปิดผ่าน PageManager.openModal() หรือ iframe oninit
-        window.onInit = window.onModalInit = function (payload, response) {
-            console.log("[LinkMarketplace] onInit Payload:", payload);
-
-            // เก็บ reference สำหรับส่งค่ากลับ
+        window.onInit = function (payload, response) {
+            console.log("window.onInit called");
             refResponse = response;
-
-            // ตรวจสอบภาษา
             if (window.crmData && window.crmData.language) {
                 currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
             }
             applyLanguage();
 
-            // ตรวจสอบว่าส่ง marketplace มาหรือไม่
             let marketType = pageSetting.defaultMarketplace;
             if (payload && payload.marketplace) {
                 marketType = payload.marketplace;
@@ -370,7 +684,6 @@
             setupInitialUI(marketType);
         };
 
-        // Submit Data
         els.submitBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             const orderId = els.orderId.value.trim();
@@ -384,14 +697,14 @@
             setLoading(true);
 
             try {
-                // เรียกใช้ CRM API
                 const linkStatus = await CrmApi.linkmarketplace(currentMarketplace, orderId, zipcode);
 
-                // ตรวจสอบเงื่อนไขตามระบบเดิม
                 if (linkStatus === "confirm") {
                     latestFinalStatus = 'success';
+                    refResponse.success = true;
                 } else if (linkStatus) {
                     latestFinalStatus = 'pending';
+                    refResponse.success = true;
                 } else {
                     latestFinalStatus = 'failed';
                 }
@@ -399,7 +712,6 @@
                 showResultPopup(latestFinalStatus);
 
             } catch (error) {
-                console.error("[LinkMarketplace] Error:", error);
                 latestFinalStatus = 'failed';
                 showResultPopup('failed');
             } finally {
@@ -407,33 +719,25 @@
             }
         });
 
-        // Close Modal & Send Data Back
         els.modalCloseBtn.addEventListener('click', function () {
-            els.modal.classList.add('hidden');
-
-            // เซ็ตค่า Response กลับไป
+            els.modal.classList.add('lm-hidden');
             if (refResponse) {
                 refResponse.status = latestFinalStatus;
                 refResponse.orderId = els.orderId.value.trim();
             }
-
             closeLinkMarketPage();
         });
 
-        // ฟังก์ชันสำหรับปิดหน้า (รองรับทั้งเปิดแบบ Modal และ Subpage)
         window.closeLinkMarketPage = function () {
             if (window.PageManager) {
-                // สมมติว่าเปิดแบบ Modal
                 if (typeof PageManager.closeModal === 'function' && document.getElementById('sys-modal-container')?.style.display !== 'none') {
                     PageManager.closeModal();
                 } else {
-                    // สมมติว่าเปิดแบบ LoadPage
                     PageManager.loadPage('home');
                 }
             }
         };
 
-        // รองรับการแสดงผลกรณีเทสเปิดหน้านี้ตรงๆ (Standalone)
         if (!window.PageManager) {
             setTimeout(() => {
                 if (!els.marketName.textContent || els.marketName.textContent === 'Marketplace') {

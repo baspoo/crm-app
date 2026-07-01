@@ -16,6 +16,7 @@ window.PageManager = (function () {
     // --- ตัวแปรสำหรับจัดการ Modal Callback ---
     let currentModalOnClose = null;
     let currentModalResponse = null;
+    let modalCloseTimeout = null;
 
     // ฟังก์ชันสำคัญ: แปะ HTML และบังคับให้เบราว์เซอร์รันแท็ก <script>
     function setInnerHTMLAndExecuteScripts(element, htmlContent, useAnimation = true) {
@@ -161,7 +162,7 @@ window.PageManager = (function () {
 
             this.console.activeTop(route.top);
 
-            if (htmlCache[pageKey]) {
+            if (htmlCache[pageKey] && appConfig.setting.cachePage) {
                 setInnerHTMLAndExecuteScripts(contentContainer, htmlCache[pageKey]);
                 return;
             }
@@ -170,7 +171,8 @@ window.PageManager = (function () {
             contentContainer.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #9ca3af;"></div>';
 
             try {
-                const html = await fetchPage(`${route.path}`, APP_VERSION);
+                const v = appConfig.setting.cachePage ? APP_VERSION : Date.now();
+                const html = await fetchPage(`${route.path}`, v);
                 this.hideLoading();
                 if (html) {
                     htmlCache[pageKey] = html;
@@ -187,115 +189,72 @@ window.PageManager = (function () {
             const route = configRoutes[pageKey];
             if (!route) return console.error("Route not found for modal:", pageKey);
 
-            // ใช้ x, y จาก route ถ้าไม่มีให้ default เป็น 90% (หรือถ้าเป็น 100 คือเต็มจอ)
-            const x = route.full ? 100 : (route.x !== undefined ? route.x : 90);
-            const y = route.full ? 100 : (route.y !== undefined ? route.y : 90);
+            const x = route.full ? 100 : route.x !== undefined ? Number(route.x) : 90;
+            const y = route.full ? 100 : route.y !== undefined ? Number(route.y) : 90;
 
             currentModalOnClose = onclose;
             currentModalResponse = {};
-
-            // ส่งค่าผ่าน window เพื่อให้ script ในหน้า Modal ดึงไปใช้ได้
             window.currentModalPayload = payload;
             window.currentModalResponse = currentModalResponse;
 
-            // ตรวจสอบหรือสร้าง Container สำหรับ Modal แบบไดนามิก
-            let container = document.getElementById('sys-modal-container');
-            let backdrop = document.getElementById('sys-modal-backdrop');
+            // ชี้ไปที่ Container ที่เตรียมไว้แล้วใน console.html
+            const container = document.getElementById('sys-modal-container');
+            const backdrop = document.getElementById('sys-modal-backdrop');
+            const closeBtnEl = document.getElementById('btn-modal-close-float');
+            const contentWrap = document.getElementById('sys-modal-content-wrap');
 
-            if (!container) {
-                const appRoot = document.querySelector('.app-root-container') || document.body;
-
-                // สร้าง Backdrop (z-index 35: สูงกว่า Login แต่ต่ำกว่า Iframe)
-                backdrop = document.createElement('div');
-                backdrop.id = 'sys-modal-backdrop';
-                backdrop.style.position = 'absolute';
-                backdrop.style.inset = '0';
-                backdrop.style.backgroundColor = 'rgba(0,0,0,0.6)';
-                backdrop.style.zIndex = '35';
-                backdrop.onclick = () => { this.closeModal(); };
-                appRoot.appendChild(backdrop);
-
-                // สร้าง Container สำหรับยัด HTML
-                container = document.createElement('div');
-                container.id = 'sys-modal-container';
-                container.style.position = 'absolute';
-                container.style.zIndex = '36';
-                container.style.backgroundColor = 'var(--theme-bg-app, #f8fafc)';
-                container.style.display = 'none';
-                container.style.flexDirection = 'column';
-                container.style.overflow = 'hidden';
-                container.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
-                container.style.transition = 'all 0.3s ease';
-
-                // ปุ่มปิดลอยตัว (แชร์คลาส CSS จากปุ่มปิด Iframe)
-                const closeBtn = document.createElement('button');
-                closeBtn.id = 'btn-modal-close-float';
-                closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-                closeBtn.className = 'btn-iframe-close-float';
-                closeBtn.onclick = () => { this.closeModal(); };
-                container.appendChild(closeBtn);
-
-                // Content Wrapper สำหรับใส่หน้าย่อย
-                const contentWrap = document.createElement('div');
-                contentWrap.id = 'sys-modal-content-wrap';
-                contentWrap.style.flexGrow = '1';
-                contentWrap.style.overflowY = 'auto';
-                contentWrap.style.width = '100%';
-                contentWrap.style.height = '100%';
-                contentWrap.style.position = 'relative';
-                container.appendChild(contentWrap);
-
-                appRoot.appendChild(container);
+            if (!container || !contentWrap) {
+                return console.error("Modal containers not found! Check console.html");
             }
 
-            // จัดการการแสดงผลปุ่มปิด
-            const closeBtnEl = document.getElementById('btn-modal-close-float');
             if (closeBtnEl) closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
 
-            // จัดการขนาดและตำแหน่ง
+            // จัดการ Layout แบบเดียวกับ Iframe
             if (x === 100 && y === 100) {
-                container.style.width = '100%';
-                container.style.height = '100%';
-                container.style.top = '0';
-                container.style.left = '0';
-                container.style.borderRadius = '0';
+                container.classList.add('fullscreen');
                 if (backdrop) backdrop.style.display = 'none';
             } else {
+                container.classList.remove('fullscreen');
                 container.style.width = `${x}%`;
                 container.style.height = `${y}%`;
                 container.style.top = `${(100 - y) / 2}%`;
                 container.style.left = `${(100 - x) / 2}%`;
-                container.style.borderRadius = 'var(--theme-radius, 1rem)';
                 if (backdrop) backdrop.style.display = 'block';
             }
 
-            const contentWrap = document.getElementById('sys-modal-content-wrap');
-            contentWrap.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #9ca3af;"><div class="loading-ring-spin relative mx-auto mb-2" style="width:2rem;height:2rem;"></div>กำลังโหลด...</div>';
-
-            container.style.display = 'flex';
-            void container.offsetWidth; // Trigger reflow สำหรับ Animation
-            container.classList.add('fade-in');
+            // แสดงกล่องขึ้นมา และแสดงตัวโหลด
+            container.classList.add('show');
+            contentWrap.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#9ca3af;">กำลังโหลด...</div>';
 
             try {
-                // โหลด HTML (ดึงจาก Cache ก่อน ถ้าไม่มีก็ fetch)
-                let html = htmlCache[pageKey];
+                let html = appConfig.setting.cachePage ? htmlCache[pageKey] : null;
                 if (!html) {
-                    this.showLoading();
-                    html = await fetchPage(`${route.path}`, APP_VERSION);
-                    this.hideLoading();
-                    if (html) {
-                        htmlCache[pageKey] = html;
-                    } else {
-                        throw new Error(`Failed to load ${route.path}`);
-                    }
+                    const v = appConfig.setting.cachePage ? APP_VERSION : Date.now();
+                    html = await fetchPage(`${route.path}`, v);
+                    if (html) htmlCache[pageKey] = html;
+                    else throw new Error(`Failed to load ${route.path}`);
                 }
 
-                // แปะ HTML เข้า Container และสั่งรัน Script ภายใน
-                setInnerHTMLAndExecuteScripts(contentWrap, html);
+                let processedHtml = html;
 
-                // รอ Script ในหน้านั้นประมวลผลเสร็จ แล้วเรียก callback onModalInit
+                // ถอดเอาเฉพาะเนื้อหาใน <body> เพื่อรักษาสไตล์และโครงสร้าง (ป้องกัน css ทะลุ)
+                const bodyRegex = /<body([^>]*)>([\s\S]*?)<\/body>/i;
+                const bodyMatch = html.match(bodyRegex);
+                if (bodyMatch) {
+                    const bodyAttributes = bodyMatch[1];
+                    const bodyContent = bodyMatch[2];
+                    processedHtml = `<div ${bodyAttributes} style="width:100%; min-height:100%; display:flex; flex-direction:column; position:relative; background-color:inherit;">${bodyContent}</div>`;
+                }
+
+                // สับสวิตช์ฆ่า Tailwind CDN ออกจากไฟล์ลูก ป้องกันการรีเซ็ตหน้าจอหลัก
+                processedHtml = processedHtml.replace(/<script[^>]*tailwindcss\.com[^>]*><\/script>/gi, '');
+
+                setInnerHTMLAndExecuteScripts(contentWrap, processedHtml, false);
+
+                // ส่ง Callback ให้ทำงานเมื่อโหลดเสร็จ
                 setTimeout(() => {
-                    if (typeof window.onModalInit === 'function') {
+                    if (typeof window.onInit === 'function') {
+                        console.log("onInit call");
                         window.onInit(payload, currentModalResponse);
                     }
                 }, 50);
@@ -309,18 +268,16 @@ window.PageManager = (function () {
         closeModal: function () {
             const container = document.getElementById('sys-modal-container');
             const backdrop = document.getElementById('sys-modal-backdrop');
+            const contentWrap = document.getElementById('sys-modal-content-wrap');
 
-            if (container) {
-                container.style.display = 'none';
-                container.classList.remove('fade-in');
-                const contentWrap = document.getElementById('sys-modal-content-wrap');
-                if (contentWrap) contentWrap.innerHTML = ''; // ล้างหน้าจอทิ้ง
-            }
-            if (backdrop) {
-                backdrop.style.display = 'none';
-            }
+            if (container) container.classList.remove('show');
+            if (backdrop) backdrop.style.display = 'none';
 
-            // ทริกเกอร์ onclose callback ถ้ามีการแนบมาตอนเปิด
+            // ล้างหน้าจอหลังซ่อนเสร็จแล้ว
+            setTimeout(() => {
+                if (contentWrap) contentWrap.innerHTML = '';
+            }, 300);
+
             if (typeof currentModalOnClose === 'function') {
                 try {
                     currentModalOnClose(currentModalResponse);
@@ -329,13 +286,13 @@ window.PageManager = (function () {
                 }
             }
 
-            // ล้างค่าทิ้งป้องกันการเรียกซ้ำซ้อน
             currentModalOnClose = null;
             currentModalResponse = null;
             window.currentModalPayload = null;
             window.currentModalResponse = null;
-            window.onModalInit = null;
+            window.oninit = null;
         },
+
 
 
         // โหลด Iframe

@@ -1,17 +1,18 @@
 <style>
     /* ==========================================
        Login Page Styles
+       อ้างอิงสีจาก Global Theme (--theme-primary, ฯลฯ)
        ========================================== */
     .login-wrapper {
         position: fixed;
         inset: 0;
         z-index: 40;
-        background-color: #f3f4f6;
+        background-color: var(--theme-bg-app, #f3f4f6);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        color: #1f2937;
+        color: var(--theme-text-main, #1f2937);
     }
 
     .login-container {
@@ -22,10 +23,10 @@
 
     /* Base Card Style */
     .login-card {
-        background: #fff;
-        border-radius: 2rem;
+        background: var(--theme-bg-card, #ffffff);
+        border-radius: var(--theme-radius, 2rem);
         padding: 2rem;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--theme-shadow-hover, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -40,7 +41,7 @@
         right: -5rem;
         width: 10rem;
         height: 10rem;
-        background: var(--color-primary-light, #eff6ff);
+        background: var(--theme-primary-light, #eff6ff);
         border-radius: 9999px;
         filter: blur(40px);
         z-index: 0;
@@ -51,7 +52,7 @@
     .store-name-title {
         font-size: 1.5rem;
         font-weight: 900;
-        color: #111827;
+        color: var(--theme-text-main, #111827);
         margin-bottom: 1.5rem;
         z-index: 10;
         text-align: center;
@@ -69,10 +70,10 @@
         width: 7rem;
         height: 7rem;
         border-radius: 9999px;
-        border: 4px solid #fff;
+        border: 4px solid var(--theme-bg-card, #ffffff);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         object-fit: cover;
-        background: #f3f4f6;
+        background: var(--theme-bg-app, #f3f4f6);
     }
 
     .store-icon-sub {
@@ -82,10 +83,10 @@
         width: 2.5rem;
         height: 2.5rem;
         border-radius: 9999px;
-        border: 3px solid #fff;
+        border: 3px solid var(--theme-bg-card, #ffffff);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         object-fit: cover;
-        background: #fff;
+        background: var(--theme-bg-card, #ffffff);
     }
 
     /* Inputs */
@@ -104,31 +105,31 @@
         display: flex;
         align-items: center;
         pointer-events: none;
-        color: #9ca3af;
+        color: var(--theme-text-muted, #9ca3af);
     }
 
     .text-input-field {
         width: 100%;
         padding: 1rem 1rem 1rem 2.75rem;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 1rem;
+        background: var(--theme-bg-app, #f9fafb);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius-btn, 1rem);
         font-size: 1.125rem;
         font-weight: 500;
-        color: #1f2937;
+        color: var(--theme-text-main, #1f2937);
         outline: none;
         transition: all 0.2s ease;
         box-sizing: border-box;
     }
 
     .text-input-field:focus {
-        background: #fff;
-        border-color: var(--color-primary, #2563eb);
+        background: var(--theme-bg-card, #ffffff);
+        border-color: var(--theme-primary, #2563eb);
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
     }
 
     .text-input-field::placeholder {
-        color: #9ca3af;
+        color: var(--theme-text-muted, #9ca3af);
     }
 
     /* Checkbox list */
@@ -160,24 +161,24 @@
         appearance: none;
         width: 1.25rem;
         height: 1.25rem;
-        border: 2px solid #d1d5db;
+        border: 2px solid var(--theme-border-color, #d1d5db);
         border-radius: 0.25rem;
-        background: #fff;
+        background: var(--theme-bg-card, #ffffff);
         cursor: pointer;
         transition: all 0.2s ease;
         margin: 0;
     }
 
     .check-input:checked {
-        background: var(--color-primary, #2563eb);
-        border-color: var(--color-primary, #2563eb);
+        background: var(--theme-primary, #2563eb);
+        border-color: var(--theme-primary, #2563eb);
     }
 
     .check-icon {
         position: absolute;
         width: 0.875rem;
         height: 0.875rem;
-        color: #fff;
+        color: #ffffff;
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.2s ease;
@@ -185,12 +186,12 @@
 
     .check-text-desc {
         font-size: 0.8125rem;
-        color: #4b5563;
+        color: var(--theme-text-muted, #4b5563);
         line-height: 1.25;
     }
 
     .check-link {
-        color: var(--color-primary, #2563eb);
+        color: var(--theme-primary, #2563eb);
         font-weight: 700;
         text-decoration: none;
     }
@@ -202,9 +203,9 @@
     /* Buttons */
     .btn-login-primary {
         width: 100%;
-        background: var(--color-primary, #2563eb);
-        color: #fff;
-        border-radius: 1rem;
+        background: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        border-radius: var(--theme-radius-btn, 1rem);
         padding: 1rem;
         font-weight: 700;
         box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
@@ -219,19 +220,25 @@
         font-size: 1rem;
     }
 
-    .btn-login-primary:hover {
+    .btn-login-primary:hover:not(:disabled) {
         filter: brightness(0.9);
     }
 
-    .btn-login-primary:active {
+    .btn-login-primary:active:not(:disabled) {
         transform: scale(0.98);
+    }
+
+    .btn-login-primary:disabled {
+        background-color: var(--theme-border-color, #d1d5db);
+        box-shadow: none;
+        cursor: not-allowed;
     }
 
     .btn-login-secondary {
         width: 100%;
-        background: #f3f4f6;
-        color: #6b7280;
-        border-radius: 1rem;
+        background: var(--theme-bg-app, #f3f4f6);
+        color: var(--theme-text-muted, #6b7280);
+        border-radius: var(--theme-radius-btn, 1rem);
         padding: 1rem;
         font-weight: 700;
         border: none;
@@ -241,8 +248,8 @@
     }
 
     .btn-login-secondary:hover {
-        color: #374151;
-        background: #e5e7eb;
+        color: var(--theme-text-main, #374151);
+        background: var(--theme-border-color, #e5e7eb);
     }
 
     .btn-login-secondary:active {
@@ -253,7 +260,7 @@
         width: 1.25rem;
         height: 1.25rem;
         border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #fff;
+        border-top-color: #ffffff;
         border-radius: 9999px;
         animation: spin 1s linear infinite;
         display: none;
@@ -267,8 +274,8 @@
     .otp-header-icon {
         width: 4rem;
         height: 4rem;
-        background: var(--color-primary-light, #eff6ff);
-        color: var(--color-primary, #2563eb);
+        background: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
         border-radius: 9999px;
         display: flex;
         align-items: center;
@@ -279,12 +286,12 @@
     .otp-title-text {
         font-size: 1.5rem;
         font-weight: 900;
-        color: #111827;
+        color: var(--theme-text-main, #111827);
         margin: 0 0 0.25rem 0;
     }
 
     .otp-subtitle-text {
-        color: #6b7280;
+        color: var(--theme-text-muted, #6b7280);
         font-size: 0.875rem;
         margin-bottom: 1.5rem;
         text-align: center;
@@ -302,20 +309,20 @@
     .otp-digit-box {
         width: 3.5rem;
         height: 4rem;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
+        background: var(--theme-bg-app, #f9fafb);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
         border-radius: 0.75rem;
         text-align: center;
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--color-primary, #2563eb);
+        color: var(--theme-primary, #2563eb);
         outline: none;
         transition: all 0.2s ease;
     }
 
     .otp-digit-box:focus {
-        background: #fff;
-        border-color: var(--color-primary, #2563eb);
+        background: var(--theme-bg-card, #ffffff);
+        border-color: var(--theme-primary, #2563eb);
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
     }
 
@@ -328,13 +335,13 @@
     }
 
     .otp-countdown-val {
-        color: var(--color-primary, #2563eb);
+        color: var(--theme-primary, #2563eb);
         font-weight: 700;
         margin-left: 0.25rem;
     }
 
     .otp-btn-resend {
-        color: var(--color-primary, #2563eb);
+        color: var(--theme-primary, #2563eb);
         font-weight: 700;
         cursor: pointer;
         border: none;
@@ -407,10 +414,13 @@
                         </path>
                     </svg>
                 </div>
-                <input type="tel" id="input-phone" placeholder="เบอร์โทรศัพท์ของฉัน" class="text-input-field">
+                <!-- กำหนด data-i18n-placeholder สำหรับระบบภาษา -->
+                <input type="tel" id="input-phone" data-i18n-placeholder="phonePlaceholder"
+                    placeholder="เบอร์โทรศัพท์ของฉัน" class="text-input-field">
             </div>
 
             <div class="check-list-group">
+                <!-- Checkbox: Terms (Required) -->
                 <label class="check-label-item">
                     <div class="check-box-ui">
                         <input type="checkbox" id="chk-terms" class="check-input">
@@ -421,11 +431,14 @@
                         </svg>
                     </div>
                     <span class="check-text-desc">
-                        ฉันได้อ่านและยอมรับ <span id="link-terms" class="check-link"
-                            onclick="openCondition(event)">ข้อกำหนดและเงื่อนไข</span> ในการเชื่อมต่อข้อมูล
+                        <span data-i18n="termsText1">ฉันได้อ่านและยอมรับ</span>
+                        <a href="#" id="link-terms" class="check-link" onclick="openCondition(event)"
+                            data-i18n="termsLink">ข้อกำหนดและเงื่อนไข</a>
+                        <span data-i18n="termsText2">ในการเชื่อมต่อข้อมูล</span>
                     </span>
                 </label>
 
+                <!-- Checkbox: Marketing (Optional) -->
                 <label class="check-label-item">
                     <div class="check-box-ui">
                         <input type="checkbox" id="chk-marketing" class="check-input">
@@ -435,14 +448,15 @@
                             </path>
                         </svg>
                     </div>
-                    <span class="check-text-desc">
+                    <span class="check-text-desc" data-i18n="marketingText">
                         ฉันยินยอมรับข่าวสารโปรโมชั่น และสิทธิพิเศษจากแบรนด์ (ไม่บังคับ)
                     </span>
                 </label>
             </div>
 
-            <button id="btn-register" class="btn-login-primary">
-                <span id="btn-register-text">ลงทะเบียน / เข้าสู่ระบบ</span>
+            <!-- ปุ่มล็อคโดยเริ่มต้น จะเปิดเมื่อกดยอมรับ Terms เท่านั้น -->
+            <button id="btn-register" class="btn-login-primary opacity-50 cursor-not-allowed" disabled>
+                <span id="btn-register-text" data-i18n="btnLogin">ลงทะเบียน / เข้าสู่ระบบ</span>
                 <div id="btn-register-loader" class="spinner-loader"></div>
             </button>
         </div>
@@ -460,11 +474,11 @@
                 </svg>
             </div>
 
-            <h2 class="otp-title-text">กรอกรหัส OTP</h2>
+            <h2 class="otp-title-text" data-i18n="otpTitle">กรอกรหัส OTP</h2>
             <p class="otp-subtitle-text">
-                ระบบได้ส่งรหัส OTP ไปที่เบอร์<br>
+                <span data-i18n="otpSub1">ระบบได้ส่งรหัส OTP ไปที่เบอร์</span><br>
                 <span id="display-phone" style="font-weight: 700; color: #1f2937;"></span><br>
-                <span style="font-size: 0.75rem;">Ref: <span id="otp-ref"
+                <span style="font-size: 0.75rem;"><span data-i18n="otpRef">Ref:</span> <span id="otp-ref"
                         style="font-weight: 700; color: #374151;">---</span></span>
             </p>
 
@@ -477,19 +491,20 @@
 
             <div class="otp-countdown-wrap">
                 <div id="countdown-wrapper" style="color: #6b7280;">
-                    ไม่ได้รับรหัส? ส่งอีกครั้งใน <span id="otp-countdown" class="otp-countdown-val">01:00</span>
+                    <span data-i18n="otpNoCode">ไม่ได้รับรหัส? ส่งอีกครั้งใน</span> <span id="otp-countdown"
+                        class="otp-countdown-val">01:00</span>
                 </div>
-                <button id="btn-resend" class="otp-btn-resend hidden">
+                <button id="btn-resend" class="otp-btn-resend hidden" data-i18n="otpResendBtn">
                     ส่งรหัส OTP อีกครั้ง
                 </button>
             </div>
 
             <button id="btn-verify" class="btn-login-primary" style="margin-bottom: 0.75rem;">
-                <span id="btn-verify-text">ยืนยันรหัส OTP</span>
+                <span id="btn-verify-text" data-i18n="otpVerifyBtn">ยืนยันรหัส OTP</span>
                 <div id="btn-verify-loader" class="spinner-loader"></div>
             </button>
 
-            <button id="btn-change-phone" class="btn-login-secondary">
+            <button id="btn-change-phone" class="btn-login-secondary" data-i18n="otpChangePhoneBtn">
                 กลับไปเปลี่ยนเบอร์
             </button>
         </div>
@@ -499,23 +514,120 @@
 
 <script>
     (() => {
-        // Toggle Custom Checkbox visual manually since we removed Tailwind peer classes
+        // ==========================================
+        // 1. PAGE SETTINGS 
+        // ==========================================
+        const pageSetting = {
+            // โลโก้หรือรูปภาพร้านค้าสำรอง (กรณีไม่มีมากับ Payload)
+            defaultStoreIcon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg==",
+            // เวลาของ OTP Countdown (วินาที)
+            defaultOtpCountdown: 60
+        };
+
+        // ==========================================
+        // 2. LANGUAGE DICTIONARY
+        // ==========================================
+        const i18nDict = {
+            Th: {
+                phonePlaceholder: "เบอร์โทรศัพท์ของฉัน",
+                termsText1: "ฉันได้อ่านและยอมรับ ",
+                termsLink: "ข้อกำหนดและเงื่อนไข",
+                termsText2: " ในการเชื่อมต่อข้อมูล",
+                marketingText: "ฉันยินยอมรับข่าวสารโปรโมชั่น และสิทธิพิเศษจากแบรนด์ (ไม่บังคับ)",
+                btnLogin: "ลงทะเบียน / เข้าสู่ระบบ",
+                otpTitle: "กรอกรหัส OTP",
+                otpSub1: "ระบบได้ส่งรหัส OTP ไปที่เบอร์",
+                otpRef: "Ref:",
+                otpNoCode: "ไม่ได้รับรหัส? ส่งอีกครั้งใน",
+                otpResendBtn: "ส่งรหัส OTP อีกครั้ง",
+                otpVerifyBtn: "ยืนยันรหัส OTP",
+                otpChangePhoneBtn: "กลับไปเปลี่ยนเบอร์",
+                toastPhoneEmpty: "กรุณากรอกเบอร์โทรศัพท์",
+                errorConnect: "การเชื่อมต่อผิดพลาด",
+                errorGeneral: "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
+                errorOtpFormat: "กรุณากรอก PIN ให้ครบ 4 หลัก",
+                errorOtpWrong: "รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่",
+                errorOtpProcess: "เกิดข้อผิดพลาดในการยืนยันรหัส",
+                loginSuccessTitle: "ยินดีต้อนรับ",
+                loginSuccessDesc: "เข้าสู่ระบบสำเร็จ",
+                loginProcessing: "กำลังบันทึกข้อมูล..."
+            },
+            En: {
+                phonePlaceholder: "My Phone Number",
+                termsText1: "I have read and agree to the ",
+                termsLink: "Terms & Conditions",
+                termsText2: " for data connection",
+                marketingText: "I consent to receive promotional news and brand privileges (Optional)",
+                btnLogin: "Register / Login",
+                otpTitle: "Enter OTP Code",
+                otpSub1: "The system has sent an OTP code to",
+                otpRef: "Ref:",
+                otpNoCode: "Didn't receive code? Resend in",
+                otpResendBtn: "Resend OTP Code",
+                otpVerifyBtn: "Verify OTP Code",
+                otpChangePhoneBtn: "Back to change number",
+                toastPhoneEmpty: "Please enter your phone number",
+                errorConnect: "Connection error",
+                errorGeneral: "An error occurred, please try again",
+                errorOtpFormat: "Please enter 4-digit PIN",
+                errorOtpWrong: "Incorrect OTP code, please try again",
+                errorOtpProcess: "An error occurred during verification",
+                loginSuccessTitle: "Welcome",
+                loginSuccessDesc: "Login successful",
+                loginProcessing: "Saving data..."
+            }
+        };
+
+        const state = {
+            userId: "", idToken: "", phone: "", verificationToken: "", refNo: "", expiresIn: pageSetting.defaultOtpCountdown, countdownTimer: null
+        };
+
+        let currentLang = 'Th';
+
+        function applyLanguage() {
+            if (window.crmData && window.crmData.language) {
+                currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+            }
+            const dict = i18nDict[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) el.placeholder = dict[key];
+            });
+        }
+
+        // ==========================================
+        // 3. LOGIC & INITIALIZATION
+        // ==========================================
+
+        // จัดการ Checkbox และการตรวจสอบเปิด/ปิดปุ่ม
         const setupCheckbox = (id) => {
             const chk = document.getElementById(id);
             const icon = document.getElementById(id + '-icon');
             chk.addEventListener('change', (e) => {
                 if (e.target.checked) icon.style.opacity = '1';
                 else icon.style.opacity = '0';
-            });
-        };
-        setupCheckbox('chk-terms');
-        setupCheckbox('chk-marketing');
+                state[id] = e.target.checked;
 
-        const state = {
-            userId: "", idToken: "", phone: "", verificationToken: "", refNo: "", expiresIn: 60, countdownTimer: null
+                // ควบคุมปุ่มเข้าสู่ระบบ: ต้องยอมรับ terms ถึงจะกดปุ่มได้
+                if (id === 'chk-terms') {
+                    const btnReg = document.getElementById('btn-register');
+                    if (e.target.checked) {
+                        btnReg.disabled = false;
+                        btnReg.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        btnReg.disabled = true;
+                        btnReg.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                }
+            });
         };
 
         function initUI() {
+            applyLanguage();
             const payload = crmData?.LIFF_PAYLOAD;
             if (payload) {
                 state.userId = payload.userId;
@@ -529,6 +641,9 @@
         }
 
         function setupEventListeners() {
+            setupCheckbox('chk-terms');
+            setupCheckbox('chk-marketing');
+
             document.getElementById('btn-register').addEventListener('click', () => handleAuth(false));
             document.getElementById('btn-verify').addEventListener('click', handleVerify);
             document.getElementById('btn-resend').addEventListener('click', () => handleAuth(true));
@@ -550,16 +665,16 @@
 
         async function handleAuth(isResend = false) {
             const phone = document.getElementById('input-phone').value.trim();
-            const chkTerms = document.getElementById('chk-terms');
+            const dict = i18nDict[currentLang];
 
             if (!isResend) {
-                if (!phone) return PageManager?.showToast('กรุณากรอกเบอร์โทรศัพท์', '⚠️');
-                if (!chkTerms.checked) return PageManager?.showToast('กรุณายอมรับข้อกำหนดและเงื่อนไข', '⚠️');
+                if (!phone) return PageManager?.showToast(dict.toastPhoneEmpty, '⚠️');
+                // เงื่อนไข chk-terms ไม่ผ่านจะไม่สามารถกดปุ่มได้ตั้งแต่แรกแล้ว
             }
 
             state.phone = phone;
             setLoading('btn-register', true);
-            if (isResend) document.getElementById('btn-resend').innerText = "กำลังส่ง...";
+            if (isResend) document.getElementById('btn-resend').innerText = "กำลังส่ง..."; // ใช้ loading คร่าวๆ ก่อน
 
             try {
                 const res = await CrmApi.login(state.userId, state.idToken, state.phone);
@@ -570,17 +685,17 @@
                     if (action == "OPEN_OTP_PIN") {
                         state.verificationToken = res.result.data.verificationToken;
                         state.refNo = res.result.data.refNo;
-                        state.expiresIn = res.result.data.expiresIn || 60;
+                        state.expiresIn = res.result.data.expiresIn || pageSetting.defaultOtpCountdown;
                         showOTPStep();
                     }
-                    else if (action == "LOGIN_DONE") finishLogin();
-                    else showError(res.result.message || 'ไม่สามารถทำรายการได้ กรุณาลองใหม่');
+                    else if (action == "LOGIN_DONE") await finishLogin();
+                    else showError(res.result.message || dict.errorGeneral);
                 } else {
-                    showError(res?.result?.message || 'การเชื่อมต่อผิดพลาด');
+                    showError(res?.result?.message || dict.errorConnect);
                 }
             } catch (error) {
                 setLoading('btn-register', false);
-                showError('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+                showError(dict.errorGeneral);
             }
         }
 
@@ -622,7 +737,9 @@
 
             wrapper.classList.remove('hidden');
             btnResend.classList.add('hidden');
-            btnResend.innerText = "ส่งรหัส OTP อีกครั้ง";
+
+            // รีเซ็ตข้อความปุ่มในกรณีที่เป็นการกด resend ก่อนหน้านี้
+            btnResend.innerText = i18nDict[currentLang].otpResendBtn;
 
             const updateDisplay = () => {
                 display.innerText = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
@@ -641,8 +758,9 @@
 
         async function handleVerify() {
             const inputs = document.querySelectorAll('.otp-digit-box');
+            const dict = i18nDict[currentLang];
             let pin = Array.from(inputs).map(i => i.value).join('');
-            if (pin.length < 4) return PageManager?.showToast('กรุณากรอก PIN ให้ครบ 4 หลัก', '⚠️');
+            if (pin.length < 4) return PageManager?.showToast(dict.errorOtpFormat, '⚠️');
 
             setLoading('btn-verify', true);
             try {
@@ -654,21 +772,39 @@
                         const loginRes = await CrmApi.login(state.userId, state.idToken, null);
                         await CrmApi.loginDone(loginRes);
                     }
-                    finishLogin();
+                    await finishLogin();
                 } else {
-                    showError('รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่');
+                    showError(dict.errorOtpWrong);
                     inputs.forEach(input => input.value = '');
                     inputs[0].focus();
                 }
             } catch (error) {
                 setLoading('btn-verify', false);
-                showError('เกิดข้อผิดพลาดในการยืนยันรหัส');
+                showError(dict.errorOtpProcess);
             }
         }
 
-        function finishLogin() {
+        async function finishLogin() {
             if (PageManager) {
-                PageManager.showComplete("ยินดีต้อนรับ", "เข้าสู่ระบบสำเร็จ", null, () => {
+                const dict = i18nDict[currentLang];
+                PageManager.showLoading(dict.loginProcessing);
+
+                try {
+                    // หากลูกค้ายินยอมรับข่าวสาร (chk-marketing == true) อัปเดตข้อมูล Profile
+                    if (state["chk-marketing"] === true) {
+                        const body = {};
+                        body[TYPES.customFields.customFields.consent_notif] = true;
+                        if (window.CrmApi && typeof window.CrmApi.updateProfileCustomFields === 'function') {
+                            await CrmApi.updateProfileCustomFields(body);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to update profile custom fields:", e);
+                } finally {
+                    PageManager.hideLoading();
+                }
+
+                PageManager.showComplete(dict.loginSuccessTitle, dict.loginSuccessDesc, null, () => {
                     document.getElementById('login-system-page')?.remove();
                     if (window.updateConsoleHeader) window.updateConsoleHeader();
                     PageManager.loadPage('home');
@@ -683,6 +819,7 @@
             if (isLoading) {
                 text.classList.add('hidden');
                 loader.classList.add('show');
+                // ป้องกันการกดย้ำ
                 btn.style.opacity = '0.8';
                 btn.style.pointerEvents = 'none';
             } else {

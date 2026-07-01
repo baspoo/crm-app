@@ -1,0 +1,1391 @@
+<!-- โหลด Library สำหรับรวมรูปภาพเป็น PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+    /* ==========================================
+       Upload Slip Page Styles (Pure CSS & Theme Aware)
+       ========================================== */
+    .us-page-bg {
+        background-color: #f8fafc;
+        min-height: 100vh;
+        padding-bottom: 5rem;
+        font-family: 'Kanit', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Header Image */
+    .us-header-wrap {
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .us-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+        object-fit: cover;
+        display: block;
+        background-color: #e5e7eb;
+    }
+
+    /* Main Container */
+    .us-container-wrap {
+        max-width: 36rem;
+        margin: -1.5rem auto 0 auto;
+        padding: 0 1.25rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Card */
+    .us-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    /* Texts */
+    .us-title-wrap {
+        margin-bottom: 0.5rem;
+    }
+
+    .us-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .us-desc {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Dropzone */
+    .us-dropzone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 160px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 1.25rem;
+        background-color: rgba(248, 250, 252, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        padding: 2rem 1rem;
+        box-sizing: border-box;
+    }
+
+    .us-dropzone-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        background-color: #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .us-dropzone:hover .us-dropzone-icon {
+        transform: scale(1.1);
+    }
+
+    .us-dropzone-title {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .us-dropzone-sub {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    /* Preview Area */
+    .us-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .us-preview-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .us-btn-clear {
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: none;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .us-btn-clear:hover {
+        background-color: #fee2e2;
+    }
+
+    .us-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .us-preview-item {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .us-preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .us-btn-remove {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Buttons */
+    .us-btn-submit {
+        width: 100%;
+        padding: 1rem;
+        color: #ffffff;
+        border: none;
+        border-radius: 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s ease;
+        margin-top: 0.5rem;
+        box-sizing: border-box;
+    }
+
+    .us-btn-submit:active {
+        transform: scale(0.98);
+    }
+
+    .us-btn-submit:disabled {
+        background-color: #cbd5e1 !important;
+        box-shadow: none !important;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .us-btn-history {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 1.25rem 1rem;
+        background: transparent;
+        color: #64748b;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s;
+        box-sizing: border-box;
+    }
+
+    .us-footer-note {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        margin-top: 0;
+    }
+
+    /* -------------------------------------
+       History Modal
+       ------------------------------------- */
+    .us-hist-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 100;
+    }
+
+    .us-hist-overlay.show {
+        display: flex;
+    }
+
+    .us-hist-card {
+        width: 100%;
+        max-width: 32rem;
+        height: 85vh;
+        background-color: #f8fafc;
+        border-radius: 1.5rem 1.5rem 0 0;
+        display: flex;
+        flex-direction: column;
+        animation: usSlideUp 0.3s ease-out forwards;
+        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (min-width: 640px) {
+        .us-hist-overlay {
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .us-hist-card {
+            height: 80vh;
+            border-radius: 1.5rem;
+        }
+    }
+
+    @keyframes usSlideUp {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .us-hist-header {
+        padding: 1.25rem;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: inherit;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .us-hist-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .us-hist-icon-box {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .us-hist-title {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .us-hist-close {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: none;
+        background-color: #f1f5f9;
+        color: #64748b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .us-hist-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .us-hist-loading,
+    .us-hist-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+        text-align: center;
+    }
+
+    /* History Items */
+    .us-hist-item {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .us-hist-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .us-hist-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .us-hist-date {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .us-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .us-badge.completed {
+        background-color: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+
+    .us-badge.pending {
+        background-color: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+    .us-badge.processing {
+        background-color: #eff6ff;
+        color: #3b82f6;
+        border: 1px solid #bfdbfe;
+    }
+
+    .us-badge.rejected {
+        background-color: #fef2f2;
+        color: #e11d48;
+        border: 1px solid #fecdd3;
+    }
+
+    .us-hist-id {
+        background-color: rgba(0, 0, 0, 0.03);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-family: monospace;
+        font-size: 0.7rem;
+        color: #64748b;
+        word-break: break-all;
+    }
+
+    .us-hist-ref {
+        margin-top: 0.25rem;
+        background-color: #f0f9ff;
+        border: 1px solid #e0f2fe;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        color: #0284c7;
+        font-weight: 500;
+    }
+
+    /* -------------------------------------
+       Result Modal (Pure CSS - No Tailwind)
+       ------------------------------------- */
+    .us-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 150;
+        padding: 1.5rem;
+        box-sizing: border-box;
+    }
+
+    .us-modal-overlay.show {
+        display: flex;
+    }
+
+    .us-result-card {
+        background-color: #ffffff;
+        border-radius: 2rem;
+        width: 100%;
+        max-width: 360px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        position: relative;
+        animation: usModalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes usModalIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .us-res-bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8rem;
+        background-color: #f8fafc;
+        opacity: 0.5;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 16px 16px;
+        pointer-events: none;
+    }
+
+    .us-res-icon-wrap {
+        padding-top: 2.5rem;
+        padding-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    .us-res-content {
+        padding: 1rem 2rem 2rem 2rem;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    .us-res-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .us-res-body {
+        margin-top: 0.75rem;
+        width: 100%;
+        text-align: left;
+    }
+
+    .us-res-btn {
+        width: 100%;
+        margin-top: 2rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    .us-res-btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Result Inner Components */
+    .res-icon-wrapper {
+        position: relative;
+        width: 6rem;
+        height: 6rem;
+        margin: 0 auto 0.5rem auto;
+    }
+
+    /* Success */
+    .res-icon-ping {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #34d399;
+        border-radius: 50%;
+        animation: usPing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        opacity: 0.6;
+    }
+
+    @keyframes usPing {
+
+        75%,
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
+    .res-icon-circle {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #d1fae5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #10b981;
+        border: 6px solid #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        font-size: 2.5rem;
+        box-sizing: border-box;
+    }
+
+    .res-box-success {
+        border-radius: 1rem;
+        padding: 1rem;
+        border: 1px solid #d1fae5;
+        background-color: #ecfdf5;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .res-box-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.25rem;
+    }
+
+    .res-box-label {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .res-box-val {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+
+    .res-box-divider {
+        height: 1px;
+        width: 100%;
+        background-color: rgba(52, 211, 153, 0.3);
+        margin: 0.75rem 0;
+    }
+
+    .res-box-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        background-color: #10b981;
+        color: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Pending */
+    .res-icon-pulse {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        animation: usPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes usPulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .res-icon-circle-pending {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 6px solid #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        font-size: 2.5rem;
+        box-sizing: border-box;
+    }
+
+    .res-box-pending {
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .res-pending-text1 {
+        color: #334155;
+        font-weight: 500;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .res-pending-text2 {
+        color: #64748b;
+        font-size: 0.75rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .res-box-highlight {
+        margin-top: 0.75rem;
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 0.75rem;
+        padding: 0.875rem;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .res-highlight-icon {
+        color: #f59e0b;
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.25rem;
+    }
+
+    .res-highlight-text {
+        color: #92400e;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0;
+        padding-left: 2rem;
+        text-align: center;
+    }
+
+    /* Error */
+    .res-icon-circle-error {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #fff1f2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f43f5e;
+        border: 6px solid #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        font-size: 2.5rem;
+        box-sizing: border-box;
+    }
+
+    .res-error-desc {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin: 0.5rem 0 0 0;
+        text-align: center;
+    }
+
+    .res-box-error {
+        background-color: #fff1f2;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        margin-top: 1rem;
+        border: 1px solid #ffe4e6;
+        text-align: left;
+    }
+
+    .res-error-msg {
+        color: #f43f5e;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0;
+        word-break: break-word;
+    }
+
+    .us-hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="us-page-bg">
+    <!-- Header Image -->
+    <div class="us-header-wrap">
+        <img id="us-header-img" class="us-header-img" src="" alt="Upload Receipt" onerror="this.style.display='none'">
+    </div>
+
+    <!-- Main Container -->
+    <div class="us-container-wrap">
+        <div class="us-card">
+            <div class="us-title-wrap">
+                <h1 class="us-title" data-i18n="pageTitle">ส่งใบเสร็จรับคะแนน</h1>
+                <p class="us-desc" data-i18n="pageDesc">กรุณาแนบรูปภาพใบเสร็จที่ชัดเจนเพื่อความรวดเร็ว</p>
+            </div>
+
+            <!-- Dropzone -->
+            <label class="us-dropzone" id="us-dropzone">
+                <input type="file" id="us-file-input" class="us-hidden" accept="image/*" multiple>
+                <div class="us-dropzone-icon" id="us-dropzone-icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div class="us-dropzone-title" data-i18n="uploadMain">กดเพื่อเลือกหรือถ่ายรูป</div>
+                <div class="us-dropzone-sub" data-i18n="uploadSub">อัปโหลดได้หลายรูปพร้อมกัน</div>
+            </label>
+
+            <!-- Preview Container -->
+            <div id="us-preview-container" class="us-hidden">
+                <div class="us-preview-header">
+                    <div class="us-preview-title">
+                        <span data-i18n="previewTitle">รูปที่เลือก</span> (<span id="us-file-count">0</span>)
+                    </div>
+                    <button class="us-btn-clear" id="us-btn-clear" data-i18n="clearAll">ลบทั้งหมด</button>
+                </div>
+                <div class="us-grid" id="us-preview-grid"></div>
+            </div>
+
+            <!-- Submit -->
+            <button id="us-btn-submit" class="us-btn-submit" disabled data-i18n="submitBtn">ส่งข้อมูลใบเสร็จ</button>
+        </div>
+
+        <button id="us-btn-history" class="us-btn-history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span data-i18n="historyBtnText">ดูประวัติการอัปโหลด</span>
+        </button>
+
+        <p class="us-footer-note" data-i18n="footerNote">
+            ระบบจะทำการตรวจสอบข้อมูลอัตโนมัติ<br>กรุณาตรวจสอบความชัดเจนของรูปภาพก่อนส่ง</p>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div id="us-history-modal" class="us-hist-overlay">
+    <div class="us-hist-card">
+        <div class="us-hist-header">
+            <div class="us-hist-title-wrap">
+                <div class="us-hist-icon-box" id="us-hist-icon-box">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div class="us-hist-title" data-i18n="historyTitle">ประวัติการอัปโหลด</div>
+            </div>
+            <button class="us-hist-close" id="us-hist-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="us-hist-body" id="us-hist-body">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Result Popup Modal (Custom UI) -->
+<div id="resultModal" class="us-modal-overlay">
+    <div class="us-result-card">
+        <div class="us-res-bg-pattern"></div>
+        <div id="resultStatusIcon" class="us-res-icon-wrap"></div>
+        <div class="us-res-content">
+            <h3 id="resultTitle" class="us-res-title"></h3>
+            <div id="resultBody" class="us-res-body"></div>
+            <button id="resultCloseBtn" class="us-res-btn">ตกลง</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.UploadSlipCtrl = (() => {
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const i18n = {
+            Th: {
+                pageTitle: "ส่งใบเสร็จรับคะแนน",
+                pageDesc: "กรุณาแนบรูปภาพใบเสร็จที่ชัดเจนเพื่อความรวดเร็ว",
+                uploadMain: "กดเพื่อเลือกหรือถ่ายรูปใบเสร็จ",
+                uploadSub: "อัปโหลดได้หลายรูปพร้อมกัน",
+                previewTitle: "รูปภาพที่เลือก",
+                clearAll: "ลบทั้งหมด",
+                submitBtn: "ส่งข้อมูลใบเสร็จ",
+                historyBtnText: "ดูประวัติการอัปโหลด",
+                historyTitle: "ประวัติการอัปโหลด",
+                historyEmpty: "ยังไม่มีประวัติการอัปโหลด",
+                historyLoading: "กำลังโหลดข้อมูล...",
+                status_completed: "สำเร็จ",
+                status_pending: "รอตรวจสอบ",
+                status_processing: "กำลังตรวจสอบ",
+                status_duplicate: "ซ้ำ",
+                status_rejected: "ไม่อนุมัติ",
+                msgLoadingUpload: "กำลังอัปโหลดข้อมูล...",
+                msgLoadingCheck: "กำลังตรวจสอบใบเสร็จ...",
+                successTitle: "อัปโหลดสำเร็จ!",
+                successDesc: "ระบบตรวจสอบข้อมูลเรียบร้อยแล้ว",
+                successAmount: "ยอดเงินที่ตรวจสอบ",
+                successPoints: "คะแนนที่ได้รับ",
+                successPointsUnit: "คะแนน",
+                reviewTitle: "ได้รับข้อมูลแล้ว",
+                reviewDesc1: "ระบบกำลังรอการอนุมัติ",
+                reviewDesc2: "คะแนนจะถูกโอนเข้าบัญชีของคุณอัตโนมัติ<br>เมื่อเจ้าหน้าที่ทำการตรวจสอบเสร็จสิ้น",
+                reviewNoticeTitle: "ใช้เวลาดำเนินการ 1-2 วัน",
+                errorTitle: "เกิดข้อผิดพลาด",
+                errorDesc: "ไม่สามารถทำรายการได้ในขณะนี้",
+                duplicateTitle: "ใบเสร็จซ้ำ",
+                duplicateDesc: "ใบเสร็จนี้ถูกสแกนใช้งานไปแล้ว",
+                msgPending: "อัปโหลดสำเร็จ ระบบกำลังรอการตรวจสอบ",
+                msgDuplicate: "ใบเสร็จนี้ถูกใช้งานไปแล้ว",
+                msgError: "เกิดข้อผิดพลาด กรุณาลองใหม่",
+                btnOk: "ตกลง",
+                historyOrderRef: "อ้างอิง:"
+            },
+            En: {
+                pageTitle: "Submit Receipt",
+                pageDesc: "Please attach clear photos of your receipt.",
+                uploadMain: "Click to select or take a photo",
+                uploadSub: "Multiple photos supported",
+                previewTitle: "Selected Images",
+                clearAll: "Clear All",
+                submitBtn: "Submit Receipt",
+                historyBtnText: "View Upload History",
+                historyTitle: "Upload History",
+                historyEmpty: "No upload history yet.",
+                historyLoading: "Loading data...",
+                status_completed: "Completed",
+                status_pending: "Pending",
+                status_processing: "Processing",
+                status_duplicate: "Duplicate",
+                status_rejected: "Rejected",
+                msgLoadingUpload: "Uploading data...",
+                msgLoadingCheck: "Verifying receipt...",
+                successTitle: "Upload Successful!",
+                successDesc: "System has verified the data.",
+                successAmount: "Verified Amount",
+                successPoints: "Points Earned",
+                successPointsUnit: "pts",
+                reviewTitle: "Data Received",
+                reviewDesc1: "Awaiting approval",
+                reviewDesc2: "Points will be automatically transferred<br>once the review is complete.",
+                reviewNoticeTitle: "Processing takes 1-2 days",
+                errorTitle: "Error Occurred",
+                errorDesc: "Cannot process the request at this time.",
+                duplicateTitle: "Duplicate Receipt",
+                duplicateDesc: "This receipt has already been used.",
+                msgPending: "Uploaded successfully, awaiting review.",
+                msgDuplicate: "This receipt has already been used.",
+                msgError: "An error occurred, please try again.",
+                btnOk: "OK",
+                historyOrderRef: "Ref:"
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let selectedFiles = [];
+        let pollingInterval = null;
+        let pointsAutoApprove = false;
+        let currentResultData = null;
+        let currentSuccessStatus = false;
+
+        // Elements
+        const elFileInput = document.getElementById('us-file-input');
+        const elPreviewCont = document.getElementById('us-preview-container');
+        const elPreviewGrid = document.getElementById('us-preview-grid');
+        const elFileCount = document.getElementById('us-file-count');
+        const elBtnClear = document.getElementById('us-btn-clear');
+        const elBtnSubmit = document.getElementById('us-btn-submit');
+        const elBtnHistory = document.getElementById('us-btn-history');
+        const elHistModal = document.getElementById('us-history-modal');
+        const elHistClose = document.getElementById('us-hist-close');
+        const elHistBody = document.getElementById('us-hist-body');
+        const elResultModal = document.getElementById('resultModal');
+        const elResultCloseBtn = document.getElementById('resultCloseBtn');
+
+        // ==========================================
+        // 3. CORE FUNCTIONS
+        // ==========================================
+        function init() {
+            // Set Language
+            if (window.crmData && window.crmData.language === 'En') currentLang = 'En';
+            applyLanguage();
+            applyTheme();
+
+            // Set Header Image
+            const headerImg = document.getElementById('us-header-img');
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                const imgPath = Utility.getAssetPath('uploadHeader');
+                if (imgPath) headerImg.src = imgPath;
+            } else if (window.appData?.customAssets?.uploadHeader) {
+                headerImg.src = window.appData.customAssets.uploadHeader;
+            }
+
+            // Bind Events
+            elFileInput.addEventListener('change', handleFileSelect);
+            elBtnClear.addEventListener('click', clearFiles);
+            elBtnSubmit.addEventListener('click', handleSubmit);
+            elBtnHistory.addEventListener('click', openHistory);
+            elHistClose.addEventListener('click', () => elHistModal.classList.remove('show'));
+
+            // Result Modal Close Event
+            elResultCloseBtn.addEventListener('click', () => {
+                elResultModal.classList.remove('show');
+                clearFiles();
+            });
+        }
+
+        // --- Color Helper ---
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#ffffff';
+            hexcolor = hexcolor.replace("#", "");
+            if (hexcolor.length === 3) {
+                hexcolor = hexcolor.split('').map(char => char + char).join('');
+            }
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1e293b' : '#ffffff';
+        }
+
+        function hexToRgb(hex) {
+            let h = hex.replace("#", "");
+            if (h.length === 3) h = h.split('').map(c => c + c).join('');
+            return `${parseInt(h.substr(0, 2), 16)}, ${parseInt(h.substr(2, 2), 16)}, ${parseInt(h.substr(4, 2), 16)}`;
+        }
+
+        function applyTheme() {
+            const pColor = window.appData?.primaryColor || '#2563eb';
+            const pText = getContrastYIQ(pColor);
+
+            let pRgb = '37, 99, 235';
+            try { pRgb = hexToRgb(pColor); } catch (e) { }
+
+            let styleTag = document.getElementById('dynamic-theme');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamic-theme';
+                document.head.appendChild(styleTag);
+            }
+
+            styleTag.innerHTML = `
+                .us-btn-submit:not(:disabled) { background-color: ${pColor}; color: ${pText}; }
+                .us-btn-submit:not(:disabled):hover { box-shadow: 0 6px 20px rgba(${pRgb}, 0.23); opacity: 0.95; }
+                .us-dropzone:hover { border-color: ${pColor}; background-color: rgba(${pRgb}, 0.04); }
+                .us-dropzone:hover .us-dropzone-icon { color: ${pColor}; }
+                .us-dropzone-icon { color: ${pColor}; }
+                #us-file-count { color: ${pColor}; }
+                .us-preview-title svg { color: ${pColor}; }
+                .us-btn-history:hover { color: ${pColor}; }
+                .us-hist-icon-box { background-color: rgba(${pRgb}, 0.1); color: ${pColor}; }
+                .us-badge.processing { background-color: rgba(${pRgb}, 0.1); color: ${pColor}; border: 1px solid rgba(${pRgb}, 0.3); }
+            `;
+        }
+
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerHTML = dict[key];
+            });
+        }
+
+        // --- File Handling ---
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            selectedFiles = [...selectedFiles, ...files];
+            renderPreview();
+        }
+
+        function clearFiles() {
+            selectedFiles = [];
+            elFileInput.value = '';
+            renderPreview();
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renderPreview();
+        }
+
+        function renderPreview() {
+            elPreviewGrid.innerHTML = '';
+            elFileCount.textContent = selectedFiles.length;
+
+            if (selectedFiles.length > 0) {
+                elPreviewCont.classList.remove('us-hidden');
+                elBtnSubmit.disabled = false;
+
+                selectedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'us-preview-item';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button class="us-btn-remove" onclick="window.UploadSlipCtrl.remove(${index})">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        `;
+                        elPreviewGrid.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                elPreviewCont.classList.add('us-hidden');
+                elBtnSubmit.disabled = true;
+            }
+        }
+
+        // --- Submit & API Flow ---
+        async function handleSubmit() {
+            if (!window.CrmApi || typeof window.CrmApi.onUploadReceiptImage !== 'function') {
+                if (window.PageManager) PageManager.showToast("System Error: CrmApi.onUploadReceiptImage not found", "❌");
+                return;
+            }
+
+            const dict = i18n[currentLang];
+            if (window.PageManager) PageManager.showLoading(dict.msgLoadingUpload);
+
+            try {
+                // เรียกใช้งาน API กลาง
+                const data = await window.CrmApi.onUploadReceiptImage(selectedFiles);
+
+                if (data) {
+                    pointsAutoApprove = data.pointsAutoApprove === true;
+                    // Success -> มีข้อมูล Data กลับมา
+                    if (pointsAutoApprove) {
+                        startPolling(data.jobId, data.ida);
+                    } else {
+                        // ปิด Loading และเปิดหน้าจอ Pending แบบ Custom 
+                        if (window.PageManager) PageManager.hideLoading();
+                        finishProcess(data, true);
+                    }
+                } else {
+                    // Failed
+                    throw new Error('Upload failed or returned null');
+                }
+            } catch (error) {
+                if (window.PageManager) PageManager.hideLoading();
+                finishProcess({ error: error.message || dict.msgError }, false);
+                console.error("Upload Error:", error);
+            }
+        }
+
+        function startPolling(jobId, ida) {
+            const dict = i18n[currentLang];
+            if (window.PageManager) PageManager.showLoading(dict.msgLoadingCheck);
+
+            let attempts = 0;
+            const maxAttempts = 15; // ประมาณ 45 วินาที
+
+            const poll = async () => {
+                attempts++;
+                try {
+                    if (!window.CrmApi || typeof window.CrmApi.onCheckOCR !== 'function') {
+                        throw new Error("CrmApi.onCheckOCR not found");
+                    }
+
+                    // เรียกใช้ API เช็คสถานะ
+                    const data = await window.CrmApi.onCheckOCR(jobId, ida);
+
+                    if (!data) throw new Error("Polling returned null");
+
+                    const status = data?.job?.status || data?.jobs?.[0]?.status;
+
+                    if (status === 'completed') {
+                        if (window.PageManager) PageManager.hideLoading();
+                        finishProcess(data, true);
+                    } else if (status === 'duplicate') {
+                        if (window.PageManager) PageManager.hideLoading();
+                        data.isDuplicate = true;
+                        finishProcess(data, false);
+                    } else if (status === 'pending_review' || status === 'processing') {
+                        if (attempts >= maxAttempts) {
+                            // Timeout fallback เปลี่ยนไปแสดงหน้าจอรอดำเนินการ
+                            if (window.PageManager) PageManager.hideLoading();
+                            pointsAutoApprove = false;
+                            finishProcess(data, true);
+                        } else {
+                            if (window.PageManager) PageManager.showLoading(dict.msgLoadingCheck);
+                            pollingInterval = setTimeout(poll, 3000);
+                        }
+                    } else {
+                        // Rejected or Error
+                        if (window.PageManager) PageManager.hideLoading();
+                        finishProcess(data, false);
+                    }
+                } catch (err) {
+                    if (window.PageManager) PageManager.hideLoading();
+                    finishProcess({ error: err.message || dict.msgError }, false);
+                }
+            };
+            poll();
+        }
+
+        // --- Final Process Output (Custom Result Modal) ---
+        function finishProcess(data, success = true) {
+            currentResultData = data;
+            currentSuccessStatus = success;
+
+            const dict = i18n[currentLang];
+            const resultTitle = document.getElementById('resultTitle');
+            const resultBody = document.getElementById('resultBody');
+            const resultStatusIcon = document.getElementById('resultStatusIcon');
+            const resultCloseBtn = document.getElementById('resultCloseBtn');
+
+            resultBody.innerHTML = '';
+            resultCloseBtn.textContent = dict.btnOk;
+
+            // Set Color Themes
+            const primaryColor = window.appData?.primaryColor || '#2563eb';
+            const primaryTextColor = getContrastYIQ(primaryColor);
+
+            let pRgb = '37, 99, 235';
+            try { pRgb = hexToRgb(primaryColor); } catch (e) { }
+
+            if (success) {
+                if (pointsAutoApprove) {
+                    // Success View (Green / Emerald)
+                    resultStatusIcon.innerHTML = `
+                        <div class="res-icon-wrapper">
+                            <div class="res-icon-ping"></div>
+                            <div class="res-icon-circle">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                    `;
+                    resultTitle.textContent = dict.successTitle;
+                    resultTitle.style.color = '#059669';
+
+                    const totalAmount = data?.job?.order?.totalAmount || data?.order?.totalAmount || "0.00";
+                    const pointsEarned = data?.job?.order?.pointsEarned || data?.order?.pointsEarned || 0;
+
+                    resultBody.innerHTML = `
+                        <p style="color:#64748b; font-size:0.875rem; margin-bottom:1.25rem; text-align:center;">${dict.successDesc}</p>
+                        <div class="res-box-success">
+                            <div class="res-box-row">
+                                <span class="res-box-label">${dict.successAmount}</span>
+                                <span class="res-box-val">฿${parseFloat(totalAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                            </div>
+                            <div class="res-box-divider"></div>
+                            <div class="res-box-row">
+                                <span class="res-box-label">${dict.successPoints}</span>
+                                <div class="res-box-badge">
+                                    + ${pointsEarned} <span style="font-size:0.75rem; margin-left:0.125rem;">${dict.successPointsUnit}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    resultCloseBtn.style.backgroundColor = primaryColor;
+                    resultCloseBtn.style.color = primaryTextColor;
+                } else {
+                    // Pending View (Theme Colors)
+                    resultStatusIcon.innerHTML = `
+                        <div class="res-icon-wrapper">
+                            <div class="res-icon-pulse" style="background-color: ${primaryColor};"></div>
+                            <div class="res-icon-circle-pending" style="background-color: rgba(${pRgb}, 0.1); color: ${primaryColor};">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                    `;
+                    resultTitle.textContent = dict.reviewTitle;
+                    resultTitle.style.color = primaryColor;
+
+                    resultBody.innerHTML = `
+                        <div class="res-box-pending" style="background-color: rgba(${pRgb}, 0.05); border-color: rgba(${pRgb}, 0.2);">
+                            <p class="res-pending-text1">${dict.reviewDesc1}</p>
+                            <p class="res-pending-text2">${dict.reviewDesc2}</p>
+                        </div>
+                        <div class="res-box-highlight">
+                            <i class="fa-solid fa-circle-exclamation res-highlight-icon"></i>
+                            <p class="res-highlight-text">
+                                ${dict.reviewNoticeTitle}
+                            </p>
+                        </div>
+                    `;
+                    resultCloseBtn.style.backgroundColor = primaryColor;
+                    resultCloseBtn.style.color = primaryTextColor;
+                }
+            } else {
+                // Failed View (Red / Rose)
+                resultStatusIcon.innerHTML = `
+                    <div class="res-icon-wrapper">
+                        <div class="res-icon-circle-error">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                    </div>
+                `;
+
+                if (data?.isDuplicate) {
+                    resultTitle.textContent = dict.duplicateTitle;
+                    resultTitle.style.color = '#e11d48';
+                    resultBody.innerHTML = `
+                        <p class="res-error-desc">${dict.duplicateDesc}</p>
+                    `;
+                } else {
+                    resultTitle.textContent = dict.errorTitle;
+                    resultTitle.style.color = '#1e293b';
+                    resultBody.innerHTML = `
+                        <p class="res-error-desc">${dict.errorDesc}</p>
+                        <div class="res-box-error">
+                            <p class="res-error-msg">${data?.error || data?.remark || data?.message || 'Unknown Error'}</p>
+                        </div>
+                    `;
+                }
+
+                resultCloseBtn.style.backgroundColor = '#1e293b';
+                resultCloseBtn.style.color = '#ffffff';
+            }
+
+            elResultModal.classList.add('show');
+        }
+
+        // --- History ---
+        async function openHistory() {
+            elHistModal.classList.add('show');
+            const dict = i18n[currentLang];
+
+            elHistBody.innerHTML = `
+                <div class="us-hist-loading">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <p>${dict.historyLoading}</p>
+                </div>
+            `;
+
+            try {
+                if (!window.CrmApi || typeof window.CrmApi.onCheckOCR !== 'function') {
+                    throw new Error("CrmApi.onCheckOCR not found");
+                }
+
+                // เรียก API ดึง History โดยไม่ส่ง Parameter (ดึงทั้งหมด 30 รายการตาม Default)
+                const data = await window.CrmApi.onCheckOCR();
+
+                if (!data) {
+                    throw new Error("No data returned from API");
+                }
+
+                const jobs = data?.jobs || data?.job || [];
+                renderHistory(jobs);
+
+            } catch (error) {
+                elHistBody.innerHTML = `<div class="us-hist-empty" style="color:#ef4444;">${dict.msgError}</div>`;
+            }
+        }
+
+        function getStatusStyle(status) {
+            const s = status ? status.toLowerCase() : '';
+            const dict = i18n[currentLang];
+            if (s === 'completed') return { text: dict.status_completed, class: 'completed' };
+            if (s === 'pending_review') return { text: dict.status_pending, class: 'pending' };
+            if (s === 'processing') return { text: dict.status_processing, class: 'processing' };
+            if (s === 'duplicate') return { text: dict.status_duplicate, class: 'rejected' };
+            if (s === 'rejected') return { text: dict.status_rejected, class: 'rejected' };
+            return { text: status || 'Unknown', class: 'pending' };
+        }
+
+        function renderHistory(jobs) {
+            const dict = i18n[currentLang];
+
+            if (!jobs || jobs.length === 0) {
+                elHistBody.innerHTML = `
+                    <div class="us-hist-empty">
+                        <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 0.75rem; opacity: 0.5;"></i>
+                        <p style="font-weight: 700; margin:0; color:#334155;">${dict.historyEmpty}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            jobs.forEach(job => {
+                const style = getStatusStyle(job.status);
+                let dateStr = '';
+                if (job.createdAt) {
+                    const d = new Date(job.createdAt);
+                    dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+                }
+
+                html += `
+                    <div class="us-hist-item">
+                        <div class="us-hist-item-top">
+                            <div class="us-hist-info">
+                                <i class="fa-solid fa-receipt" style="color:#94a3b8;"></i>
+                                <span class="us-hist-date">${dateStr}</span>
+                            </div>
+                            <span class="us-badge ${style.class}">${style.text}</span>
+                        </div>
+                        <div class="us-hist-id">ID: ${job.jobId || '-'}</div>
+                        ${job.orderId ? `<div class="us-hist-ref">${dict.historyOrderRef} <b>${job.orderId}</b></div>` : ''}
+                    </div>
+                `;
+            });
+
+            elHistBody.innerHTML = html;
+        }
+
+        // Public API for HTML bindings
+        return {
+            init,
+            remove: removeFile
+        };
+    })();
+
+    // Initialize when script executes
+    window.UploadSlipCtrl.init();
+</script>

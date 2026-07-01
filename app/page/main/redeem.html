@@ -1,236 +1,372 @@
 <style>
-    .page-container {
-        padding: 1rem;
-        padding-bottom: 5rem;
+    /* ==========================================
+       Redeem Page Styles (Premium UI)
+       ========================================== */
+    .rd-page-container {
+        padding: 1.25rem;
+        padding-bottom: 6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
         width: 100%;
         height: 100%;
         overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        background-color: #f9fafb;
-    }
-
-    .redeem-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #ffffff;
-        padding: 1rem;
-        border-radius: 1rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
-    }
-
-    .redeem-pts-label {
-        font-size: 0.75rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-        display: block;
-    }
-
-    .redeem-pts-val {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-primary);
-    }
-
-    .redeem-icon {
-        width: 3rem;
-        height: 3rem;
-        background: var(--color-primary-light);
-        border-radius: 9999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    .category-tabs {
-        display: flex;
-        gap: 0.5rem;
-        overflow-x: auto;
+        background-color: transparent;
+        /* โปร่งใสตาม Requirement */
+        -ms-overflow-style: none;
         scrollbar-width: none;
-        padding-bottom: 0.25rem;
     }
 
-    .category-tabs::-webkit-scrollbar {
+    .rd-page-container::-webkit-scrollbar {
         display: none;
     }
 
-    .tab-btn {
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        color: #4b5563;
-        padding: 0.375rem 1rem;
+    /* --- Tabs Section --- */
+    .rd-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--theme-bg-card, #ffffff);
+        padding: 0.375rem;
         border-radius: 9999px;
-        font-size: 0.75rem;
+        box-shadow: var(--theme-shadow, 0 2px 4px rgba(0, 0, 0, 0.02));
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        animation: fadeInDown 0.4s ease-out forwards;
+        opacity: 0;
+    }
+
+    .rd-tab-btn {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
         font-weight: 700;
-        white-space: nowrap;
-        transition: background 0.2s;
+        color: var(--theme-text-muted, #6b7280);
+        background: transparent;
+        border: none;
         cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
     }
 
-    .tab-btn:hover {
-        background: #f9fafb;
-    }
-
-    .tab-btn.active {
-        background: #111827;
+    .rd-tab-btn.active {
+        background: var(--theme-primary, #2563eb);
         color: #ffffff;
-        border-color: #111827;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
     }
 
-    .catalog-grid {
+    /* --- Grid Section --- */
+    .rd-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-        flex-grow: 1;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
         align-content: flex-start;
+        animation: fadeIn 0.5s ease-out forwards;
+        animation-delay: 0.1s;
+        opacity: 0;
     }
 
-    .catalog-card {
-        background: #ffffff;
-        border: 1px solid #f3f4f6;
-        border-radius: 1rem;
+    /* --- Reward Card --- */
+    .rd-card {
+        background: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.25rem);
         padding: 0.75rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--theme-shadow, 0 4px 6px -2px rgba(0, 0, 0, 0.05));
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         cursor: pointer;
-        transition: all 0.2s;
-        height: 100%;
-    }
-
-    .catalog-card:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border-color: var(--color-primary-light);
-    }
-
-    .catalog-card:active {
-        transform: scale(0.98);
-    }
-
-    .catalog-img-wrapper {
-        width: 100%;
-        aspect-ratio: 1/1;
-        border-radius: 0.75rem;
-        background: #f3f4f6;
-        margin-bottom: 0.75rem;
-        overflow: hidden;
+        transition: all 0.3s ease;
         position: relative;
     }
 
-    .catalog-card .img-slot {
+    .rd-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--theme-shadow-hover, 0 12px 20px -5px rgba(0, 0, 0, 0.1));
+        border-color: var(--theme-primary, #3b82f6);
+    }
+
+    .rd-card:active {
+        transform: scale(0.96);
+    }
+
+    /* Badges Overlay */
+    .rd-img-wrap {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: calc(var(--theme-radius, 1.25rem) - 0.375rem);
+        background: var(--theme-bg-app, #f8fafc);
+        margin-bottom: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rd-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
     }
 
-    .catalog-card .qty-slot {
+    .rd-card:hover .rd-img {
+        transform: scale(1.08);
+    }
+
+    /* Game Icon Corner (ไอคอนเกมที่มุมของการ์ด) */
+    .rd-game-icon-corner {
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
-        background: rgba(0, 0, 0, 0.5);
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        background-color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        object-fit: cover;
+        z-index: 15;
+        transition: transform 0.3s ease;
+    }
+
+    .rd-card:hover .rd-game-icon-corner {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    /* Dim image if already redeemed */
+    .rd-card.is-redeemed .rd-img {
+        filter: grayscale(80%) brightness(0.8);
+    }
+
+    .rd-badge-top {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
+        z-index: 10;
+    }
+
+    .rd-badge-bottom {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        z-index: 10;
+    }
+
+    .rd-badge {
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: #fff;
         backdrop-filter: blur(4px);
-        color: #ffffff;
-        font-size: 0.5625rem;
-        font-weight: 700;
-        padding: 0.125rem 0.5rem;
-        border-radius: 9999px;
-        display: none;
+        -webkit-backdrop-filter: blur(4px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
 
-    .catalog-card .qty-slot.show {
-        display: block;
+    .rd-badge.type-physical {
+        background: rgba(59, 130, 246, 0.85);
     }
 
-    .catalog-card .title-slot {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #1f2937;
+    .rd-badge.type-digital {
+        background: rgba(16, 185, 129, 0.85);
+    }
+
+    .rd-badge.type-game {
+        background: rgba(139, 92, 246, 0.85);
+    }
+
+    .rd-badge.onetime {
+        background: rgba(245, 158, 11, 0.9);
+    }
+
+    .rd-badge.redeemed {
+        background: rgba(75, 85, 99, 0.9);
+    }
+
+    /* Card Details */
+    .rd-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rd-name {
+        font-size: 0.875rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         margin-bottom: 0.25rem;
-        line-height: 1.375;
+        line-height: 1.3;
     }
 
-    .catalog-footer {
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
-        border-top: 1px solid #f9fafb;
+    .rd-desc {
+        font-size: 0.7rem;
+        color: var(--theme-text-muted, #6b7280);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        flex-grow: 1;
+    }
+
+    .rd-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--theme-border-color, #f3f4f6);
     }
 
-    .catalog-card .point-slot {
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: var(--color-primary);
+    .rd-price {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
 
-    .catalog-btn {
+    .rd-price-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+    }
+
+    .rd-price-val {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: var(--theme-primary, #3b82f6);
+    }
+
+    .rd-price-free {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: #10b981;
+        /* Emerald for Free */
+    }
+
+    .rd-action-icon {
         width: 1.5rem;
         height: 1.5rem;
-        border-radius: 9999px;
-        background: var(--color-primary-light);
-        color: var(--color-primary);
+        border-radius: 50%;
+        background: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #3b82f6);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
+        font-size: 0.7rem;
+        transition: all 0.2s ease;
     }
 
-    .catalog-card:hover .catalog-btn {
-        background: var(--color-primary);
+    .rd-card:hover .rd-action-icon {
+        background: var(--theme-primary, #3b82f6);
         color: #ffffff;
+    }
+
+    /* Empty State */
+    .rd-empty {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        color: var(--theme-text-muted, #9ca3af);
+        text-align: center;
+    }
+
+    .rd-empty i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 </style>
 
-<div class="page-container">
-    <!-- Header & Points -->
-    <div class="redeem-header">
-        <div>
-            <span class="redeem-pts-label">Available Points</span>
-            <span class="redeem-pts-val" id="redeem-my-points">0</span>
-        </div>
-        <div class="redeem-icon">💎</div>
+<div class="rd-page-container">
+
+    <!-- 1. Tabs: Items vs Campaigns -->
+    <div class="rd-tabs">
+        <button class="rd-tab-btn active" data-tab="items" data-i18n="tabItems">แลกรางวัล</button>
+        <button class="rd-tab-btn" data-tab="campaigns" data-i18n="tabCampaigns">แคมเปญ</button>
     </div>
 
-    <!-- Categories Filters -->
-    <div class="category-tabs">
-        <button class="tab-btn active">All</button>
-        <button class="tab-btn">Physical</button>
-        <button class="tab-btn">Digital</button>
+    <!-- 2. Rewards Grid -->
+    <div id="rd-grid-container" class="rd-grid">
+        <!-- Cards will be injected here -->
     </div>
 
-    <!-- Catalog Grid -->
-    <div id="redeem-catalog-grid" class="catalog-grid">
-        <!-- JS ยัด Template ลงตรงนี้ -->
-    </div>
 </div>
 
-<!-- ================= TEMPLATES ================= -->
-<template id="tpl-catalog-card">
-    <div class="catalog-card">
-        <div>
-            <div class="catalog-img-wrapper">
-                <img class="img-slot" src="" onerror="this.style.display='none'" />
-                <div class="qty-slot">Limit 1</div>
+<!-- Template: Reward Card -->
+<template id="rd-tpl-card">
+    <div class="rd-card">
+        <div class="rd-img-wrap">
+            <!-- ภาพหลักของรางวัล -->
+            <img class="rd-img slot-img" src="" alt="Reward"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+
+            <!-- ไอคอนเกม (มุมขวาบน) -->
+            <img class="rd-game-icon-corner hidden slot-game-icon" src="" alt="Game Icon">
+
+            <div class="rd-badge-top">
+                <span class="rd-badge slot-type"><i class="fa-solid fa-tag"></i> <span
+                        class="slot-type-txt">Type</span></span>
             </div>
-            <h4 class="title-slot">Reward Name</h4>
+            <div class="rd-badge-bottom">
+                <span class="rd-badge onetime slot-onetime hidden"><i class="fa-solid fa-bolt"></i> <span
+                        data-i18n="badgeOneTime">1 Time Only</span></span>
+                <span class="rd-badge redeemed slot-redeemed hidden"><i class="fa-solid fa-check"></i> <span
+                        data-i18n="badgeRedeemed">Redeemed</span></span>
+            </div>
         </div>
 
-        <div class="catalog-footer">
-            <span class="point-slot">0 Pts</span>
-            <div class="catalog-btn">
-                <svg style="width: 0.75rem; height: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
-                </svg>
+        <div class="rd-info">
+            <h3 class="rd-name slot-name">Name</h3>
+            <p class="rd-desc slot-desc">Description</p>
+
+            <div class="rd-footer">
+                <div class="rd-price slot-price-wrap">
+                    <img class="rd-price-icon slot-price-icon" src="" alt="pts">
+                    <span class="rd-price-val slot-price-val">0</span>
+                </div>
+                <div class="rd-action-icon">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -238,63 +374,295 @@
 
 <script>
     (() => {
-        const grid = document.getElementById('redeem-catalog-grid');
-        const tplCard = document.getElementById('tpl-catalog-card');
-        const lblPoints = document.getElementById('redeem-my-points');
+        // ==========================================
+        // 1. PAGE SETTINGS
+        // ==========================================
+        const pageSetting = {
+            // เวลาในการหน่วงไม่ให้ยิง API ซ้ำรัวๆ (มิลลิวินาที) - 1 นาที
+            refreshCooldownMs: 60000,
+            // รูปภาพสำรองกรณีรางวัลไม่มีรูป
+            defaultImg: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg==",
+            // ไอคอนประเภทต่างๆ
+            typeIcons: {
+                physical: "fa-solid fa-box",
+                digital: "fa-solid fa-ticket",
+                game: "fa-solid fa-gamepad",
+                gacha: "fa-solid fa-gift"
+            }
+        };
 
-        async function loadCatalog() {
-            if (window.crmData && window.crmData.user) {
-                const pts = window.crmData.user.points || 0;
-                lblPoints.textContent = pts.toLocaleString();
+        // ==========================================
+        // 2. LANGUAGE DICTIONARY
+        // ==========================================
+        const i18nDict = {
+            Th: {
+                tabItems: "แลกรางวัล",
+                tabCampaigns: "แคมเปญ",
+                badgeOneTime: "แลกได้ครั้งเดียว",
+                badgeRedeemed: "แลกแล้ว",
+                free: "ฟรี",
+                emptyList: "ยังไม่มีของรางวัลในหมวดหมู่นี้",
+                type_physical: "จัดส่ง",
+                type_digital: "คูปอง",
+                type_game: "กิจกรรม",
+                type_gacha: "สุ่มรางวัล",
+                fetchError: "ไม่สามารถโหลดข้อมูลได้",
+                confirmRedeemTitle: "ยืนยันการแลก",
+                confirmRedeemDesc: "คุณต้องการแลก {name} หรือไม่?",
+                ptsStr: "คะแนน",
+                toastAlreadyRedeemed: "คุณได้แลกรางวัลนี้ไปแล้ว"
+            },
+            En: {
+                tabItems: "Rewards",
+                tabCampaigns: "Campaigns",
+                badgeOneTime: "1 Time Only",
+                badgeRedeemed: "Redeemed",
+                free: "Free",
+                emptyList: "No rewards available in this category.",
+                type_physical: "Physical",
+                type_digital: "Digital",
+                type_game: "Game",
+                type_gacha: "Gacha",
+                fetchError: "Failed to load data.",
+                confirmRedeemTitle: "Confirm Redeem",
+                confirmRedeemDesc: "Do you want to redeem {name}?",
+                ptsStr: "Pts",
+                toastAlreadyRedeemed: "Already redeemed"
+            }
+        };
+
+        // ==========================================
+        // 3. STATE & ELEMENTS
+        // ==========================================
+        let currentLang = 'Th';
+        let currentTab = 'items'; // 'items' | 'campaigns'
+        let lastFetchTime = 0;
+
+        // DOM
+        const elTabs = document.querySelectorAll('.rd-tab-btn');
+        const elGrid = document.getElementById('rd-grid-container');
+        const tplCard = document.getElementById('rd-tpl-card');
+
+        // ==========================================
+        // 4. INITIALIZATION
+        // ==========================================
+        async function init() {
+            if (window.crmData && window.crmData.language === 'En') {
+                currentLang = 'En';
             }
 
-            let rewards = window.crmData?.marketData?.rewards;
-            if (!rewards) {
-                try {
-                    await CrmApi.getMarketData();
-                    rewards = window.crmData?.marketData?.rewards || [];
-                } catch (e) {
-                    rewards = [];
-                }
-            }
+            applyLanguage();
+            setupEvents();
 
-            grid.innerHTML = '';
+            // โหลดข้อมูลครั้งแรก (ใช้ Cache ถ้ามี)
+            await loadData(false);
+        }
 
-            if (!Array.isArray(rewards) || rewards.length === 0) {
-                grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #9ca3af; font-size: 0.75rem; padding: 2.5rem 0;">No items available</div>';
-                return;
-            }
-
-            rewards.forEach(item => {
-                const clone = tplCard.content.cloneNode(true);
-                clone.querySelector('.title-slot').textContent = item.name;
-
-                const itemPts = item.points || 0;
-                clone.querySelector('.point-slot').textContent = `${itemPts.toLocaleString()} Pts`;
-
-                if (item.image) clone.querySelector('.img-slot').src = item.image;
-
-                if (item.oneTimeRedemption) {
-                    const qtySlot = clone.querySelector('.qty-slot');
-                    qtySlot.classList.add('show');
-                    qtySlot.textContent = "1 / user";
-                }
-
-                clone.querySelector('.catalog-card').onclick = () => {
-                    PageManager.showConfirm(
-                        "Confirm Redeem",
-                        `Do you want to redeem "${item.name}" for ${itemPts} Pts?`,
-                        item.image || "🎁",
-                        () => {
-                            PageManager.showComplete("Success!", "Reward redeemed successfully. Check your inventory.");
-                        }
-                    );
-                };
-
-                grid.appendChild(clone);
+        function applyLanguage() {
+            const dict = i18nDict[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
             });
         }
 
-        loadCatalog();
+        function setupEvents() {
+            // Tab switching
+            elTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    elTabs.forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentTab = e.target.getAttribute('data-tab');
+                    renderGrid();
+                });
+            });
+        }
+
+        // ==========================================
+        // 5. DATA LOADING & RENDERING
+        // ==========================================
+        async function loadData(forceRefresh = false) {
+            const now = Date.now();
+            const isCooldown = (now - lastFetchTime) < pageSetting.refreshCooldownMs;
+
+            // ถ้าไม่ใช่ forceRefresh และยังอยู่ใน Cooldown ก็ใช้ข้อมูลเดิมจาก crmData
+            let needFetch = forceRefresh || !window.crmData?.marketData?.rewards || (!forceRefresh && !isCooldown);
+
+            if (needFetch) {
+                try {
+                    if (window.CrmApi) {
+                        const freshRewards = await CrmApi.getRewards();
+                        // อัปเดตข้อมูลเข้าไปในโครงสร้างกลางเพื่อให้ Utility มองเห็น
+                        if (freshRewards && window.crmData) {
+                            if (!window.crmData.marketData) window.crmData.marketData = {};
+                            window.crmData.marketData.rewards = freshRewards;
+                        }
+                        lastFetchTime = Date.now();
+                    }
+                } catch (e) {
+                    console.error("Failed to load rewards", e);
+                    if (window.PageManager) PageManager.showToast(i18nDict[currentLang].fetchError, "❌");
+                }
+            }
+
+            // จัดการซ่อน/แสดง Tab หากไม่มีแคมเปญ
+            const allRewards = window.crmData?.marketData?.rewards || [];
+            const hasCampaigns = allRewards.some(r => r.rewardType === 'game' || r.rewardType === 'gacha');
+            const tabsContainer = document.querySelector('.rd-tabs');
+
+            if (tabsContainer) {
+                if (hasCampaigns) {
+                    tabsContainer.style.display = 'flex';
+                } else {
+                    tabsContainer.style.display = 'none';
+                    // ถ้าปัจจุบันเลือกแท็บแคมเปญอยู่ ให้กลับไปที่หน้าไอเท็มปกติ
+                    if (currentTab === 'campaigns') {
+                        currentTab = 'items';
+                        elTabs.forEach(t => t.classList.remove('active'));
+                        document.querySelector('[data-tab="items"]')?.classList.add('active');
+                    }
+                }
+            }
+
+            renderGrid();
+        }
+
+        function getFilteredRewards() {
+            if (!window.Utility || typeof window.Utility.getRewardsForShop !== 'function') return [];
+
+            if (currentTab === 'items') {
+                return Utility.getRewardsForShop([window.TYPES.rewardTypes.physical, window.TYPES.rewardTypes.digital]);
+            } else {
+                return Utility.getRewardsForShop([window.TYPES.rewardTypes.game, window.TYPES.rewardTypes.gacha]);
+            }
+        }
+
+        function renderGrid() {
+            const rewards = getFilteredRewards();
+            const dict = i18nDict[currentLang];
+
+            elGrid.innerHTML = '';
+
+            if (!rewards || rewards.length === 0) {
+                elGrid.innerHTML = `
+                <div class="rd-empty">
+                    <i class="fa-solid fa-box-open"></i>
+                    <p>${dict.emptyList}</p>
+                </div>
+            `;
+                return;
+            }
+
+            // ขอ Path สำหรับ Icon Point เพื่อใส่ใน Card
+            const pointIconPath = (window.Utility && typeof window.Utility.getAssetPath === 'function')
+                ? Utility.getAssetPath("pointIcon") : null;
+
+            rewards.forEach(reward => {
+                const clone = tplCard.content.cloneNode(true);
+                const rootCard = clone.querySelector('.rd-card');
+
+                // Basic Info
+                clone.querySelector('.slot-name').innerText = reward.name || 'Reward';
+                clone.querySelector('.slot-desc').innerText = reward.description || '';
+
+                // Image หลักของรางวัล
+                clone.querySelector('.slot-img').src = reward.image || pageSetting.defaultImg;
+
+                // ตรวจสอบว่าเป็น Game/Gacha หรือไม่ เพื่อดึง Icon ของเกมมาแสดงมุมขวาบน
+                const gameIconEl = clone.querySelector('.slot-game-icon');
+                if ((reward.rewardType === 'game' || reward.rewardType === 'gacha') && window.Utility) {
+                    const gameCampaign = Utility.getRewardGameCampaign(reward);
+                    if (gameCampaign && gameCampaign.icon) {
+                        gameIconEl.src = gameCampaign.icon;
+                        gameIconEl.classList.remove('hidden');
+                    } else {
+                        gameIconEl.classList.add('hidden');
+                    }
+                } else {
+                    gameIconEl.classList.add('hidden');
+                }
+
+                // Points / Price
+                const ptsVal = clone.querySelector('.slot-price-val');
+                if (reward.points > 0) {
+                    ptsVal.innerText = reward.points.toLocaleString();
+                    if (pointIconPath) {
+                        clone.querySelector('.slot-price-icon').src = pointIconPath;
+                    } else {
+                        clone.querySelector('.slot-price-icon').style.display = 'none';
+                    }
+                } else {
+                    ptsVal.innerText = dict.free;
+                    ptsVal.className = 'rd-price-free slot-price-val';
+                    clone.querySelector('.slot-price-icon').style.display = 'none';
+                }
+
+                // Type Badge
+                const typeBadge = clone.querySelector('.slot-type');
+                const typeIconClass = pageSetting.typeIcons[reward.rewardType] || pageSetting.typeIcons.physical;
+                const typeName = dict[`type_${reward.rewardType}`] || reward.rewardType;
+
+                typeBadge.classList.add(`type-${reward.rewardType}`);
+                typeBadge.querySelector('i').className = typeIconClass;
+                typeBadge.querySelector('.slot-type-txt').innerText = typeName;
+
+                // Flags Badges
+                const badgeOnetimeEl = clone.querySelector('.slot-onetime');
+                const badgeRedeemedEl = clone.querySelector('.slot-redeemed');
+
+                // ตรวจสอบว่าเป็นรางวัลแบบแลกได้ครั้งเดียวหรือไม่
+                if (reward.oneTimeRedemption) {
+                    if (reward.alreadyRedeemed) {
+                        badgeRedeemedEl.classList.remove('hidden');
+                        badgeRedeemedEl.querySelector('span').innerText = dict.badgeRedeemed;
+                        rootCard.classList.add('is-redeemed');
+                    } else {
+                        badgeOnetimeEl.classList.remove('hidden');
+                        badgeOnetimeEl.querySelector('span').innerText = dict.badgeOneTime;
+                    }
+                }
+
+                // Click Event
+                rootCard.onclick = () => {
+                    // หากเป็นรางวัลที่แลกได้ครั้งเดียวและถูกแลกไปแล้ว ไม่ต้องเปิด pop-up แต่แสดง Toast แทน
+                    if (reward.oneTimeRedemption && reward.alreadyRedeemed) {
+                        if (window.PageManager) PageManager.showToast(dict.toastAlreadyRedeemed, "ℹ️");
+                    } else {
+                        handleRedeemClick(reward);
+                    }
+                };
+
+                elGrid.appendChild(clone);
+            });
+        }
+
+        // ==========================================
+        // 6. ACTIONS
+        // ==========================================
+        function handleRedeemClick(reward) {
+            if (!window.Utility || typeof window.Utility.openRedeem !== 'function') return;
+
+            // เรียก Panel กลางของระบบจัดการต่อ
+            Utility.openRedeem(reward, async (res) => {
+                // เมื่อ Callback กลับมา ให้แสดง Loading และอัปเดตข้อมูล
+                if (window.PageManager) PageManager.showLoading();
+
+                try {
+                    if (window.CrmApi) {
+                        await CrmApi.getProfile();
+                        // บังคับ Force Refresh ข้อมูลรางวัล
+                        await loadData(true);
+                    }
+                } catch (e) {
+                    console.error("Refresh after redeem failed", e);
+                } finally {
+                    if (window.PageManager) PageManager.hideLoading();
+                }
+            });
+        }
+
+        // เริ่มทำงาน
+        init();
+
     })();
 </script>

@@ -25,11 +25,19 @@
             dailyCheckin: 'dailyCheckin',
             referralCode: 'referralCode',
             qrHunt: 'qrHunt'
+        },
+        rewardTypes: {
+            physical: 'physical',
+            digital: 'digital',
+            game: 'game'
+        },
+        gameRewardTypes: {
+            item: 'item',
+            currency: 'currency',
+            _event: 'event',
+            gacha: 'gacha'
         }
     };
-
-
-
 
 
 
@@ -199,6 +207,38 @@
             var points = crmData?.crmUser?.user?.points || 0;
             return points;
         },
+
+        isTierReady: function () {
+            var tiers = crmData.marketData?.tiers || [];
+            return tiers != null && tiers.length > 0;
+        },
+        getUserTier: function () {
+            if (!this.isTierReady()) return null;
+            var tier = crmData?.crmUser?.user?.tier || null;
+            if (tier) {
+                return this.getTier(tier.id);
+            }
+            else {
+                var tiers = crmData.marketData?.tiers || [];
+                return tiers.length > 0 ? tiers[0] : null;
+            }
+        },
+        getUserNextTier: function () {
+            if (!this.isTierReady()) return null;
+            var tier = this.getUserTier();
+            if (tier) {
+                var tiers = crmData.marketData?.tiers || [];
+                return tier == undefined ? tiers[0] : tiers.find(x => x.level > tier.level);
+            }
+            return null;
+        },
+        isMaxTier: function (tier) {
+            if (!this.isTierReady()) return false;
+            var tiers = crmData.marketData?.tiers || [];
+            return tiers.find(x => x.level > tier.level) == null;
+        },
+
+
         getAssetPath: function (id) {
             var assets = crmData.initializeData?.customAssets || {};
             if (assets.hasOwnProperty(id)) {
@@ -221,6 +261,85 @@
             }
             return null;
         },
+
+        /** @returns {MarketReward} */
+        getRewardsForShop: function (types) {
+            var allRewards = crmData.marketData?.rewards || [];
+            const filteredRewards = allRewards.filter(t => types.includes(t.rewardType) && t.displayAtShop);
+            return filteredRewards || [];
+        },
+
+        /** 
+         * @param {MarketReward} reward 
+         * @returns {boolean} */
+        isEnough: function (reward, amount = 1) {
+            return crmData.user.user.points >= (reward.points * amount);
+        },
+
+        /** 
+         * @param {MarketReward} reward 
+         * @returns {boolean} */
+        isCanRedeem: function (reward) {
+            var ok = reward.status == "active";
+            if (!ok) return false;
+            if (reward.canRedeem) {
+                ok = reward.canRedeem;
+                if (!ok) return false;
+            }
+            if (reward.tierRestricted) {
+                ok = reward.tierEligible;
+                if (!ok) return false;
+            }
+            if (reward.oneTimeRedemption) {
+                if (reward.alreadyRedeemed)
+                    return false;
+            }
+            return ok;
+        },
+
+        /** 
+         * @param {MarketReward} reward 
+         * @returns {boolean} */
+        isGacha: function (reward) {
+            if (reward.rewardType != TYPES.rewardTypes.game) return false;
+            return reward.gameMetadata != null && reward.gameMetadata.type == TYPES.gameRewardTypes.gacha;
+        },
+
+        /** 
+         * @param {MarketReward} reward 
+         * @returns {GameCampaignData} */
+        getRewardGameCampaign: function (reward) {
+            var gameId = reward?.gameMetadata?.gameId;
+            if (!gameId) return null;
+            var gameCampaign = this.getGameCampaign(gameId);
+            return gameCampaign;
+        },
+
+        /**
+         * เปิด modal สำหรับแลกของรางวัล
+         * @param {MarketReward} reward รหัสรางวัล
+         * @param {function} callback ฟังก์ชันที่จะทำงานเมื่อปิด modal
+         */
+        openRedeem: function (reward, callback) {
+            if (reward == null) return;
+            if (this.isGacha(reward)) {
+                var game = this.getRewardGameCampaign(reward);
+                if (game) {
+                    // OPEN GAME DETAIL PANEL...
+                }
+            }
+            else {
+                PageManager.openModal("redeemReward", { id: reward.id }, (res) => {
+                    if (res && res.success) {
+                        if (callback != null) {
+                            callback();
+                        }
+                    }
+                });
+            }
+        },
+
+
         /** @returns {TierData} */
         getTier: function (id) {
             var tiers = crmData.marketData?.tiers || [];

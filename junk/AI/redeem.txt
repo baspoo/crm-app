@@ -1,0 +1,116 @@
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+
+==================================================================================================
+
+
+[## Requirement ##]
+
+สร้างหน้า redeem page สำหรับแลกรางวัล
+
+
+ทำการดึงข้อมูลรางวัลทั้งหมดออกมาก่อน  await crmApi.getRewards();
+และเก็บเวลาการดึงล่าสุดเอาไว้ ผ่านไปสักระยะเวลานึ่ง 1-2นาที ค่อยดึงใหม่ หรือผู้ใช้กด refresh เองด้วยการลากดึงลงสุด
+
+แบ่งออกเป็น 2 tab [แลกรางวัล]  [แคมเปญ]
+[แลกรางวัล] ดึงรางวัลจาก function นี้มาแสดง ระบบจะ filter มาให้แล้ว
+const rewards = Utility.getRewardsForShop([ TYPES.rewardTypes.physical, TYPES.rewardTypes.digital ]);
+[แคมเปญ] ดึงรางวัลจาก function นี้มาแสดง ระบบจะ filter มาให้แล้ว
+const rewards = Utility.getRewardsForShop([ TYPES.rewardTypes.game ]);
+
+ตัวโครงสร้างของ reward
+MarketReward {
+    id: number;
+    name: string;
+    description?: string;
+    termsConditions?: string;
+    image?: string;
+    points: number;
+    quantity: number;
+    rewardType: string; // "physical" | "digital" | "game"
+    oneTimeRedemption: boolean;
+    tierRestricted: boolean;
+    tierEligible: boolean;
+    requiredTiers?: TierData[];
+    startDate?: string;
+    endDate?: string;
+    status: string; // "active" | etc.
+    alreadyRedeemed: boolean;
+    canRedeem: boolean;
+    displayAtShop: boolean;
+    gameMetadata?: {
+        gameId?: string;
+        itemId?: string;
+        type?: string; // "item" | "currency" | "event" | "gacha"
+        amount?: number;
+        displayAtShop?: boolean;
+    };
+}
+
+
+แสดงข้อมูลให้ดูเป็น reward สำหรับ detail
+image : แสดงรูปภาพ
+name : ชื่อ
+description : คำอธิบายรางวัล หากไม่พอให้แสดง เป็น ... ต่อท้าย
+points : แลกด้วยคะแนน หากเป็น 0 ให้แสดงเป็นคำว่า free
+rewardType: string; // "physical" | "digital" | "game" : แสดง icon ทั้ง 3 type และชื่อ เป็นแบช
+oneTimeRedemption : หากเป็น true ให้แสดง เป็น badge ว่า "แลกได้ครั้งเดียว"
+alreadyRedeemed : หากเป็น true ให้แสดง เป็น badge ว่า "แลกแล้ว"
+
+ดึง icon ไปแสดง
+Utility.getAssetPath("pointIcon"); 
+
+ส่วนของ rewardType == game ให้ดึง icon ออกมาแสดง หากไม่มีใช้ default icon เกม
+gameCampaign = Utility.getRewardGameCampaign(reward);
+gameCampaign.icon
+
+เมื่อกด item จะเปิด panel จัดการขึ้นมาด้วยคำสั่งนี้ ส่ง id ของ reward เข้าไป
+Utility.openRedeem(reward,  async (res) => {
+
+        // ทำการ fetch ข้อมูลใหม่มาอัพเดท interface 
+        await crmApi.getProfile();
+        await crmApi.getRewards();
+        // refresh interface ui this page.... //
+
+})
+
+
+
+

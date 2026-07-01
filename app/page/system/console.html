@@ -384,13 +384,13 @@
     <div id="sys-modal-backdrop"
         style="display:none; position:absolute; inset:0; background-color:rgba(0,0,0,0.6); z-index:35; backdrop-filter: blur(4px);"
         onclick="PageManager.closeModal()"></div>
-    <div id="sys-modal-container" class="iframe-layer"
-        style="z-index:36; background-color:var(--theme-bg-app, #f8fafc); overflow:hidden;">
+    <div id="sys-modal-container" class="iframe-layer" style="z-index:36;">
         <button id="btn-modal-close-float" onclick="PageManager.closeModal()" class="btn-iframe-close-float">
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div id="sys-modal-content-wrap"
-            style="flex-grow:1; overflow-y:auto; overflow-x:hidden; width:100%; height:100%; position:relative;"></div>
+            style="flex-grow:1; overflow-y:auto; overflow-x:hidden; width:100%; height:100%; position:relative; background-color:var(--theme-bg-app, #f8fafc); border-radius: inherit;">
+        </div>
     </div>
 
     <!-- Bottom Navigation (Floating Dock) -->
@@ -489,7 +489,7 @@
 
             // อัปเดต Point Value
             if (window.Utility) {
-                console.log(Utility.getPoints());
+
                 document.getElementById('ui-points').textContent = Utility.getPoints().toLocaleString();
             }
 

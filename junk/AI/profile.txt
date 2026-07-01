@@ -1,0 +1,293 @@
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+
+==================================================================================================
+
+
+[## Requirement ##]
+
+สร้างหน้า Profile 
+แสดงข้อมูล information user / teir / point แบบเต็ม / address / customFields
+
+เรียงโครงสร้างหน้าดังนี้จากบนลงล่าง
+
+
+
+[# EDIT PROFILE #] 
+ด้านบนมุมขวาสุดของหน้านี้ มีปุ่มสำหรับแก้ไขข้อมูล เรียก function นี้สำหรับเปิด modal
+หลังจากกดบันทึกแล้ว ทำการ refresh interface เพื่อ update หน้า profile
+PageManager.openModal("editProfile", { } , function(res)=>{
+    if(res && res.success){
+        await crmApi.getProfile();
+        // refresh interface ui this page.... //
+    }
+});
+
+
+
+[# PROFILE #] 
+ส่วนแสดง panel profile ที่มีรูปภาพโปรไฟล์เป็นวงกลมอันใหญ่อยู่ตรงกลางด้านบน
+ตามด้วยข้้อมูลพื้นฐาน สร้าง กรอบ panel group ข้อมูล profile เอาไว้
+const user = crmData.crmUser.user
+{
+    id: number;
+    lineUserId: string;
+    displayName: string;
+    pictureUrl?: string;
+    email?: string;
+    phone?: string;
+    phoneVerified: number; // 0 | 1
+    points: number;
+    storeName?: string;
+    logoURL?: string;
+    memberSince?: string;
+    tier?: TierData | null;
+    customFields?: Record<string, any>;
+}
+
+user.pictureUrl : รูปโปรไฟล์หลัก
+user.displayName : ชื่อ 
+user.email : อีเมล์
+user.phone : เบอร์โทรศัพท์
+const gender = user.customFields[TYPES.customFields.gender];  ["male","female","other"] : เพศ แสดงทั้งข้อความและ icon ระบุเพศ หากไม่มีค่า ให้แสดงเป็น ไม่ระบุ
+const birthday = user.customFields[TYPES.customFields.birthday]; : วันเกิด หากยังไม่มีค่าให้แสดงเป็นไม่ระบุ
+const consent_notif = user.customFields[TYPES.customFields.consent_notif]; : เครื่องหมายแสดงการยอมรับข่าวสาร
+const language = crmData.language;  : ภาษาที่เลือก Th,En
+
+ด้านบนมุมขวา panel PROFILE มีปุ่มสำหรับแสดง qecode เรียก function นี้สำหรับเปิด modal
+PageManager.openModal("qecode");
+
+
+
+
+[# PROFILE MENU #] 
+ถัดลงมา widget ส่วนแสดงปุ่ม menu ที่มีปุ่ม 4 ปุ่มเรียงกัน 
+เรียงลำดับจากบนไปล่าง
+เรียก function นี้สำหรับเปิด modal
+PageManager.openModal("inventory");
+PageManager.openModal("shipping");
+PageManager.openModal("history");
+
+เฉพาะปุ่มสุดท้าย daily checkin จะแสดงออกมาก็ต่อเมื่อ feature เปิดใช้งานแล้วเท่านั้น check จากตัวแปลนี้
+const enableDailyCheckIn = crmData.marketData.enableDailyCheckIn;
+if(enableDailyCheckIn)
+{
+    PageManager.openModal("dailyCheckin");
+}
+หาก feature เปิดใช้งานแล้วตัวปุ่มจะมีลูกเล่นดังนี้ ให้ดึงข้อมูลมา check จากตัวแปลนี้
+const daily = crmData.daily;
+{
+    canCheckIn: boolean;
+    currentStreak: number;
+    currentStamina: number;
+    nextDayIndex: number;
+}
+daily.canCheckIn : ตอนนี้สามารถกด checkin ได้ ปุ่มจะแสดงสถานะต่างจากปุ่มอื่นๆและมีจุดสีแดงให้รู้ว่าต้องกดไป checkin
+ 
+
+
+
+
+[# POINT #]
+ถัดลงมา widget ส่วนแสดงคะแนนของ user ดึงข้อมูลมาจากตัวแปลนี้เพื่อแสดงผลให้สวยงาม 
+
+Utility.getAssetPath("pointIcon");  : ไอคอนของ point
+const myPoint = Utility.getPoints(); :  ยอดคะแนนทั้งหมดที่มีตอนนี้
+const statisticsData = crmData.crmUser.statisticsData;
+const totalSpending = statisticsData.spending != null ? statisticsData.spending.total : 0;  : ยอดใช้จ่ายทั้งหมดตอนนี้
+const currency = statisticsData.spending != null ? statisticsData.spending.currency : "THB";  : หน่วยเงิน
+const totalOrders = statisticsData.orders != null ? statisticsData.orders.total : 0;   :  ยอด Order ที่สั่งตอนนี้
+ 
+
+[# POINT DETAIL #]
+ตรงส่วนของ widget POINT มี icon expand อยู่สักมุมนึง สำหรับขยายส่วนแสดงรายละเอียดของ point 
+สร้าง panel ขึ้นมาเพื่อแสดงรายละเอียด point แบบเต็ม และ ยอดคะแนนที่กำลังจะหมดอายุ expiringSoon (หากมี)
+const pointData = statisticsData.points;
+{
+    available: number;    
+    totalEarned: number;   
+    pending: number;
+    redeemed: number;
+    apiDeducted: number;
+    expiringSoon?: EpiringData;
+}
+const expiringSoon = pointData.expiringSoon;
+{
+    total: number;
+    nextBatch?: BatchData;
+    batches?: BatchData[];
+}
+BatchData {
+    points: number;
+    expiresAt: string;
+    daysLeft: number;
+}
+
+
+[# REFERRAL CODE #]
+ถัดลงมา widget ส่วนแสดง referral code ถ้าเปิดใช้งาน feature นี้ ให้อยู่ถัดลงมาจากส่วนของ POINT เช็คว่า feature เปิดใช้งานจากตัวแปลนี้
+const enableReferralCode = crmData.marketData.enableReferralCode;
+if(enableReferralCode)
+{ .... }
+สร้าง widget referral code พร้อมคำอธิบายสั้นๆ และปุ่ม [Get Code] กดปุ่มจะเปิดหน้า modal นี้ขึ้นมา
+PageManager.openModal("referralCode",{ mode : "me" });
+
+
+
+[# Tier #]
+ถัดลงมา ตรงส่วนของ widget Tier ของ user check isTierReady ก่อนว่า feature ถูกเปิดใช้งานแล้ว และ ดึงค่าที่จำเป็นออกมาดังนี้
+const isTierReady = Utility.isTierReady( );
+const currentTier = Utility.getUserTier( );
+const nextTier = Utility.getUserNextTier( );
+
+TierData {
+    id: number;
+    name: string;
+    level: number;
+    color?: string;
+    icon?: string;
+    benefitCard?: string;
+    description?: string;
+    benefits?: string[];
+    rules?: TierRuleData[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+แสดง icon / name / สร้างพื้นที่สำหรับแสดงสี color 
+และ progress bar พร้อมตัวเลข progress/max ความคืบหน้าพัฒนา Tier ของ user ดังนี้
+// next ถ้ายังมี Tier ถัดไปให้แสดง progress และ ค่าปัจุบัน และค่าที่ต้องการสำหรับการอัพ Tier 
+if (nextTier != null)
+{
+    const currentValue = totalSpending;
+    const nextValue = nextTier.requireSpending;
+
+    var percent = ((float)totalSpending / (float)nextTier.requireSpending);
+    progressRank.fillAmount = percent;
+
+    value.text = ${currentValue} / ${nextValue};
+
+    tNextRank.SetActive(true);
+    if(percent >= 1.0f)
+    {
+        // Tier มันจะอัพเดทรายวันหลังเที่ยงคืน ดังนั้นมันมีโอกาสสูงที่ progress จะมากกว่า 100% คือล้น Bar ออกไป ให้แสดง 100% พอ
+        // และ แสดงกราฟฟิกเพื่อให้รู้ว่า rankup แล้ว พร้อมคำอธิบายเล็กน้อย -- เมื่อเข้าสู่วันถัดไป Tier จะอัพและ progress next จะ update เอง
+    }
+}
+// ถ้าไม่มี Tier ถัดไป แสดงว่าเป็น Tier สูงสุดแล้ว ให้แสดง progress เต็ม และค่าปัจุบัน /Max
+else
+{
+    progressRank.fillAmount = 1.0f;
+    value.text  =   ${currentValue} "/Max";
+}
+
+มี icon expand อยู่สักมุมนึง ของ widget Tier สำหรับขยายส่วนแสดงรายละเอียดของ Tier เรียก function นี้เพื่อเปิด modal
+PageManager.openModal("rank");
+
+
+
+
+
+[# ADDRESS #] 
+ถัดลงมา widget ส่วนแสดงที่อยู่  ดึงข้อมูลมาจากตัวแปลนี้เพื่อแสดงผลให้สวยงาม 
+const addresses = crmData.crmUser.userAddresses;
+[
+    {
+        id: number;
+        contactPerson: string;
+        addressLine1: string;
+        addressLine2?: string;
+        subdistrict?: string;
+        district?: string;
+        province?: string;
+        postalCode?: string;
+        contactPhone?: string;
+        isDefault: boolean;
+        createdAt?: string;
+        updatedAt?: string;
+    }
+]
+แสดง แค่อันเดียว
+พยายามแสดง  addresses[N].isDefault ขึ้นมาแสดงผล
+หากไม่เจอ isDefault ให่แสดง addresses[0] เอาอันแรกขึ้นมาแสดงเลย
+ข้อมูลที่แสดง ทำให้ดูครบถ้วนสวยงาม
+หากไม่พบข้อมูลเลยสักอัน ให้เป็นกล่องสำหรับเพิ่มที่อยู่ใหม่ สถานะ empty พร้อมแสดงรูปภาพประกอบเล็กๆ
+
+มีปุ่มสำหรับ แก้ไข/เพิ่ม ที่อยู่ กดแล้วเปิด modal ขึ้นมาให้จัดการ หลังจากกดบันทึกแล้ว ทำการ refresh interface เพื่อ update หน้า profile
+PageManager.openModal("address", { } , function(res)=>{
+    if(res && res.success){
+        await crmApi.getProfile();
+        // refresh interface ui this page.... //
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+สร้าง function สำหรับ refresh หน้า profile สามารถใช้ใน page นี้ และ page อื่นๆ เรียกใช้ได้เช่นกัน เพื่อทำการอัพเดทข้อมูลใหม่
+window.updateProfile = async function () {
+     await api.getProfile();
+     // refresh interface all..........
+}
+
+
+
+
+
+สร้าง function สำหรับ custom widget panel
+สร้าง <div> ไว้ 3 ต่ำแหน่ง  รอฉัน feed html เข้าไปปรับแต่ง
+custom-widget-1 : เอาไว้บนสุดต่อจาก menu 
+custom-widget-2 : เอาไว้ตรงกลางด้านบน address
+custom-widget-3 : เอาไว้ด้านล่างใต้ address
+
+และ function รับ html เข้าไป inner ตรงตำแหน่งนั้น
+function customWidget(widgetId, html){
+   // widgetId : "custom-widget-1" | "custom-widget-2" | "custom-widget-3"   
+    
+}
+
+

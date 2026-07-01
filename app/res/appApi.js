@@ -492,7 +492,7 @@
             console.log("🔐 OpenApi Keys Configured.");
         },
 
-        callApiOpen: async function (functionName, payload, callback = null) {
+        callApiOpen: async function (functionName, payload) {
             try {
                 if (!state.config.URL) throw new Error("AppApi is not initialized!");
 
@@ -507,57 +507,71 @@
                 });
 
                 const res = await response.json();
-                if (callback) callback(res);
                 return res;
 
             } catch (error) {
                 console.error(`[OnApiOpen Error] ${functionName}:`, error);
                 const errRes = { result: { code: 500, message: error.message || "Network Error" } };
-                if (callback) callback(errRes);
                 return errRes;
             }
         },
         // ==========================================
         // Open & Upload APIs
         // ==========================================
-        callApiUpload: async function (file, params) {
-            const { codeName, action = null, subPath = null, extension = null } = params;
+        callApiUpload: async function (file, params, formData) {
+
+            // ส่งได้ 2 แบบ
+            // 1.  ส่ง file + params: {codeName, action, subPath, extension} : ---> callApiUpload(file, params);
+            // 2.  ส่ง formData สำเร็จรูป: ---> callApiUpload(file, null, formData);
+
+            // file ส่งได้ทั้งแบบ Array และ Single file
+            const isArray = file instanceof Array;
+            const keyFile = isArray ? 'files' : 'file';
+            const keyUploadAction = isArray ? 'uploads' : 'upload';
+
 
             try {
                 if (!state.config.URL) throw new Error("AppApi is not initialized!");
 
-                const formData = new FormData();
-                const gameId = state.config.GameConfigId || "";
-                const fileExt = extension || (file.name ? "." + file.name.split('.').pop() : "");
+                if (params && formData == null) {
+                    const { codeName, action = null, subPath = null, extension = null } = params;
 
-                formData.append('gameId', gameId);
-                formData.append('codeName', codeName);
+                    formData = new FormData();
+                    const gameId = state.config.GameConfigId || "";
+                    const fileExt = extension || (file.name ? "." + file.name.split('.').pop() : "");
+
+                    formData.append('gameId', gameId);
+                    formData.append('codeName', codeName);
 
 
-                if (file) formData.append('file', file);
-                if (action) formData.append('action', action);
-                if (subPath) formData.append('subPath', subPath);
-                if (extension) formData.append('extension', fileExt);
+                    if (file) formData.append(keyFile, file);
+                    if (action) formData.append('action', action);
+                    if (subPath) formData.append('subPath', subPath);
+                    if (extension) formData.append('extension', fileExt);
+                }
+                else {
+                    if (formData.has('gameId') == false) formData.append('gameId', state.config.GameConfigId);
+                    if (file && formData.has(keyFile) == false) formData.append(keyFile, file);
+                }
+
 
                 const headers = {};
                 if (state.sessionToken) headers['X-Parse-Session-Token'] = state.sessionToken;
                 if (state.openApi.GameKey) headers['X-Parse-Session-Token'] = state.openApi.GameKey;
                 if (state.openApi.GameSecret) headers['X-Parse-Session-Token'] = state.openApi.GameSecret;
 
-                const response = await fetch(`${state.config.URL}/upload`, {
+                const response = await fetch(`${state.config.URL}/${keyUploadAction}`, {
                     method: 'POST',
                     headers: headers,
                     body: formData
                 });
 
                 const res = await response.json();
-                if (callback) callback(res);
                 return res;
 
             } catch (error) {
                 console.error(`[OnApiUpload Error]:`, error);
                 const errRes = { result: { code: 500, message: error.message || "Upload Error" } };
-                if (callback) callback(errRes);
                 return errRes;
             }
         }

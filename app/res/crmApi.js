@@ -561,7 +561,54 @@
         },
 
 
+        onCheckOCR: async function (jobId, ida) {
+            let body = {
+                gameId: GameId,
+                statId: StatId,
+            };
+            if (jobId && ida) {
+                body.jobId = jobId;
+                body.ida = ida;
+            }
+            else {
+                body.limit = 30;
+                body.offset = 0;
+            }
+            const res = await AppApi.callApiInternal('crm_checkOCR', body);
+            if (res.result.code == 200) {
+                return res.result.data;
+            }
+            else {
+                this.onfailed(res);
+                return null;
+            }
+        },
+        onUploadReceiptImage: async function (files) {
 
+            const token = await this.onGetOneTimeToken();
+            if (!token) return null;
+
+            const formData = new FormData();
+            formData.append('gameId', GameId);
+            formData.append('statId', StatId);
+            formData.append('action', 'crm_ocrupload');
+            formData.append('token', token);
+
+            if (files.length === 1) {
+                formData.append('files', files[0]);
+            } else {
+                const pdfBlob = await generatePDF(files);
+                formData.append('files', pdfBlob, 'multi_receipts.pdf');
+            }
+
+            const res = await AppApi.callApiUpload(files, null, formData);
+            if (res.code == 200) {
+                return res.data;
+            }
+            else {
+                return null;
+            }
+        },
 
 
 

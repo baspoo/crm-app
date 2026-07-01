@@ -6,6 +6,9 @@
         "APPID": "bug",
         "KEY": "bug"
     },
+    "setting": {
+        "cachePage": false
+    },
     "systemPage": {
         "login": {
             "path": "page/system/login.html",
@@ -103,7 +106,7 @@
         "linkMarketplace": {
             "path": "page/sub/linkMarketplace.html",
             "anim": "fade-in",
-            "full": true
+            "full": false
         },
         "linkMarketplace_howto": {
             "path": "page/sub/linkMarketplace_howto.html",

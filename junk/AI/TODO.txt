@@ -9,8 +9,33 @@
 - animation state list 
 fide-in / fide-out / zoom-in / zoom-out / slide-right / slide-left / popup / popdown
 
+- login consent_notification update ok
+- login ล็อกปุ่ม หากไม่กดยอมรับเงื่อนไขก่อน
 
+- first time
+1. check fullfill profile
+2. consent_notification
+3. reffer code
+if (CRMData.MarketData.current.enableReferralCode)
+{
+    var payload = new Dictionary<string, object>();
+    payload.Add("mode", "inviteCode");
+    UIRoot.instance.OpenIframe(Store.HtmlPages.Referal, payload, (json) =>
+    {
+        done?.Invoke();
+    });
+}
 
+- [ Profile Custom ] ให้ทำ <div> ไว้ด้านบน 1 อัน / ด้านล่างอีก 1 อัน
+แล้วใน cms มีช่องให้ใส่ URL custom profile  / custom-1  custom-2 เลือกตำแหน่งที่จะแต่ง
+เมื่อกดไปแล้วให้เรียกหน้าที่ต้องการให้ทำ full link ใน custom นั้นเลย
+** cms ทำหน้าสำหรับให้เอาไฟล์ไปอัพโหลด แล้วเราเอาแค่ link มาใช้ **
+ไหนๆ ก็ทำแล้ว ก็ทำไว้ที่ home / profile ด้วยเลย
+
+- qrhunt : เพิ่มเป๋น banner action ใหม่ไปเลย ให้ใส่ URL page เข้ามาถ้าไม่ใส่ใช้ default
+
+- editProfile
+email / gender / customfields / consent / language 
 
 window.onInit = function(payload, response) {
     console.log("ได้รับ Payload:", payload);

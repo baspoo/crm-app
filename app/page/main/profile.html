@@ -1,305 +1,1242 @@
 <style>
-    .page-container {
-        padding: 1rem;
-        padding-bottom: 5rem;
+    /* ==========================================
+       Profile Page Premium Styles (Pure CSS)
+       ========================================== */
+
+    .profile-page-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        color: var(--theme-text-main, #1f2937);
+        padding: 1.25rem;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        background-color: transparent;
+        /* No background as requested */
         width: 100%;
-        height: 100%;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        background-color: #f9fafb;
     }
 
-    .user-card {
-        background: #ffffff;
-        border-radius: 1.5rem;
+    .profile-page-wrapper *,
+    .profile-page-wrapper *::before,
+    .profile-page-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    .pf-hidden {
+        display: none !important;
+    }
+
+    /* --- Typography & Header --- */
+    .pf-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .pf-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    /* --- Buttons --- */
+    .pf-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .pf-btn:active {
+        transform: scale(0.95);
+    }
+
+    .pf-btn-edit {
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        padding: 0.5rem 1rem;
+        border-radius: var(--theme-radius-btn, 0.75rem);
+        font-size: 0.875rem;
+        font-weight: 700;
+        border: 1px solid var(--theme-border-color, transparent);
+    }
+
+    .pf-btn-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        color: var(--theme-text-muted, #6b7280);
+        background-color: var(--theme-bg-app, #f3f4f6);
+    }
+
+    .pf-btn-icon:hover {
+        background-color: #e5e7eb;
+        color: var(--theme-text-main, #374151);
+    }
+
+    /* --- Cards --- */
+    .pf-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.25rem);
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
         padding: 1.25rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
+        margin-bottom: 1.25rem;
+        position: relative;
+    }
+
+    .pf-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .pf-card-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--theme-text-main, #1f2937);
+    }
+
+    /* --- 1. Profile Section --- */
+    .pf-profile-top {
+        text-align: center;
+        padding-top: 1rem;
+    }
+
+    .pf-qr-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+
+    .pf-avatar-wrap {
+        position: relative;
+        width: 6rem;
+        height: 6rem;
+        margin: 0 auto 1rem auto;
+    }
+
+    .pf-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--theme-bg-card, #ffffff);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        background-color: var(--theme-bg-app, #f3f4f6);
+    }
+
+    .pf-name {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .pf-contact-info {
+        font-size: 0.85rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .pf-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .pf-tag {
+        background-color: var(--theme-bg-app, #f3f4f6);
+        color: var(--theme-text-muted, #4b5563);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+    }
+
+    .pf-tag.consent {
+        color: #10b981;
+        background-color: #ecfdf5;
+        border-color: #a7f3d0;
+    }
+
+    /* --- 2. Menu List (Vertical) --- */
+    .pf-menu-list {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .pf-menu-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--theme-border-color, #f3f4f6);
+        background: transparent;
+        border-radius: 0;
+        width: 100%;
+        text-align: left;
+    }
+
+    .pf-menu-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .pf-menu-item:first-child {
+        padding-top: 0;
+    }
+
+    .pf-menu-left {
         display: flex;
         align-items: center;
         gap: 1rem;
     }
 
-    .user-avatar {
-        width: 4rem;
-        height: 4rem;
-        border-radius: 9999px;
-        border: 2px solid #e5e7eb;
-        object-fit: cover;
-        background: #f3f4f6;
-        flex-shrink: 0;
+    .pf-menu-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.75rem;
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        position: relative;
     }
 
-    .user-info {
-        flex-grow: 1;
-        min-width: 0;
-    }
-
-    .user-name {
-        font-size: 1.125rem;
+    .pf-menu-label {
+        font-size: 0.95rem;
         font-weight: 700;
-        color: #1f2937;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        color: var(--theme-text-main, #374151);
     }
 
-    .user-meta {
+    .pf-red-dot {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        background-color: #ef4444;
+        border-radius: 50%;
+        border: 2px solid var(--theme-bg-card, #ffffff);
+    }
+
+    .pf-menu-chevron {
+        color: var(--theme-text-muted, #9ca3af);
+    }
+
+    /* --- 3. Points Section --- */
+    .pf-point-overview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, var(--theme-bg-app, #f8fafc) 0%, var(--theme-bg-card, #ffffff) 100%);
+        padding: 1.25rem;
+        border-radius: 1rem;
+        border: 1px solid var(--theme-border-color, #f1f5f9);
+    }
+
+    .pf-pt-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pf-pt-val-wrap {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         margin-top: 0.25rem;
     }
 
-    .user-tier {
-        font-size: 0.625rem;
+    .pf-pt-icon-img {
+        width: 2rem;
+        height: 2rem;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+    }
+
+    .pf-pt-val {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--theme-primary, #2563eb);
+        line-height: 1;
+    }
+
+    .pf-pt-stats {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .pf-stat-lbl {
+        font-size: 0.65rem;
+        color: var(--theme-text-muted, #9ca3af);
+        text-transform: uppercase;
         font-weight: 700;
-        color: #a16207;
-        background: #fef9c3;
-        padding: 0.125rem 0.5rem;
-        border-radius: 0.375rem;
+        letter-spacing: 0.05em;
     }
 
-    .user-phone {
-        font-size: 0.625rem;
-        color: #9ca3af;
+    .pf-stat-val {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #374151);
+        margin-top: 0.15rem;
     }
 
-    .progress-card {
-        background: #ffffff;
-        border-radius: 1.5rem;
-        padding: 1.25rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
+    /* Point Details (Expandable) */
+    .pf-pt-details {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
     }
 
-    .progress-header {
+    .pf-pt-details.pf-expanded {
+        max-height: 800px;
+        opacity: 1;
+        margin-top: 1rem;
+    }
+
+    .pf-pt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--theme-border-color, #e5e7eb);
+    }
+
+    .pf-pt-grid-item {
+        background-color: var(--theme-bg-app, #f9fafb);
+        padding: 0.85rem;
+        border-radius: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--theme-border-color, #f3f4f6);
+    }
+
+    .pf-pt-grid-lbl {
+        font-size: 0.7rem;
+        color: var(--theme-text-muted, #6b7280);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .pf-pt-grid-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+    }
+
+    /* Expiring Box */
+    .pf-expiring-box {
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-top: 0.75rem;
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 0.5rem;
+        align-items: center;
     }
 
-    .progress-title {
+    .pf-ex-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .pf-ex-lbl {
         font-size: 0.75rem;
+        color: #d97706;
         font-weight: 700;
-        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
     }
 
-    .progress-next {
-        font-size: 0.625rem;
-        color: #9ca3af;
+    .pf-ex-val {
+        font-size: 1.25rem;
+        color: #b45309;
+        font-weight: 900;
     }
 
-    .progress-next span {
+    .pf-ex-right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .pf-ex-date {
+        font-size: 0.8rem;
         font-weight: 700;
-        color: #4b5563;
+        color: #92400e;
     }
 
-    .progress-track {
+    .pf-ex-days {
+        font-size: 0.7rem;
+        color: #d97706;
+        font-weight: 600;
+    }
+
+    /* Expand Icon Rotation */
+    .pf-icon-rotate {
+        transition: transform 0.3s ease;
+    }
+
+    .pf-icon-rotate.pf-open {
+        transform: rotate(180deg);
+    }
+
+    /* --- 4. Referral Code Widget --- */
+    .pf-ref-widget {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, var(--theme-primary, #2563eb) 0%, #4f46e5 100%);
+        color: white;
+        border: none;
+    }
+
+    .pf-ref-text h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+        color: white;
+    }
+
+    .pf-ref-text p {
+        font-size: 0.8rem;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .pf-btn-ref {
+        background-color: white;
+        color: var(--theme-primary, #2563eb);
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* --- 5. Tier Widget --- */
+    .pf-tier-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .pf-tier-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .pf-tier-icon-lg {
+        width: 3.5rem;
+        height: 3.5rem;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    .pf-tier-name {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    .pf-prog-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #6b7280);
+        margin-bottom: 0.4rem;
+    }
+
+    .pf-prog-bg {
         width: 100%;
-        background: #f3f4f6;
-        border-radius: 9999px;
-        height: 0.5rem;
-        margin-bottom: 0.5rem;
+        height: 0.75rem;
+        background-color: var(--theme-bg-app, #f3f4f6);
+        border-radius: 999px;
         overflow: hidden;
+        border: 1px solid var(--theme-border-color, #e5e7eb);
     }
 
-    .progress-fill {
-        background-color: var(--color-primary);
-        height: 0.5rem;
-        border-radius: 9999px;
-        transition: width 1s ease-in-out;
+    .pf-prog-fill {
+        height: 100%;
+        background-color: var(--theme-primary, #2563eb);
+        border-radius: 999px;
+        transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         width: 0%;
     }
 
-    .progress-desc {
-        font-size: 0.625rem;
-        color: #6b7280;
+    .pf-prog-msg {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #9ca3af);
+        margin: 0.5rem 0 0 0;
         text-align: center;
+        font-weight: 600;
     }
 
-    .menu-card {
-        background: #ffffff;
-        border-radius: 1.5rem;
-        overflow: hidden;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f3f4f6;
+    /* --- 6. Address Widget --- */
+    .pf-addr-box {
+        background-color: var(--theme-bg-app, #f9fafb);
+        border: 1px solid var(--theme-border-color, #f3f4f6);
+        border-radius: 1rem;
+        padding: 1.25rem;
+    }
+
+    .pf-addr-name {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pf-addr-badge {
+        font-size: 0.65rem;
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.25rem;
+        text-transform: uppercase;
+    }
+
+    .pf-addr-phone {
+        font-size: 0.85rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 0.5rem 0;
+        font-weight: 600;
+    }
+
+    .pf-addr-detail {
+        font-size: 0.9rem;
+        color: var(--theme-text-main, #4b5563);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .pf-addr-empty {
         display: flex;
         flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1.5rem 0;
+        color: var(--theme-text-muted, #9ca3af);
     }
 
-    .menu-btn {
+    .pf-addr-empty img {
+        width: 3.5rem;
+        height: 3.5rem;
+        opacity: 0.5;
+        margin-bottom: 0.75rem;
+    }
+
+    .pf-addr-empty p {
+        font-size: 0.9rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    /* Custom Widgets Container */
+    .pf-custom-widget {
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem;
-        border-bottom: 1px solid #f9fafb;
-        transition: background 0.2s;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        text-align: left;
-    }
-
-    .menu-btn:hover {
-        background: #f9fafb;
-    }
-
-    .menu-btn:active {
-        background: #f3f4f6;
-    }
-
-    .menu-btn:last-child {
-        border-bottom: none;
-    }
-
-    .menu-btn-left {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .menu-icon {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 9999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        flex-shrink: 0;
-    }
-
-    .icon-history {
-        background: var(--color-primary-light);
-        color: var(--color-primary);
-    }
-
-    .icon-inventory {
-        background: #fdf2f8;
-        color: #db2777;
-    }
-
-    .icon-logout {
-        background: #fef2f2;
-        color: #ef4444;
-    }
-
-    .menu-text {
-        font-size: 0.875rem;
-        font-weight: 700;
-        color: #374151;
-    }
-
-    .menu-text.text-logout {
-        color: #ef4444;
-    }
-
-    .menu-arrow {
-        width: 1rem;
-        height: 1rem;
-        color: #d1d5db;
+        margin-bottom: 1.25rem;
     }
 </style>
 
-<div class="page-container">
+<div class="profile-page-wrapper">
 
-    <!-- User Card -->
-    <div class="user-card">
-        <img id="prof-avatar" class="user-avatar" src=""
-            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='" />
-        <div class="user-info">
-            <h2 id="prof-name" class="user-name">Loading...</h2>
-            <div class="user-meta">
-                <span id="prof-tier" class="user-tier">Member</span>
-                <span id="prof-phone" class="user-phone">---</span>
+    <!-- Header -->
+    <div class="pf-header">
+        <h1 class="pf-title" data-i18n="pageTitle">Profile</h1>
+        <button class="pf-btn pf-btn-edit" onclick="handleEditProfile()">
+            <i class="fa-solid fa-pen"></i> <span data-i18n="editBtn">Edit</span>
+        </button>
+    </div>
+
+    <!-- [# PROFILE #] -->
+    <div class="pf-card pf-profile-top">
+        <button class="pf-btn pf-btn-icon pf-qr-btn" onclick="handleOpenQrCode()">
+            <i class="fa-solid fa-qrcode"></i>
+        </button>
+
+        <div class="pf-avatar-wrap">
+            <img id="pf-ui-avatar" class="pf-avatar" src="" alt="Avatar">
+        </div>
+
+        <h2 id="pf-ui-name" class="pf-name">-</h2>
+        <div class="pf-contact-info">
+            <span id="pf-ui-phone"></span>
+            <span id="pf-ui-email"></span>
+        </div>
+
+        <div class="pf-tags">
+            <div class="pf-tag pf-hidden" id="pf-wrap-gender"><i id="pf-icon-gender" class="fa-solid fa-venus-mars"></i>
+                <span id="pf-ui-gender"></span></div>
+            <div class="pf-tag pf-hidden" id="pf-wrap-birthday"><i class="fa-solid fa-cake-candles"
+                    style="color: #f472b6;"></i> <span id="pf-ui-birthday"></span></div>
+            <div class="pf-tag"><i class="fa-solid fa-globe" style="color: #60a5fa;"></i> <span id="pf-ui-lang"></span>
+            </div>
+        </div>
+
+        <div id="pf-wrap-consent" class="pf-hidden mt-2">
+            <div class="pf-tag consent"><i class="fa-solid fa-check-circle"></i> <span
+                    data-i18n="consentText">Subscribed</span></div>
+        </div>
+    </div>
+
+    <!-- [# PROFILE MENU #] -->
+    <div class="pf-card">
+        <div class="pf-menu-list">
+            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('inventory')">
+                <div class="pf-menu-left">
+                    <div class="pf-menu-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <span class="pf-menu-label" data-i18n="menuInventory">Inventory</span>
+                </div>
+                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
+            </button>
+            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('shipping')">
+                <div class="pf-menu-left">
+                    <div class="pf-menu-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <span class="pf-menu-label" data-i18n="menuShipping">Shipping</span>
+                </div>
+                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
+            </button>
+            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('history')">
+                <div class="pf-menu-left">
+                    <div class="pf-menu-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <span class="pf-menu-label" data-i18n="menuHistory">History</span>
+                </div>
+                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
+            </button>
+            <!-- Daily Checkin -->
+            <button class="pf-btn pf-menu-item pf-hidden" id="pf-btn-daily"
+                onclick="PageManager.openModal('dailyCheckin')">
+                <div class="pf-menu-left">
+                    <div class="pf-menu-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span id="pf-ui-daily-dot" class="pf-red-dot pf-hidden"></span>
+                    </div>
+                    <span class="pf-menu-label" data-i18n="menuDaily">Daily Check-in</span>
+                </div>
+                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Widget 1 -->
+    <div id="custom-widget-1" class="pf-custom-widget"></div>
+
+    <!-- [# POINT #] & [# POINT DETAIL #] -->
+    <div class="pf-card">
+        <div class="pf-card-header">
+            <h3 class="pf-card-title"><i class="fa-solid fa-coins text-amber-500 text-xl"></i> <span
+                    data-i18n="pointTitle">My Points</span></h3>
+            <button class="pf-btn pf-btn-icon" onclick="togglePointDetail()"><i id="pf-pt-expand-icon"
+                    class="fa-solid fa-chevron-down pf-icon-rotate"></i></button>
+        </div>
+
+        <div class="pf-point-overview" onclick="togglePointDetail()" style="cursor:pointer;">
+            <div class="pf-pt-main">
+                <span class="pf-stat-lbl" data-i18n="pointAvailable">Available</span>
+                <div class="pf-pt-val-wrap">
+                    <img id="pf-ui-pt-icon" class="pf-pt-icon-img" src="" alt="pt">
+                    <span id="pf-ui-pt-bal" class="pf-pt-val">0</span>
+                </div>
+            </div>
+            <div class="pf-pt-stats">
+                <div class="pf-stat-row">
+                    <span class="pf-stat-lbl" data-i18n="statSpend">Total Spend</span>
+                    <span id="pf-ui-stat-spend" class="pf-stat-val">0</span>
+                </div>
+                <div class="pf-stat-row">
+                    <span class="pf-stat-lbl" data-i18n="statOrder">Total Orders</span>
+                    <span id="pf-ui-stat-order" class="pf-stat-val">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="pf-pt-detail-panel" class="pf-pt-details">
+            <div class="pf-pt-grid">
+                <div class="pf-pt-grid-item">
+                    <span class="pf-pt-grid-lbl" data-i18n="ptTotal">Total Earned</span>
+                    <span id="pf-ui-pt-total" class="pf-pt-grid-val" style="color: #10b981;">0</span>
+                </div>
+                <div class="pf-pt-grid-item">
+                    <span class="pf-pt-grid-lbl" data-i18n="ptRedeem">Redeemed</span>
+                    <span id="pf-ui-pt-redeem" class="pf-pt-grid-val" style="color: #ef4444;">0</span>
+                </div>
+                <div class="pf-pt-grid-item">
+                    <span class="pf-pt-grid-lbl" data-i18n="ptPending">Pending</span>
+                    <span id="pf-ui-pt-pending" class="pf-pt-grid-val" style="color: #f59e0b;">0</span>
+                </div>
+                <div class="pf-pt-grid-item">
+                    <span class="pf-pt-grid-lbl" data-i18n="ptApi">API Deducted</span>
+                    <span id="pf-ui-pt-api" class="pf-pt-grid-val" style="color: #6b7280;">0</span>
+                </div>
+            </div>
+
+            <!-- Expiring Soon -->
+            <div id="pf-wrap-expiring" class="pf-expiring-box pf-hidden">
+                <div class="pf-ex-left">
+                    <span class="pf-ex-lbl"><i class="fa-solid fa-circle-exclamation"
+                            style="animation: pulse 2s infinite;"></i> <span data-i18n="ptExpiring">Expiring
+                            Soon</span></span>
+                    <span id="pf-ui-ex-pts" class="pf-ex-val">0</span>
+                </div>
+                <div class="pf-ex-right">
+                    <span id="pf-ui-ex-date" class="pf-ex-date"></span>
+                    <span id="pf-ui-ex-days" class="pf-ex-days"></span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Member Progress -->
-    <div class="progress-card">
-        <div class="progress-header">
-            <span class="progress-title">Tier Progress</span>
-            <span class="progress-next">Next: <span id="prof-next-tier">Gold</span></span>
+    <!-- [# REFERRAL CODE #] (Conditional) -->
+    <div id="pf-widget-referral" class="pf-card pf-ref-widget pf-hidden">
+        <div class="pf-ref-text">
+            <h3 data-i18n="refTitle">Invite Friends</h3>
+            <p data-i18n="refDesc">Get bonus points for every friend!</p>
         </div>
-        <div class="progress-track">
-            <div id="prof-progress-bar" class="progress-fill"></div>
-        </div>
-        <p id="prof-progress-text" class="progress-desc">Spend ฿5,000 more to upgrade</p>
+        <button class="pf-btn pf-btn-ref" onclick="PageManager.openModal('referralCode', { mode: 'me' })"
+            data-i18n="btnGetCode">Get Code</button>
     </div>
 
-    <!-- Menus -->
-    <div class="menu-card">
-        <button onclick="PageManager.loadPage('history')" class="menu-btn">
-            <div class="menu-btn-left">
-                <div class="menu-icon icon-history">📜</div>
-                <span class="menu-text">Transaction History</span>
+    <!-- [# Tier #] (Conditional) -->
+    <div id="pf-widget-tier" class="pf-card pf-hidden">
+        <div class="pf-card-header">
+            <h3 class="pf-card-title"><i class="fa-solid fa-ranking-star text-indigo-500 text-xl"></i> <span
+                    data-i18n="tierTitle">Membership Tier</span></h3>
+            <button class="pf-btn pf-btn-icon" onclick="PageManager.openModal('rank')"><i
+                    class="fa-solid fa-expand"></i></button>
+        </div>
+        <div class="pf-tier-content">
+            <div class="pf-tier-info">
+                <img id="pf-ui-tier-icon" class="pf-tier-icon-lg" src="" alt="Rank">
+                <h4 id="pf-ui-tier-name" class="pf-tier-name"></h4>
             </div>
-            <svg class="menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </button>
-
-        <button onclick="PageManager.loadPage('inventory')" class="menu-btn">
-            <div class="menu-btn-left">
-                <div class="menu-icon icon-inventory">🎒</div>
-                <span class="menu-text">My Inventory / Coupons</span>
+            <div class="pf-prog-container">
+                <div class="pf-prog-labels">
+                    <span id="pf-ui-prog-curr">0</span>
+                    <span id="pf-ui-prog-max">Max</span>
+                </div>
+                <div class="pf-prog-bg">
+                    <div id="pf-ui-prog-fill" class="pf-prog-fill"></div>
+                </div>
+                <p id="pf-ui-prog-msg" class="pf-prog-msg"></p>
             </div>
-            <svg class="menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </button>
-
-        <button onclick="logout()" class="menu-btn group" style="background-color: transparent;">
-            <div class="menu-btn-left">
-                <div class="menu-icon icon-logout">🚪</div>
-                <span class="menu-text text-logout">Log Out</span>
-            </div>
-        </button>
+        </div>
     </div>
+
+    <!-- Custom Widget 2 -->
+    <div id="custom-widget-2" class="pf-custom-widget"></div>
+
+    <!-- [# ADDRESS #] -->
+    <div class="pf-card">
+        <div class="pf-card-header">
+            <h3 class="pf-card-title"><i class="fa-solid fa-map-location-dot text-blue-500 text-xl"></i> <span
+                    data-i18n="addrTitle">My Address</span></h3>
+            <button class="pf-btn pf-btn-edit" onclick="handleEditAddress()">
+                <i class="fa-solid fa-pen"></i> <span id="pf-ui-btn-addr-txt" data-i18n="editBtn">Edit</span>
+            </button>
+        </div>
+
+        <div id="pf-addr-content" class="pf-addr-box">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+
+    <!-- Custom Widget 3 -->
+    <div id="custom-widget-3" class="pf-custom-widget"></div>
+
 </div>
 
 <script>
-    (() => {
-        async function loadProfile() {
-            let uData = window.crmData?.user;
-            let cData = window.crmData?.crmUser;
+    (function () {
+        // ==========================================
+        // 1. PAGE SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            defaultAvatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png",
+            emptyAddressImg: "https://cdn-icons-png.flaticon.com/512/7465/7465691.png",
+            defaultPointIcon: "https://cdn-icons-png.flaticon.com/512/2583/2583133.png",
+            defaultTierIcon: "https://cdn-icons-png.flaticon.com/512/610/610333.png",
+        };
 
-            if (!cData) {
-                try {
-                    await CrmApi.getProfile();
-                    cData = window.crmData.crmUser;
-                    uData = window.crmData.user;
-                } catch (e) { console.warn(e); }
+        const i18nDict = {
+            Th: {
+                pageTitle: "โปรไฟล์ของฉัน",
+                editBtn: "แก้ไข",
+                menuInventory: "กระเป๋าของฉัน",
+                menuShipping: "สถานะการจัดส่ง",
+                menuHistory: "ประวัติการทำรายการ",
+                menuDaily: "เช็คอินรับแต้ม",
+                pointTitle: "คะแนนสะสม",
+                pointAvailable: "คะแนนที่ใช้ได้",
+                statSpend: "ยอดใช้จ่ายสะสม",
+                statOrder: "จำนวนคำสั่งซื้อ",
+                ptTotal: "ได้รับทั้งหมด",
+                ptRedeem: "แลกไปแล้ว",
+                ptPending: "รอดำเนินการ",
+                ptApi: "หักโดยระบบ",
+                ptExpiring: "คะแนนใกล้หมดอายุ",
+                daysLeft: "เหลือเวลา {days} วัน",
+                refTitle: "แนะนำเพื่อน",
+                refDesc: "ชวนเพื่อนรับคะแนนฟรีทันที!",
+                btnGetCode: "รับโค้ด",
+                tierTitle: "ระดับสมาชิก",
+                tierMaxMsg: "คุณอยู่ระดับสูงสุดแล้ว!",
+                tierNextMsg: "อีก {diff} {currency} เพื่ออัพเกรด",
+                addrTitle: "ที่อยู่จัดส่ง",
+                addrEmpty: "ยังไม่มีที่อยู่จัดส่ง",
+                addrAddBtn: "เพิ่มที่อยู่",
+                consentText: "รับข่าวสารแล้ว",
+                genderMale: "ผู้ชาย",
+                genderFemale: "ผู้หญิง",
+                genderOther: "อื่นๆ",
+                unspecified: "ไม่ระบุ"
+            },
+            En: {
+                pageTitle: "My Profile",
+                editBtn: "Edit",
+                menuInventory: "My Inventory",
+                menuShipping: "Shipping Status",
+                menuHistory: "History",
+                menuDaily: "Daily Check-in",
+                pointTitle: "My Points",
+                pointAvailable: "Available Balance",
+                statSpend: "Total Spending",
+                statOrder: "Total Orders",
+                ptTotal: "Total Earned",
+                ptRedeem: "Redeemed",
+                ptPending: "Pending",
+                ptApi: "System Deducted",
+                ptExpiring: "Expiring Soon",
+                daysLeft: "{days} days left",
+                refTitle: "Refer a Friend",
+                refDesc: "Invite friends, earn free points!",
+                btnGetCode: "Get Code",
+                tierTitle: "Membership Tier",
+                tierMaxMsg: "You have reached the maximum tier!",
+                tierNextMsg: "{diff} {currency} more to upgrade",
+                addrTitle: "Shipping Address",
+                addrEmpty: "No shipping address found",
+                addrAddBtn: "Add Address",
+                consentText: "Subscribed",
+                genderMale: "Male",
+                genderFemale: "Female",
+                genderOther: "Other",
+                unspecified: "Unspecified"
+            }
+        };
+
+        let currentLang = 'Th';
+
+        // ==========================================
+        // 2. MAIN LOGIC & DATA BINDING
+        // ==========================================
+        async function initProfilePage() {
+            // Use safe fallback if global variables are not ready
+            const data = window.crmData || {};
+            currentLang = (data.language === 'En') ? 'En' : 'Th';
+
+            applyLanguage();
+
+            if (data.crmUser) {
+                bindProfileInfo(data);
+                bindPointWidget(data);
+                bindAddressWidget(data);
             }
 
-            if (cData) {
-                document.getElementById('prof-name').textContent = cData.displayName || "Unknown User";
-                document.getElementById('prof-phone').textContent = cData.phone || "No Phone";
-                if (cData.pictureUrl) document.getElementById('prof-avatar').src = cData.pictureUrl;
-
-                const tierName = uData?.tier?.name || "Member";
-                document.getElementById('prof-tier').textContent = tierName;
-
-                // รอ DOM อัปเดตเพื่อให้ CSS Transition ทำงาน
-                setTimeout(() => {
-                    document.getElementById('prof-progress-bar').style.width = '45%';
-                }, 100);
+            if (data.marketData) {
+                bindMenu(data);
+                bindReferral(data);
+                bindTier(data);
             }
         }
 
-        window.logout = function () {
-            PageManager.showConfirm("Log Out", "Are you sure you want to log out?", "❓", () => {
-                if (window.Utility) Utility.logout();
-                else window.location.reload();
+        function applyLanguage() {
+            const dict = i18nDict[currentLang];
+            document.querySelectorAll('.profile-page-wrapper [data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerHTML = dict[key];
             });
-        };
+        }
 
-        loadProfile();
+        function getDictText(key, params = {}) {
+            let text = i18nDict[currentLang][key] || key;
+            for (const [k, v] of Object.entries(params)) {
+                text = text.replace(`{${k}}`, v);
+            }
+            return text;
+        }
+
+        // --- Profile ---
+        function bindProfileInfo(data) {
+            const user = data.crmUser?.user || {};
+
+            // Basic
+            document.getElementById('pf-ui-avatar').src = user.pictureUrl || pageSetting.defaultAvatar;
+            document.getElementById('pf-ui-name').innerText = user.displayName || "-";
+
+            const elPhone = document.getElementById('pf-ui-phone');
+            if (user.phone) {
+                elPhone.innerHTML = `<i class="fa-solid fa-phone text-xs mr-1"></i> ${user.phone}`;
+                elPhone.style.display = 'block';
+            } else {
+                elPhone.style.display = 'none';
+            }
+
+            const elEmail = document.getElementById('pf-ui-email');
+            if (user.email) {
+                elEmail.innerHTML = `<i class="fa-solid fa-envelope text-xs mr-1"></i> ${user.email}`;
+                elEmail.style.display = 'block';
+            } else {
+                elEmail.style.display = 'none';
+            }
+
+            // Custom Fields (Gender, Birthday, Consent)
+            const custom = user.customFields || {};
+
+            // Dynamic Keys via TYPES if available
+            let genderKey = 'gender';
+            let bdayKey = 'birthday';
+            let consentKey = 'consentnotif';
+
+            if (window.TYPES && window.TYPES.customFields) {
+                genderKey = window.TYPES.customFields.gender || genderKey;
+                bdayKey = window.TYPES.customFields.birthday || bdayKey;
+                consentKey = window.TYPES.customFields.consent_notif || consentKey;
+            }
+
+            // Gender
+            const genderVal = custom[genderKey];
+            const wrapGender = document.getElementById('pf-wrap-gender');
+            const uiGender = document.getElementById('pf-ui-gender');
+            const iconGender = document.getElementById('pf-icon-gender');
+
+            if (genderVal) {
+                const gLower = String(genderVal).toLowerCase();
+                if (gLower === 'male') { uiGender.innerText = getDictText('genderMale'); iconGender.className = "fa-solid fa-mars text-blue-500"; }
+                else if (gLower === 'female') { uiGender.innerText = getDictText('genderFemale'); iconGender.className = "fa-solid fa-venus text-pink-500"; }
+                else if (gLower === 'other') { uiGender.innerText = getDictText('genderOther'); iconGender.className = "fa-solid fa-venus-mars text-purple-500"; }
+                else { uiGender.innerText = genderVal; }
+                wrapGender.classList.remove('pf-hidden');
+            } else {
+                wrapGender.classList.add('pf-hidden');
+            }
+
+            // Birthday
+            const bdayVal = custom[bdayKey];
+            const wrapBirthday = document.getElementById('pf-wrap-birthday');
+            if (bdayVal) {
+                // If it's an array [d, m, y], join it. If string, just display.
+                document.getElementById('pf-ui-birthday').innerText = Array.isArray(bdayVal) ? bdayVal.join('/') : bdayVal;
+                wrapBirthday.classList.remove('pf-hidden');
+            } else {
+                wrapBirthday.classList.add('pf-hidden');
+            }
+
+            // Language
+            document.getElementById('pf-ui-lang').innerText = currentLang === 'En' ? 'English' : 'ภาษาไทย';
+
+            // Consent
+            const consentVal = custom[consentKey];
+            const wrapConsent = document.getElementById('pf-wrap-consent');
+            if (consentVal === true || consentVal === "true") {
+                wrapConsent.classList.remove('pf-hidden');
+            } else {
+                wrapConsent.classList.add('pf-hidden');
+            }
+        }
+
+        // --- Menu ---
+        function bindMenu(data) {
+            const btnDaily = document.getElementById('pf-btn-daily');
+            if (data.marketData?.enableDailyCheckIn) {
+                btnDaily.classList.remove('pf-hidden');
+
+                // Show red dot if can check-in
+                if (data.daily?.canCheckIn) {
+                    document.getElementById('pf-ui-daily-dot').classList.remove('pf-hidden');
+                } else {
+                    document.getElementById('pf-ui-daily-dot').classList.add('pf-hidden');
+                }
+            } else {
+                btnDaily.classList.add('pf-hidden');
+            }
+        }
+
+        // --- Points ---
+        function bindPointWidget(data) {
+            // Set Icon
+            let ptIcon = pageSetting.defaultPointIcon;
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                ptIcon = Utility.getAssetPath("pointIcon") || ptIcon;
+            }
+            document.getElementById('pf-ui-pt-icon').src = ptIcon;
+
+            // Stats data
+            const stats = data.crmUser?.statisticsData || data.crmUser?.statistics || {};
+            const spend = stats.spending || {};
+            const orders = stats.orders || {};
+            const points = stats.points || {};
+
+            // Value & Stats
+            const myPoint = window.Utility && typeof Utility.getPoints === 'function' ? Utility.getPoints() : (data.crmUser?.user?.points || 0);
+            document.getElementById('pf-ui-pt-bal').innerText = myPoint.toLocaleString();
+
+            const totalSpending = spend.total || 0;
+            const currency = spend.currency || "THB";
+            document.getElementById('pf-ui-stat-spend').innerText = `${totalSpending.toLocaleString()} ${currency}`;
+            document.getElementById('pf-ui-stat-order').innerText = (orders.total || 0).toLocaleString();
+
+            // Details
+            document.getElementById('pf-ui-pt-total').innerText = (points.totalEarned || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-redeem').innerText = (points.redeemed || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-pending').innerText = (points.pending || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-api').innerText = (points.apiDeducted || 0).toLocaleString();
+
+            // Expiring
+            const expiring = points.expiringSoon;
+            const wrapEx = document.getElementById('pf-wrap-expiring');
+            if (expiring && expiring.total > 0 && expiring.nextBatch) {
+                wrapEx.classList.remove('pf-hidden');
+                document.getElementById('pf-ui-ex-pts').innerText = expiring.total.toLocaleString();
+
+                let dateStr = expiring.nextBatch.expiresAt;
+                try {
+                    const d = new Date(dateStr);
+                    dateStr = d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH');
+                } catch (e) { }
+
+                document.getElementById('pf-ui-ex-date').innerText = dateStr;
+                document.getElementById('pf-ui-ex-days').innerText = getDictText('daysLeft', { days: expiring.nextBatch.daysLeft });
+            } else {
+                wrapEx.classList.add('pf-hidden');
+            }
+        }
+
+        // --- Referral ---
+        function bindReferral(data) {
+            const wRef = document.getElementById('pf-widget-referral');
+            if (data.marketData?.enableReferralCode) {
+                wRef.classList.remove('pf-hidden');
+            } else {
+                wRef.classList.add('pf-hidden');
+            }
+        }
+
+        // --- Tier ---
+        function bindTier(data) {
+            const wTier = document.getElementById('pf-widget-tier');
+            const isTierReady = window.Utility && typeof Utility.isTierReady === 'function' ? Utility.isTierReady() : (data.marketData?.tiers?.length > 0);
+
+            if (!isTierReady) {
+                wTier.classList.add('pf-hidden');
+                return;
+            }
+
+            wTier.classList.remove('pf-hidden');
+
+            const currentTier = window.Utility ? Utility.getUserTier() : null;
+            const nextTier = window.Utility ? Utility.getUserNextTier() : null;
+
+            if (!currentTier) return;
+
+            // Tier Visuals
+            const tierIcon = currentTier.icon || pageSetting.defaultTierIcon;
+            document.getElementById('pf-ui-tier-icon').src = tierIcon;
+
+            const tierNameEl = document.getElementById('pf-ui-tier-name');
+            tierNameEl.innerText = currentTier.name;
+            if (currentTier.color) tierNameEl.style.color = currentTier.color;
+
+            // Update main avatar badge too
+            const avatarBadge = document.querySelector('.avatar-tier-icon');
+            if (avatarBadge) {
+                avatarBadge.src = tierIcon;
+                avatarBadge.style.display = 'block';
+            }
+
+            // Calculation
+            const stats = data.crmUser?.statisticsData || data.crmUser?.statistics || {};
+            const totalSpending = stats.spending?.total || 0;
+            const currency = stats.spending?.currency || "THB";
+
+            const elCurr = document.getElementById('pf-ui-prog-curr');
+            const elMax = document.getElementById('pf-ui-prog-max');
+            const elFill = document.getElementById('pf-ui-prog-fill');
+            const elMsg = document.getElementById('pf-ui-prog-msg');
+
+            if (currentTier.color) elFill.style.backgroundColor = currentTier.color;
+
+            if (nextTier != null) {
+                const nextValue = nextTier.requireSpending || 1;
+                let percent = (totalSpending / nextValue) * 100;
+                if (percent > 100) percent = 100; // Can overflow if update is scheduled
+
+                elCurr.innerText = totalSpending.toLocaleString();
+                elMax.innerText = nextValue.toLocaleString();
+
+                // Anim
+                setTimeout(() => { elFill.style.width = `${percent}%`; }, 100);
+
+                const diff = nextValue - totalSpending;
+                if (diff > 0) {
+                    elMsg.innerText = getDictText('tierNextMsg', { diff: diff.toLocaleString(), currency: currency });
+                } else {
+                    elMsg.innerText = "Maximized / Awaiting daily rank update";
+                }
+            } else {
+                // Maxed Out
+                elCurr.innerText = totalSpending.toLocaleString();
+                elMax.innerText = "MAX";
+                setTimeout(() => { elFill.style.width = `100%`; }, 100);
+
+                elMsg.innerText = getDictText('tierMaxMsg');
+                elMsg.style.color = currentTier.color || 'var(--theme-primary, #2563eb)';
+                elMsg.style.fontWeight = 'bold';
+            }
+        }
+
+        // --- Address ---
+        function bindAddressWidget(data) {
+            const addresses = data.crmUser?.userAddresses || [];
+            const content = document.getElementById('pf-addr-content');
+            const btnTxt = document.getElementById('pf-ui-btn-addr-txt');
+
+            if (addresses.length > 0) {
+                let addr = addresses.find(a => a.isDefault);
+                if (!addr) addr = addresses[0];
+
+                let html = `
+                    <h4 class="pf-addr-name">
+                        ${addr.contactPerson || '-'} 
+                        ${addr.isDefault ? `<span class="pf-addr-badge">Default</span>` : ''}
+                    </h4>
+                    <p class="pf-addr-phone"><i class="fa-solid fa-phone text-xs mr-1"></i> ${addr.contactPhone || '-'}</p>
+                    <p class="pf-addr-detail">
+                        ${addr.addressLine1 || ''} ${addr.addressLine2 || ''}<br>
+                        ${addr.subdistrict || ''} ${addr.district || ''} ${addr.province || ''} ${addr.postalCode || ''}
+                    </p>
+                `;
+                content.innerHTML = html;
+                btnTxt.innerText = getDictText('editBtn');
+            } else {
+                content.innerHTML = `
+                    <div class="pf-addr-empty">
+                        <img src="${pageSetting.emptyAddressImg}" alt="empty">
+                        <p>${getDictText('addrEmpty')}</p>
+                    </div>
+                `;
+                btnTxt.innerText = getDictText('addrAddBtn');
+            }
+        }
+
+        // ==========================================
+        // 3. ACTION HANDLERS
+        // ==========================================
+
+        window.togglePointDetail = function () {
+            const panel = document.getElementById('pf-pt-detail-panel');
+            const icon = document.getElementById('pf-pt-expand-icon');
+
+            panel.classList.toggle('pf-expanded');
+            icon.classList.toggle('pf-open');
+        }
+
+        window.handleEditProfile = function () {
+            if (window.PageManager) {
+                PageManager.openModal("editProfile", {}, async (res) => {
+                    if (res && res.success) {
+                        await window.updateProfile();
+                    }
+                });
+            } else {
+                console.log("Mock: Edit Profile clicked");
+            }
+        }
+
+        window.handleOpenQrCode = function () {
+            if (window.PageManager) PageManager.openModal("qrcode");
+        }
+
+        window.handleEditAddress = function () {
+            if (window.PageManager) {
+                PageManager.openModal("address", {}, async (res) => {
+                    if (res && res.success) {
+                        await window.updateProfile();
+                    }
+                });
+            } else {
+                console.log("Mock: Edit Address clicked");
+            }
+        }
+
+        // Global functions requested by user
+        window.updateProfile = async function () {
+            if (window.PageManager) PageManager.showLoading("Updating...");
+            try {
+                if (window.CrmApi && typeof CrmApi.getProfile === 'function') {
+                    await CrmApi.getProfile();
+                    await CrmApi.getAddress(); // Update addresses
+                }
+                // Re-initialize with updated crmData
+                if (window.crmData) initProfilePage();
+            } catch (e) {
+                console.error("Failed to update profile", e);
+                if (window.PageManager) PageManager.showToast("Failed to update", "❌");
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        window.customWidget = function (widgetId, html) {
+            const el = document.getElementById(widgetId);
+            if (el) {
+                el.innerHTML = html;
+            } else {
+                console.warn(`Widget slot ${widgetId} not found.`);
+            }
+        }
+
+        // Kick off initialization
+        initProfilePage();
+
     })();
 </script>
