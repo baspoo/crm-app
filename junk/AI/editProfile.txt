@@ -1,0 +1,165 @@
+
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+-----------------------------------------------------------------------------------------
+
+ใช้ Utility.getAssetPath("xxxxxx"); สำหรับ load image path โดยใช้ key เดิม
+
+
+
+[## Requirement ##]
+สร้างหน้า Edit Profile สำหรับแก้ไข Profile 
+รับค่าเข้าด้วย window.onInit แบบนี้ และเก็บ response เอาไว้เป็น ref สำหรับส่งค่ากลับ
+window.onInit = function(payload, response) {
+    console.log("ได้รับ Payload:", payload);
+    // เซ็ตข้อมูลกลับได้ผ่าน response
+    response.status = "ok";
+};
+
+
+
+ดึงค่าปัจุบันตอนนี้ออกมาแสดงผลเบื้องต้น
+const user = crmData.crmUser.user
+{
+    id: number;
+    lineUserId: string;
+    displayName: string;
+    pictureUrl?: string;
+    email?: string;
+    phone?: string;
+    phoneVerified: number; // 0 | 1
+    points: number;
+    storeName?: string;
+    logoURL?: string;
+    memberSince?: string;
+    tier?: TierData | null;
+    customFields?: Record<string, any>;
+}
+
+[Zone1 : Basic Info]
+ข้อมูลพื้นฐานเบื้องต้น
+user.pictureUrl : รูปโปรไฟล์หลัก  (Read Only เอาไว้โชว์)
+user.displayName : ชื่อ   (Read Only เอาไว้โชว์)
+user.phone : เบอร์โทรศัพท์ (Read Only เอาไว้โชว์)
+user.email : กรอกอีเมล์ 
+const gender = user.customFields[TYPES.customFields.gender];   dropdown ["male","female","other"] : เพศ แสดงทั้งข้อความและ icon ระบุเพศ หากไม่มีค่า ให้แสดงเป็น ไม่ระบุ 
+const birthday = user.customFields[TYPES.customFields.birthday]; : วันเกิด  dropdown [day] [month] [year] 
+const consent_notif = user.customFields[TYPES.customFields.consent_notif]; : checkbox togger เครื่องหมายแสดงการยอมรับข่าวสาร
+const language = crmData.language;  : ภาษาที่เลือก Th,En  switch เลือกภาษา
+
+เฉพาะ language ให้ใช้ 
+Utility.setLanguage(language);
+ส่ง En/Th เข้าไป ให้มันตั้งแค่เฉพาะแค่ในเครื่อง local นั้นเท่านั้น
+เมื่อกดจะมี popup ขึ้นมาถามให้ยืนยัน กดยืนยันแล้วทำการ refresh หน้านี้ทันทีเพื่อ render ภาษาใหม่
+
+
+
+[Zone2 : CustomFields]
+เป็นฟอร์ม ที่ admin ปรับให้มีเพิ่มเข้ามาสำหรับหน้านี้ ให้นำ schema นี้ไปสร้าง ui form สำหรับกรอกข้อมูลแต่ละประเภท
+const form = crmData.initializeData.form ?? {};
+const profileForm = form.profile;
+{
+    "company":{
+        "en":"Company",
+        "th":"บริษัท",
+        "type":"textbox"
+    },
+    "salary":{
+        "en":"Salary",
+        "th":"เงินเดือน",
+        "type":"numbox"
+    },
+    "role":{
+        "en":"Role",
+        "th":"หน้าที่",
+        "type":"dropdown",
+        "option":["Dev","Admin","Member"]
+    },
+    "acceptPermission":{
+        "en":"Permission",
+        "th":"อนุญาติ",
+        "type":"checkbox"
+    },
+    "skill":{
+        "en":"Skill",
+        "th":"ทักษะ",
+        "type":"ratio",
+        "option":["Low","Normal","High"]
+    },    
+    "duedate":{
+        "en":"Due Date",
+        "th":"วันส่องมอบ",
+        "type":"datetime"
+    },
+}
+
+
+
+
+ค่าที่เหลือให้ส่งเข้าไป api update profile ดึง key ของ field มาเป็น key ของ customFields
+[API Update Profile]
+เฉพาะ email เท่านั้น ที่อยู่นอก customFields ที่เหลือให้ใส่ไว้ใน customFields ได้เลย
+const body={
+
+    email :"EMAIL@MAIL.COM",
+    customFields :{
+        gender : "male",
+        birthday : "DATETIME",
+        consent_notif : true,
+        ..
+        ..
+        ..
+        company : "Moby.co",
+        salary : 10000,
+        role : "Dev",
+        acceptPermission : true,
+        skill : "Normal",
+        duedate : "21/01/2026"
+    }
+
+};
+await crmApi.updateProfile(body);
+
+ตัว ref response ที่เก็บเอาไว้ เพิ่ม success เมื่อ update เสร็จแล้ว
+response.success = true;
+
+
+
+
