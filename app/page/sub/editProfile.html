@@ -1,0 +1,786 @@
+<style>
+    /* ==========================================
+       Edit Profile Page Styles (Pure CSS)
+       อ้างอิง Master CSS Variables จาก style.css
+       ========================================== */
+
+    .ep-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        color: var(--theme-text-main, #1f2937);
+        padding: 1.25rem;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .ep-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ep-wrapper *,
+    .ep-wrapper *::before,
+    .ep-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    /* Cards */
+    .ep-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+    }
+
+    /* Profile Header Info (Read-only) */
+    .ep-profile-info {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px dashed var(--theme-border-color, #e5e7eb);
+    }
+
+    .ep-avatar-box {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .ep-avatar {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--theme-bg-app, #f8fafc);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .ep-user-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .ep-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .ep-phone {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    /* Form Elements */
+    .ep-form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .ep-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+        margin-bottom: 0.5rem;
+        margin-left: 0.25rem;
+    }
+
+    .ep-input,
+    .ep-select {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        font-family: inherit;
+        color: var(--theme-text-main, #1f2937);
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius-btn, 1rem);
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .ep-input:focus,
+    .ep-select:focus {
+        background-color: var(--theme-bg-card, #ffffff);
+        border-color: var(--theme-primary, #3b82f6);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary, #3b82f6) 20%, transparent);
+    }
+
+    .ep-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+        padding-right: 2.5rem;
+    }
+
+    /* Switch / Toggle */
+    .ep-toggle-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius-btn, 1rem);
+    }
+
+    .ep-toggle-label {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ep-toggle-sub {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        font-weight: 400;
+        margin-top: 0.25rem;
+    }
+
+    .ep-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    .ep-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .ep-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .ep-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .ep-switch input:checked+.ep-slider {
+        background-color: var(--theme-primary, #3b82f6);
+    }
+
+    .ep-switch input:checked+.ep-slider:before {
+        transform: translateX(22px);
+    }
+
+    /* Radio Group */
+    .ep-radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        padding: 1rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+    }
+
+    .ep-radio-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--theme-text-main, #374151);
+        font-weight: 500;
+    }
+
+    .ep-radio-item input[type="radio"] {
+        appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #cbd5e1;
+        border-radius: 50%;
+        outline: none;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .ep-radio-item input[type="radio"]:checked {
+        border-color: var(--theme-primary, #3b82f6);
+        border-width: 5px;
+    }
+
+    /* Buttons */
+    .ep-btn-wrap {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .ep-btn {
+        flex: 1;
+        padding: 1.125rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 1rem;
+        font-weight: 800;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .ep-btn:active {
+        transform: scale(0.97);
+    }
+
+    .ep-btn-cancel {
+        background-color: var(--theme-bg-app, #f8fafc);
+        color: var(--theme-text-muted, #6b7280);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+    }
+
+    .ep-btn-cancel:hover {
+        background-color: #f1f5f9;
+        color: var(--theme-text-main, #1f2937);
+    }
+
+    .ep-btn-save {
+        background-color: var(--theme-primary, #3b82f6);
+        color: #ffffff;
+        box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--theme-primary, #3b82f6) 40%, transparent);
+    }
+
+    .ep-btn-save:hover {
+        filter: brightness(1.1);
+    }
+
+    .ep-hidden {
+        display: none !important;
+    }
+
+    /* Section Title */
+    .ep-section-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ep-section-title i {
+        color: var(--theme-primary, #3b82f6);
+    }
+</style>
+
+<div class="ep-wrapper">
+    <!-- Read Only Profile Card -->
+    <div class="ep-card">
+        <div class="ep-section-title">
+            <i class="fa-solid fa-address-card"></i>
+            <span data-i18n="titleBasic">ข้อมูลพื้นฐาน</span>
+        </div>
+
+        <div class="ep-profile-info">
+            <div class="ep-avatar-box">
+                <img id="ep-avatar" class="ep-avatar"
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=="
+                    alt="Profile">
+            </div>
+            <div class="ep-user-details">
+                <h2 id="ep-name" class="ep-name">-</h2>
+                <p id="ep-phone" class="ep-phone"><i class="fa-solid fa-phone"></i> <span>-</span></p>
+            </div>
+        </div>
+
+        <div class="ep-form-group">
+            <label class="ep-label" data-i18n="labelEmail">อีเมล (Email)</label>
+            <input type="email" id="ep-input-email" class="ep-input" placeholder="example@email.com">
+        </div>
+
+        <div class="ep-form-group">
+            <label class="ep-label" data-i18n="labelGender">เพศ (Gender)</label>
+            <select id="ep-input-gender" class="ep-select">
+                <option value="none" data-i18n="genderNone">ไม่ระบุ</option>
+                <option value="male" data-i18n="genderMale">ชาย (Male)</option>
+                <option value="female" data-i18n="genderFemale">หญิง (Female)</option>
+                <option value="other" data-i18n="genderOther">อื่นๆ (Other)</option>
+            </select>
+        </div>
+
+        <div class="ep-form-group">
+            <label class="ep-label" data-i18n="labelBirthday">วันเกิด (Birthday)</label>
+            <input type="date" id="ep-input-birthday" class="ep-input">
+        </div>
+    </div>
+
+    <!-- Additional / Custom Fields Card -->
+    <div id="ep-custom-card" class="ep-card ep-hidden">
+        <div class="ep-section-title">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span data-i18n="titleAdditional">ข้อมูลเพิ่มเติม</span>
+        </div>
+        <div id="ep-dynamic-fields-container">
+            <!-- Dynamic fields will be injected here -->
+        </div>
+    </div>
+
+    <!-- Settings Card -->
+    <div class="ep-card">
+        <div class="ep-section-title">
+            <i class="fa-solid fa-gear"></i>
+            <span data-i18n="titleSettings">การตั้งค่า</span>
+        </div>
+
+        <div class="ep-form-group">
+            <div class="ep-toggle-wrap">
+                <div class="ep-toggle-label">
+                    <span data-i18n="labelConsent">รับข่าวสารโปรโมชั่น</span>
+                    <span class="ep-toggle-sub" data-i18n="descConsent">ยินยอมรับข่าวสารและสิทธิพิเศษจากแบรนด์</span>
+                </div>
+                <label class="ep-switch">
+                    <input type="checkbox" id="ep-input-consent">
+                    <span class="ep-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="ep-form-group">
+            <div class="ep-toggle-wrap">
+                <div class="ep-toggle-label">
+                    <span data-i18n="labelLanguage">ภาษาของระบบ (Language)</span>
+                    <span id="ep-lang-desc" class="ep-toggle-sub">ปัจจุบัน: ภาษาไทย</span>
+                </div>
+                <label class="ep-switch">
+                    <!-- Checkbox unchecked = Th, checked = En -->
+                    <input type="checkbox" id="ep-input-language" onchange="window.handleLanguageChange(this)">
+                    <span class="ep-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="ep-btn-wrap">
+        <button class="ep-btn ep-btn-cancel" onclick="window.handleCancel()">
+            <span data-i18n="btnCancel">ยกเลิก</span>
+        </button>
+        <button class="ep-btn ep-btn-save" onclick="window.handleSave()">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span data-i18n="btnSave">บันทึกข้อมูล</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 1. PAGE SETTINGS
+    // ==========================================
+    /*
+      pageSetting ควบคุมการแสดงผลเบื้องต้นและ Fallback
+    */
+    const pageSetting = {
+        defaultAvatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+    };
+
+    // ==========================================
+    // 2. DICTIONARY & I18N
+    // ==========================================
+    const i18nDict = {
+        Th: {
+            titleBasic: "ข้อมูลพื้นฐาน",
+            titleAdditional: "ข้อมูลเพิ่มเติม",
+            titleSettings: "การตั้งค่า",
+            labelEmail: "อีเมล (Email)",
+            labelGender: "เพศ (Gender)",
+            genderNone: "ไม่ระบุ",
+            genderMale: "ชาย (Male)",
+            genderFemale: "หญิง (Female)",
+            genderOther: "อื่นๆ (Other)",
+            labelBirthday: "วันเกิด (Birthday)",
+            labelConsent: "รับข่าวสารโปรโมชั่น",
+            descConsent: "ยินยอมรับข่าวสารและสิทธิพิเศษจากแบรนด์",
+            labelLanguage: "ภาษาของระบบ (Language)",
+            langCurrentTh: "ปัจจุบัน: ภาษาไทย",
+            langCurrentEn: "Current: English",
+            btnCancel: "ยกเลิก",
+            btnSave: "บันทึกข้อมูล",
+            langConfirmTitle: "เปลี่ยนภาษา",
+            langConfirmDesc: "คุณต้องการเปลี่ยนภาษาของระบบและรีเฟรชหน้าต่างใหม่หรือไม่?",
+            saveSuccessTitle: "สำเร็จ",
+            saveSuccessDesc: "อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว",
+            saveErrorTitle: "ผิดพลาด",
+            saveErrorDesc: "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง"
+        },
+        En: {
+            titleBasic: "Basic Information",
+            titleAdditional: "Additional Information",
+            titleSettings: "Settings",
+            labelEmail: "Email",
+            labelGender: "Gender",
+            genderNone: "Not specified",
+            genderMale: "Male",
+            genderFemale: "Female",
+            genderOther: "Other",
+            labelBirthday: "Birthday",
+            labelConsent: "Receive Promotions",
+            descConsent: "Consent to receive news and privileges from the brand",
+            labelLanguage: "System Language",
+            langCurrentTh: "ปัจจุบัน: ภาษาไทย",
+            langCurrentEn: "Current: English",
+            btnCancel: "Cancel",
+            btnSave: "Save Profile",
+            langConfirmTitle: "Change Language",
+            langConfirmDesc: "Do you want to change the system language and refresh the page?",
+            saveSuccessTitle: "Success",
+            saveSuccessDesc: "Profile updated successfully.",
+            saveErrorTitle: "Error",
+            saveErrorDesc: "Cannot save profile. Please try again."
+        }
+    };
+
+    // ==========================================
+    // 3. GLOBAL VARIABLES
+    // ==========================================
+    let currentLang = 'Th';
+    let responseRef = null;
+    let customFieldsSchema = {};
+
+    // Keys สำหรับข้อมูลระบบ
+    let keys = {
+        gender: 'gender',
+        birthday: 'birthday',
+        consent_notif: 'consentnotif'
+    };
+
+    // ==========================================
+    // 4. CORE FUNCTIONS
+    // ==========================================
+
+    // ฟังก์ชันอัปเดตข้อความตามภาษาที่เลือก
+    function applyLanguage() {
+        const dict = i18nDict[currentLang] || i18nDict['Th'];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+                el.innerText = dict[key];
+            }
+        });
+
+        // อัปเดตคำอธิบายภาษาปัจจุบัน
+        const langDesc = document.getElementById('ep-lang-desc');
+        if (langDesc) {
+            langDesc.innerText = currentLang === 'En' ? dict.langCurrentEn : dict.langCurrentTh;
+        }
+    }
+
+    // ฟังก์ชันโหลดข้อมูลเข้าฟอร์ม
+    function populateData() {
+        const crmData = window.crmData || (window.parent && window.parent.crmData);
+        if (!crmData) {
+            console.error("[EditProfile] crmData is missing!");
+            return;
+        }
+
+        const user = crmData.crmUser?.user || {};
+        const customValues = user.customFields || {};
+
+        // ตั้งค่า Keys จากระบบ (ถ้ามี)
+        const sysTypes = window.TYPES || (window.parent && window.parent.TYPES);
+        if (sysTypes && sysTypes.customFields) {
+            keys.gender = sysTypes.customFields.gender || keys.gender;
+            keys.birthday = sysTypes.customFields.birthday || keys.birthday;
+            keys.consent_notif = sysTypes.customFields.consent_notif || keys.consent_notif;
+        }
+
+        // 1. Basic Read-only Info
+        document.getElementById('ep-avatar').src = user.pictureUrl || pageSetting.defaultAvatar;
+        document.getElementById('ep-name').innerText = user.displayName || 'Unknown';
+        document.getElementById('ep-phone').querySelector('span').innerText = user.phone || '-';
+
+        // 2. Standard Form Fields
+        document.getElementById('ep-input-email').value = user.email || '';
+        document.getElementById('ep-input-gender').value = customValues[keys.gender] || 'none';
+
+        // จัดการรูปแบบวันที่ (สมมติว่าเป็น YYYY-MM-DD หรือ ISO String)
+        let bdayRaw = customValues[keys.birthday];
+        if (bdayRaw) {
+            // พยายามตัดแค่ YYYY-MM-DD
+            try {
+                if (typeof bdayRaw === 'string' && bdayRaw.includes('T')) {
+                    bdayRaw = bdayRaw.split('T')[0];
+                }
+                document.getElementById('ep-input-birthday').value = bdayRaw;
+            } catch (e) { console.error(e); }
+        }
+
+        // 3. Settings Toggles
+        const consentVal = customValues[keys.consent_notif];
+        document.getElementById('ep-input-consent').checked = (consentVal === true || consentVal === "true");
+
+        // Language
+        currentLang = (crmData.language === 'En') ? 'En' : 'Th';
+        document.getElementById('ep-input-language').checked = (currentLang === 'En');
+
+        // 4. Dynamic Custom Fields
+        customFieldsSchema = crmData.initializeData?.form?.profile || {};
+        renderDynamicFields(customValues);
+
+        // อัปเดตภาษา UI
+        applyLanguage();
+    }
+
+    // ฟังก์ชันสร้าง Dynamic Fields จาก Schema
+    function renderDynamicFields(currentCustomValues) {
+
+
+        console.log(currentCustomValues);
+        console.log(customFieldsSchema);
+
+        const container = document.getElementById('ep-dynamic-fields-container');
+        const card = document.getElementById('ep-custom-card');
+        container.innerHTML = '';
+
+        const fieldKeys = Object.keys(customFieldsSchema);
+        if (fieldKeys.length === 0) {
+            card.classList.add('ep-hidden');
+            return;
+        }
+
+        card.classList.remove('ep-hidden');
+
+        fieldKeys.forEach(key => {
+            const fieldDef = customFieldsSchema[key];
+            const type = fieldDef.type || 'textbox';
+            const options = fieldDef.option || [];
+
+            // ดึง Label ตามภาษาปัจจุบัน ถ้าไม่มีใช้ fallback
+            const langKey = currentLang.toLowerCase();
+            const labelText = fieldDef[langKey] || fieldDef.en || fieldDef.th || key;
+
+            const value = currentCustomValues[key] !== undefined ? currentCustomValues[key] : '';
+
+            let fieldHtml = '';
+
+            if (type === 'textbox') {
+                fieldHtml = `<input type="text" id="dyn_${key}" class="ep-input" value="${value}" placeholder="...">`;
+            } else if (type === 'numbox') {
+                fieldHtml = `<input type="number" id="dyn_${key}" class="ep-input" value="${value}" placeholder="0">`;
+            } else if (type === 'dropdown') {
+                let opts = options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('');
+                fieldHtml = `<select id="dyn_${key}" class="ep-select"><option value="">-- Select --</option>${opts}</select>`;
+            } else if (type === 'checkbox') {
+                const checked = (value === true || value === "true") ? 'checked' : '';
+                fieldHtml = `
+                    <div class="ep-toggle-wrap" style="padding: 0.75rem 1rem;">
+                        <span class="ep-toggle-label" style="font-weight: 500;">${labelText}</span>
+                        <label class="ep-switch">
+                            <input type="checkbox" id="dyn_${key}" ${checked}>
+                            <span class="ep-slider"></span>
+                        </label>
+                    </div>`;
+            } else if (type === 'ratio' || type === 'radio') {
+                let radios = options.map(o => `
+                    <label class="ep-radio-item">
+                        <input type="radio" name="dyn_${key}" value="${o}" ${value === o ? 'checked' : ''}>
+                        <span>${o}</span>
+                    </label>
+                `).join('');
+                fieldHtml = `<div class="ep-radio-group">${radios}</div>`;
+            } else if (type === 'datetime') {
+                // หากค่ามีเวลารวมอยู่ด้วย ให้ตัดเหลือแค่วันที่ (รองรับ input type date)
+                let dateVal = value;
+                if (typeof dateVal === 'string' && dateVal.includes('T')) dateVal = dateVal.split('T')[0];
+                fieldHtml = `<input type="date" id="dyn_${key}" class="ep-input" value="${dateVal}">`;
+            }
+
+            const group = document.createElement('div');
+            group.className = 'ep-form-group';
+
+            // ถ้าเป็น checkbox เราสร้าง label เข้าไปใน wrap แล้ว ไม่ต้องสร้าง label ซ้ำ
+            if (type !== 'checkbox') {
+                group.innerHTML = `<label class="ep-label">${labelText}</label>${fieldHtml}`;
+            } else {
+                group.innerHTML = fieldHtml;
+            }
+
+            container.appendChild(group);
+        });
+    }
+
+    // ==========================================
+    // 5. ACTIONS
+    // ==========================================
+
+    // Handle Language Toggle
+    window.handleLanguageChange = function (checkbox) {
+        const dict = i18nDict[currentLang];
+        const newLang = checkbox.checked ? 'En' : 'Th';
+
+        if (window.PageManager && typeof PageManager.showConfirm === 'function') {
+            PageManager.showConfirm(
+                dict.langConfirmTitle,
+                dict.langConfirmDesc,
+                "🌍",
+                () => {
+                    // กดยืนยัน: เปลี่ยนภาษาและ Refresh
+                    if (window.Utility && typeof Utility.setLanguage === 'function') {
+                        Utility.setLanguage(newLang);
+                    }
+                    window.location.reload();
+                },
+                () => {
+                    // กดยกเลิก: Revert switch state
+                    checkbox.checked = !checkbox.checked;
+                }
+            );
+        } else {
+            // กรณีไม่มี PageManager (ทดสอบ)
+            if (confirm(dict.langConfirmDesc)) {
+                if (window.Utility && typeof Utility.setLanguage === 'function') Utility.setLanguage(newLang);
+                window.location.reload();
+            } else {
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+    };
+
+    window.handleCancel = function () {
+        if (window.PageManager && typeof PageManager.closeModal === 'function') {
+            PageManager.closeModal();
+        } else {
+            console.log("Mock: Close Modal");
+        }
+    };
+
+    window.handleSave = async function () {
+        if (window.PageManager) PageManager.showLoading('Saving...');
+        const dict = i18nDict[currentLang];
+
+        try {
+            // สร้าง Payload Object
+            const body = {
+                email: document.getElementById('ep-input-email').value.trim(),
+                customFields: {}
+            };
+
+            // ดึงค่า Standard Custom Fields
+            body.customFields[keys.gender] = document.getElementById('ep-input-gender').value;
+
+            const bday = document.getElementById('ep-input-birthday').value;
+            if (bday) body.customFields[keys.birthday] = bday;
+
+            body.customFields[keys.consent_notif] = document.getElementById('ep-input-consent').checked;
+
+            // ดึงค่า Dynamic Custom Fields
+            Object.keys(customFieldsSchema).forEach(key => {
+                const type = customFieldsSchema[key].type || 'textbox';
+
+                if (type === 'checkbox') {
+                    const el = document.getElementById(`dyn_${key}`);
+                    if (el) body.customFields[key] = el.checked;
+                } else if (type === 'ratio' || type === 'radio') {
+                    const el = document.querySelector(`input[name="dyn_${key}"]:checked`);
+                    if (el) body.customFields[key] = el.value;
+                } else {
+                    const el = document.getElementById(`dyn_${key}`);
+                    if (el) body.customFields[key] = el.value;
+                }
+            });
+
+            // เรียก API อัปเดต Profile
+            if (window.CrmApi && typeof CrmApi.updateProfile === 'function') {
+                const res = await CrmApi.updateProfile(body);
+                if (window.PageManager) PageManager.hideLoading();
+
+                if (res) {
+                    // สำเร็จ
+                    if (responseRef) responseRef.success = true;
+
+                    if (window.PageManager) {
+                        PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
+                            PageManager.closeModal();
+                        });
+                    }
+                } else {
+                    // กรณี Error จาก API
+                    throw new Error(res?.result?.message || 'Update failed');
+                }
+            } else {
+                // Mock Saving
+                console.log("Mock Saving Payload:", body);
+                setTimeout(() => {
+                    if (window.PageManager) PageManager.hideLoading();
+                    if (responseRef) responseRef.success = true;
+                    if (window.PageManager) {
+                        PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
+                            PageManager.closeModal();
+                        });
+                    }
+                }, 800);
+            }
+
+        } catch (error) {
+            console.error("Save Profile Error:", error);
+            if (window.PageManager) PageManager.hideLoading();
+            if (window.PageManager) {
+                PageManager.showFailed(dict.saveErrorTitle, dict.saveErrorDesc);
+            } else {
+                alert(dict.saveErrorDesc);
+            }
+        }
+    };
+
+    // ==========================================
+    // 6. SYSTEM BINDING (INIT)
+    // ==========================================
+    window.onInit = function (payload, response) {
+        console.log("EditProfile Initialized with payload:", payload);
+        responseRef = response;
+        populateData();
+    };
+
+    // Fallback for standalone testing without iframe/PageManager
+    if (!window.parent || window.parent === window) {
+        setTimeout(() => {
+            if (typeof window.onInit === 'function') {
+                window.onInit({}, {});
+            }
+        }, 300);
+    }
+
+</script>

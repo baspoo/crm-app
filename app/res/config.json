@@ -30,24 +30,29 @@
     },
     "mainPage": {
         "home": {
+            "title": "Home",
             "path": "page/main/home.html",
             "anim": "fade-in"
         },
         "leaderboard": {
+            "title": "Leaderboard",
             "path": "page/main/leaderboard.html",
             "anim": "fade-in"
         },
         "getpoint": {
+            "title": "Get Point",
             "path": "page/main/getpoint.html",
             "anim": "fade-in",
             "top": true
         },
         "redeem": {
+            "title": "Redeem",
             "path": "page/main/redeem.html",
             "anim": "fade-in",
             "top": true
         },
         "profile": {
+            "title": "My Profile",
             "path": "page/main/profile.html",
             "anim": "fade-in"
         }
@@ -55,6 +60,16 @@
     "subPage": {
         "address": {
             "path": "page/sub/address.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "editProfile": {
+            "path": "page/sub/editProfile.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "contentDetail": {
+            "path": "page/sub/contentDetail.html",
             "anim": "fade-in",
             "full": true
         },
@@ -112,6 +127,22 @@
             "path": "page/sub/linkMarketplace_howto.html",
             "anim": "fade-in",
             "full": true
+        },
+        "dailyCheckin": {
+            "path": "page/sub/dailyCheckin.html",
+            "anim": "fade-in",
+            "full": true
+        },
+        "referralCode": {
+            "path": "page/sub/referralCode.html",
+            "anim": "fade-in",
+            "full": true
+        }
+    },
+    "iframe": {
+        "qrHunt": {
+            "path": "page/form/qrHunt.html",
+            "anim": "fade-in"
         }
     },
     "resPath": {
