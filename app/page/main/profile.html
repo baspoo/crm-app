@@ -10,8 +10,15 @@
         padding-bottom: 6rem;
         box-sizing: border-box;
         background-color: transparent;
-        /* No background as requested */
         width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .profile-page-wrapper::-webkit-scrollbar {
+        display: none;
     }
 
     .profile-page-wrapper *,
@@ -24,68 +31,38 @@
         display: none !important;
     }
 
-    /* --- Typography & Header --- */
-    .pf-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
+    /* --- Animations --- */
+    .pf-hover-up {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
     }
 
-    .pf-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin: 0;
-        color: var(--theme-text-main, #111827);
+    .pf-hover-up:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 24px -8px rgba(0, 0, 0, 0.12);
     }
 
-    /* --- Buttons --- */
-    .pf-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-        outline: none;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+    .pf-active-scale:active {
+        transform: scale(0.96) !important;
     }
 
-    .pf-btn:active {
-        transform: scale(0.95);
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: .5;
+        }
     }
 
-    .pf-btn-edit {
-        background-color: var(--theme-primary-light, #eff6ff);
-        color: var(--theme-primary, #2563eb);
-        padding: 0.5rem 1rem;
-        border-radius: var(--theme-radius-btn, 0.75rem);
-        font-size: 0.875rem;
-        font-weight: 700;
-        border: 1px solid var(--theme-border-color, transparent);
-    }
-
-    .pf-btn-icon {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 50%;
-        color: var(--theme-text-muted, #6b7280);
-        background-color: var(--theme-bg-app, #f3f4f6);
-    }
-
-    .pf-btn-icon:hover {
-        background-color: #e5e7eb;
-        color: var(--theme-text-main, #374151);
-    }
-
-    /* --- Cards --- */
+    /* --- Cards Base --- */
     .pf-card {
         background-color: var(--theme-bg-card, #ffffff);
-        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
-        border-radius: var(--theme-radius, 1.25rem);
-        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #f1f5f9);
+        border-radius: 1.75rem;
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
         padding: 1.25rem;
         margin-bottom: 1.25rem;
         position: relative;
@@ -105,26 +82,118 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--theme-text-main, #1f2937);
+        color: var(--theme-text-main, #1e293b);
+    }
+
+    /* --- Unified Panel Buttons (เหมือนกันหมดทั้ง 3 กล่อง) --- */
+    .pf-panel-btn {
+        background-color: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .pf-panel-btn:hover,
+    .pf-panel-btn.active {
+        background-color: #eff6ff;
+        color: var(--theme-primary, #2563eb);
+        border-color: #bfdbfe;
+        transform: translateY(-1px);
+    }
+
+    .pf-panel-btn:active {
+        transform: scale(0.96);
+    }
+
+    .pf-icon-rotate {
+        transition: transform 0.3s ease;
+    }
+
+    .pf-icon-rotate.pf-open {
+        transform: rotate(180deg);
+        color: var(--theme-primary, #2563eb);
+    }
+
+    /* --- Icons (Pure CSS) --- */
+    .pf-icon-gold {
+        color: #f59e0b;
+        font-size: 1.25rem;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .pf-icon-indigo {
+        color: #6366f1;
+        font-size: 1.25rem;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .pf-icon-rose {
+        color: #f43f5e;
+        font-size: 1.25rem;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
     }
 
     /* --- 1. Profile Section --- */
     .pf-profile-top {
         text-align: center;
-        padding-top: 1rem;
+        margin-top: 4.5rem;
+        padding-top: 0.5rem;
+        overflow: visible;
     }
 
-    .pf-qr-btn {
+    .pf-floating-btn {
         position: absolute;
-        top: 1rem;
+        top: 1.25rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-app, #f8fafc);
+        color: var(--theme-text-muted, #64748b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        z-index: 10;
+    }
+
+    .pf-floating-btn:hover {
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        border-color: var(--theme-primary-light, #bfdbfe);
+        transform: scale(1.1);
+    }
+
+    .pf-btn-left {
+        left: 1rem;
+    }
+
+    .pf-btn-right {
         right: 1rem;
     }
 
     .pf-avatar-wrap {
         position: relative;
-        width: 6rem;
-        height: 6rem;
-        margin: 0 auto 1rem auto;
+        width: 8.5rem;
+        height: 8.5rem;
+        margin: -4.75rem auto 0.75rem auto;
+        border-radius: 50%;
+        padding: 0.35rem;
+        background: linear-gradient(135deg, var(--theme-primary, #2563eb) 0%, var(--theme-secondary, #f59e0b) 100%);
+        box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.2);
+        z-index: 20;
     }
 
     .pf-avatar {
@@ -132,181 +201,217 @@
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid var(--theme-bg-card, #ffffff);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        border: 4px solid var(--theme-bg-card, #ffffff);
         background-color: var(--theme-bg-app, #f3f4f6);
     }
 
     .pf-name {
-        font-size: 1.35rem;
+        font-size: 1.5rem;
         font-weight: 800;
-        margin: 0 0 0.25rem 0;
+        margin: 0 0 0.5rem 0;
+        color: var(--theme-text-main, #0f172a);
+        letter-spacing: -0.02em;
     }
 
-    .pf-contact-info {
-        font-size: 0.85rem;
-        color: var(--theme-text-muted, #6b7280);
-        margin: 0 0 1rem 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .pf-tags {
+    .pf-badges-wrap {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
     }
 
-    .pf-tag {
-        background-color: var(--theme-bg-app, #f3f4f6);
-        color: var(--theme-text-muted, #4b5563);
+    .pf-badge-item {
+        background-color: var(--theme-bg-app, #f8fafc);
+        color: var(--theme-text-muted, #475569);
         font-size: 0.75rem;
         font-weight: 600;
-        padding: 0.25rem 0.75rem;
-        border-radius: 999px;
-        display: flex;
+        padding: 0.3rem 0.75rem;
+        border-radius: 1rem;
+        display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
     }
 
-    .pf-tag.consent {
-        color: #10b981;
+    .pf-badge-item.highlight {
+        color: #059669;
         background-color: #ecfdf5;
         border-color: #a7f3d0;
     }
 
-    /* --- 2. Menu List (Vertical) --- */
-    .pf-menu-list {
+    .text-truncate-sm {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* --- 2. Menu Widget --- */
+    .pf-menu-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .pf-menu-btn {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid #f1f5f9;
+        border-radius: 1.5rem;
+        padding: 1rem 0.5rem;
         display: flex;
         flex-direction: column;
-        padding: 0;
-    }
-
-    .pf-menu-item {
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--theme-border-color, #f3f4f6);
-        background: transparent;
-        border-radius: 0;
-        width: 100%;
-        text-align: left;
+        justify-content: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
     }
 
-    .pf-menu-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
+    .pf-menu-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        border-color: var(--theme-primary-light, #bfdbfe);
     }
 
-    .pf-menu-item:first-child {
-        padding-top: 0;
-    }
-
-    .pf-menu-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .pf-menu-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.75rem;
-        background-color: var(--theme-primary-light, #eff6ff);
+    .pf-menu-icon-wrap {
+        width: 3.75rem;
+        height: 3.75rem;
+        border-radius: 1.2rem;
+        background: linear-gradient(145deg, var(--theme-bg-app, #f8fafc) 0%, var(--theme-bg-card, #ffffff) 100%);
         color: var(--theme-primary, #2563eb);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1.5rem;
         position: relative;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02), 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .pf-menu-btn:hover .pf-menu-icon-wrap {
+        background: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        transform: scale(1.05);
     }
 
     .pf-menu-label {
-        font-size: 0.95rem;
+        font-size: 0.75rem;
         font-weight: 700;
-        color: var(--theme-text-main, #374151);
+        color: var(--theme-text-main, #334155);
+        line-height: 1.2;
     }
 
+    /* Red Dot สำหรับปุ่มที่มีการแจ้งเตือน */
     .pf-red-dot {
         position: absolute;
-        top: -2px;
-        right: -2px;
+        top: 0.5rem;
+        right: 0.5rem;
         width: 12px;
         height: 12px;
         background-color: #ef4444;
         border-radius: 50%;
-        border: 2px solid var(--theme-bg-card, #ffffff);
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+        z-index: 10;
     }
 
-    .pf-menu-chevron {
-        color: var(--theme-text-muted, #9ca3af);
-    }
-
-    /* --- 3. Points Section --- */
-    .pf-point-overview {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: linear-gradient(135deg, var(--theme-bg-app, #f8fafc) 0%, var(--theme-bg-card, #ffffff) 100%);
+    /* --- 3. Points Wallet Card (Clean & Modern Redesign) --- */
+    .pf-wallet-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 1.25rem;
         padding: 1.25rem;
-        border-radius: 1rem;
-        border: 1px solid var(--theme-border-color, #f1f5f9);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
-    .pf-pt-main {
+    .pf-wallet-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .pf-wallet-top {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
     }
 
-    .pf-pt-val-wrap {
+    .pf-wallet-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .pf-wallet-amount-wrap {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        margin-top: 0.25rem;
+        gap: 0.4rem;
     }
 
-    .pf-pt-icon-img {
-        width: 2rem;
-        height: 2rem;
-        object-fit: contain;
-        filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
-    }
-
-    .pf-pt-val {
-        font-size: 2rem;
+    .pf-wallet-amount {
+        font-size: 1.75rem;
+        /* ปรับให้เล็กลงตามรีเควสต์ */
         font-weight: 900;
         color: var(--theme-primary, #2563eb);
         line-height: 1;
+        letter-spacing: -0.02em;
     }
 
-    .pf-pt-stats {
-        text-align: right;
+    .pf-wallet-icon {
+        width: 1.4rem;
+        height: 1.4rem;
+        object-fit: contain;
+    }
+
+    .pf-wallet-stats {
+        display: flex;
+        gap: 1.5rem;
+        background-color: #f1f5f9;
+        padding: 0.85rem 1rem;
+        border-radius: 0.85rem;
+    }
+
+    .pf-wallet-stat-item {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        flex: 1;
     }
 
-    .pf-stat-lbl {
+    .pf-wallet-stat-label {
         font-size: 0.65rem;
-        color: var(--theme-text-muted, #9ca3af);
-        text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-    }
-
-    .pf-stat-val {
-        font-size: 0.95rem;
         font-weight: 800;
-        color: var(--theme-text-main, #374151);
-        margin-top: 0.15rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        margin-bottom: 0.15rem;
     }
 
-    /* Point Details (Expandable) */
+    .pf-wallet-stat-val {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #334155;
+    }
+
+    .pf-wallet-divider {
+        width: 1px;
+        background-color: #cbd5e1;
+    }
+
+    /* Point Detail 2x2 Grid (Modernized) */
     .pf-pt-details {
         max-height: 0;
         overflow: hidden;
@@ -320,278 +425,509 @@
         margin-top: 1rem;
     }
 
-    .pf-pt-grid {
+    .pf-detail-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
         margin-top: 1rem;
         padding-top: 1rem;
-        border-top: 1px dashed var(--theme-border-color, #e5e7eb);
+        border-top: 1px dashed #cbd5e1;
     }
 
-    .pf-pt-grid-item {
-        background-color: var(--theme-bg-app, #f9fafb);
-        padding: 0.85rem;
-        border-radius: 0.75rem;
+    .pf-detail-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
-        border: 1px solid var(--theme-border-color, #f3f4f6);
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
-    .pf-pt-grid-lbl {
+    .pf-detail-box:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+    }
+
+    .pf-box-top {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .pf-box-icon-wrap {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .pf-box-icon-wrap.earned {
+        background-color: #d1fae5;
+        color: #059669;
+    }
+
+    .pf-box-icon-wrap.redeemed {
+        background-color: #ffe4e6;
+        color: #e11d48;
+    }
+
+    .pf-box-icon-wrap.pending {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+
+    .pf-box-icon-wrap.api {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    .pf-box-lbl {
         font-size: 0.7rem;
-        color: var(--theme-text-muted, #6b7280);
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .pf-pt-grid-val {
-        font-size: 1.1rem;
         font-weight: 800;
-        color: var(--theme-text-main, #1f2937);
+        color: #64748b;
+        text-transform: uppercase;
+        margin-top: 0.25rem;
+        display: block;
     }
 
-    /* Expiring Box */
-    .pf-expiring-box {
-        background-color: #fffbeb;
-        border: 1px solid #fde68a;
-        padding: 1rem;
-        border-radius: 0.75rem;
+    .pf-box-val {
+        font-size: 1.35rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .pf-txt-earned {
+        color: #059669;
+    }
+
+    .pf-txt-redeemed {
+        color: #e11d48;
+    }
+
+    .pf-txt-pending {
+        color: #d97706;
+    }
+
+    .pf-txt-api {
+        color: #1e293b;
+    }
+
+    /* Expiring Banner */
+    .pf-expiring-banner {
         margin-top: 0.75rem;
+        background: linear-gradient(to right, #fffbeb, #fef3c7);
+        border: 1px solid #fde68a;
+        border-radius: 1rem;
+        padding: 0.85rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .pf-ex-left {
+    .pf-expiring-left {
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
     }
 
-    .pf-ex-lbl {
-        font-size: 0.75rem;
+    .pf-expiring-lbl {
+        font-size: 0.65rem;
+        font-weight: 800;
         color: #d97706;
-        font-weight: 700;
+        text-transform: uppercase;
         display: flex;
         align-items: center;
         gap: 0.35rem;
     }
 
-    .pf-ex-val {
+    .pf-expiring-val {
         font-size: 1.25rem;
-        color: #b45309;
         font-weight: 900;
+        color: #b45309;
+        line-height: 1;
     }
 
-    .pf-ex-right {
-        text-align: right;
+    .pf-expiring-right {
         display: flex;
         flex-direction: column;
+        align-items: flex-end;
         gap: 0.25rem;
     }
 
-    .pf-ex-date {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #92400e;
+    .pf-expiring-date {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #78350f;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.5rem;
     }
 
-    .pf-ex-days {
-        font-size: 0.7rem;
-        color: #d97706;
-        font-weight: 600;
+    .pf-expiring-days {
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: #b45309;
+        text-transform: uppercase;
     }
 
-    /* Expand Icon Rotation */
-    .pf-icon-rotate {
-        transition: transform 0.3s ease;
+    /* --- 4. Membership Tier Card (Light Premium Design) --- */
+    .pf-member-card {
+        background: #ffffff;
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
-    .pf-icon-rotate.pf-open {
-        transform: rotate(180deg);
+    .pf-member-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.05);
     }
 
-    /* --- 4. Referral Code Widget --- */
-    .pf-ref-widget {
+    .pf-member-bg-pattern {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: radial-gradient(#f1f5f9 1px, transparent 1px);
+        background-size: 16px 16px;
+        pointer-events: none;
+    }
+
+    .pf-member-top {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        background: linear-gradient(135deg, var(--theme-primary, #2563eb) 0%, #4f46e5 100%);
-        color: white;
-        border: none;
+        gap: 1rem;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 1rem;
     }
 
-    .pf-ref-text h3 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        margin: 0 0 0.25rem 0;
-        color: white;
+    .pf-member-icon-wrap {
+        width: 5.5rem;
+        /* ขยายขึ้น 20% จาก 4.8rem */
+        height: 5.5rem;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
     }
 
-    .pf-ref-text p {
-        font-size: 0.8rem;
-        margin: 0;
-        opacity: 0.9;
+    .pf-member-icon-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
 
-    .pf-btn-ref {
-        background-color: white;
-        color: var(--theme-primary, #2563eb);
-        padding: 0.6rem 1.25rem;
-        border-radius: 999px;
-        font-weight: 800;
-        font-size: 0.85rem;
-        white-space: nowrap;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    /* --- 5. Tier Widget --- */
-    .pf-tier-content {
+    .pf-member-info {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
     }
 
-    .pf-tier-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .pf-tier-icon-lg {
-        width: 3.5rem;
-        height: 3.5rem;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-    }
-
-    .pf-tier-name {
+    .pf-member-name {
         font-size: 1.5rem;
         font-weight: 900;
         text-transform: uppercase;
+        margin: 0 0 0.35rem 0;
         letter-spacing: 0.05em;
-        margin: 0;
+        line-height: 1;
+        color: #1e293b;
     }
 
-    .pf-prog-labels {
+    .pf-member-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        width: max-content;
+        letter-spacing: 0.05em;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* ถอดกรอบกล่อง Progress ออก ใช้เส้นแบ่งบน-ล่างแทน */
+    .pf-member-progress {
+        position: relative;
+        z-index: 2;
+        padding: 1.25rem 0;
+        margin-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .pf-prog-header {
         display: flex;
         justify-content: space-between;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--theme-text-muted, #6b7280);
-        margin-bottom: 0.4rem;
+        align-items: center;
+        margin-bottom: 0.85rem;
     }
 
-    .pf-prog-bg {
-        width: 100%;
-        height: 0.75rem;
-        background-color: var(--theme-bg-app, #f3f4f6);
+    .pf-prog-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+
+    /* จัด Current / Max / % ให้อยู่บรรทัดเดียวกัน */
+    .pf-prog-values {
+        display: flex;
+        align-items: baseline;
+        gap: 0.35rem;
+    }
+
+    .pf-prog-current {
+        font-size: 1rem;
+        font-weight: 900;
+        color: #1e293b;
+    }
+
+    .pf-prog-separator {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #94a3b8;
+    }
+
+    .pf-prog-max {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .pf-prog-badge {
+        background: var(--theme-primary, #3b82f6);
+        color: #ffffff;
+        font-size: 0.65rem;
+        font-weight: 900;
+        padding: 0.15rem 0.5rem;
         border-radius: 999px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-left: 0.5rem;
+        transform: translateY(-1px);
+    }
+
+    .pf-prog-track {
+        width: 100%;
+        height: 0.6rem;
+        background: #f1f5f9;
+        border-radius: 1rem;
         overflow: hidden;
-        border: 1px solid var(--theme-border-color, #e5e7eb);
+        margin-bottom: 0.5rem;
+        border: 1px solid #e2e8f0;
     }
 
     .pf-prog-fill {
         height: 100%;
-        background-color: var(--theme-primary, #2563eb);
-        border-radius: 999px;
-        transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-        width: 0%;
+        background: var(--theme-primary, #3b82f6);
+        border-radius: 1rem;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    .pf-prog-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
     }
 
     .pf-prog-msg {
-        font-size: 0.75rem;
-        color: var(--theme-text-muted, #9ca3af);
-        margin: 0.5rem 0 0 0;
-        text-align: center;
+        font-size: 0.65rem;
         font-weight: 600;
+        color: #64748b;
+        display: block;
+        text-align: right;
     }
 
-    /* --- 6. Address Widget --- */
-    .pf-addr-box {
-        background-color: var(--theme-bg-app, #f9fafb);
-        border: 1px solid var(--theme-border-color, #f3f4f6);
-        border-radius: 1rem;
+    /* --- 5. Address Card (Full Width Design) --- */
+    .pf-addr-container {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.25rem;
         padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        /* เรียงบนลงล่าง */
+        gap: 0.75rem;
+        transition: all 0.3s ease;
     }
 
-    .pf-addr-name {
-        font-size: 1rem;
-        font-weight: 800;
-        color: var(--theme-text-main, #1f2937);
-        margin: 0 0 0.5rem 0;
+    .pf-addr-container:hover {
+        background-color: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .pf-addr-header-row {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.85rem;
     }
 
-    .pf-addr-badge {
-        font-size: 0.65rem;
-        background-color: var(--theme-primary-light, #eff6ff);
-        color: var(--theme-primary, #2563eb);
-        padding: 0.2rem 0.5rem;
-        border-radius: 0.25rem;
-        text-transform: uppercase;
+    .pf-addr-icon-wrap {
+        width: 3rem;
+        height: 3rem;
+        background-color: #fff1f2;
+        color: #f43f5e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        border: 1px solid #ffe4e6;
     }
 
-    .pf-addr-phone {
-        font-size: 0.85rem;
-        color: var(--theme-text-muted, #6b7280);
-        margin: 0 0 0.5rem 0;
+    .pf-addr-contact-info h4 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0 0 0.15rem 0;
+        line-height: 1.2;
+    }
+
+    .pf-addr-contact-info p {
+        font-size: 0.75rem;
+        color: #64748b;
         font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
     }
 
-    .pf-addr-detail {
-        font-size: 0.9rem;
-        color: var(--theme-text-main, #4b5563);
-        line-height: 1.5;
+    .pf-addr-full-text {
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        font-size: 0.85rem;
+        color: #475569;
+        line-height: 1.6;
         margin: 0;
+        width: 100%;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
     .pf-addr-empty {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         text-align: center;
         padding: 1.5rem 0;
-        color: var(--theme-text-muted, #9ca3af);
+        width: 100%;
     }
 
     .pf-addr-empty img {
         width: 3.5rem;
         height: 3.5rem;
-        opacity: 0.5;
-        margin-bottom: 0.75rem;
+        opacity: 0.4;
+        margin: 0 auto 0.75rem auto;
     }
 
     .pf-addr-empty p {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
         margin: 0;
-        font-weight: 600;
     }
 
-    /* Custom Widgets Container */
-    .pf-custom-widget {
+    /* --- 6. Referral Widget --- */
+    .pf-ref-widget {
+        background: linear-gradient(135deg, var(--theme-primary, #2563eb) 0%, #1e1b4b 100%);
+        color: white;
+        border: none;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pf-ref-widget::before {
+        content: '\f06b';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: -1rem;
+        bottom: -2rem;
+        font-size: 8rem;
+        color: rgba(255, 255, 255, 0.05);
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+
+    .pf-ref-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+    }
+
+    .pf-ref-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .pf-ref-desc {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        font-weight: 500;
+        margin: 0 0 1.25rem 0;
+    }
+
+    .pf-btn-ref {
+        background-color: white;
+        color: var(--theme-primary, #2563eb);
+        padding: 0.85rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         width: 100%;
-        margin-bottom: 1.25rem;
+        text-align: center;
+        border: none;
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+    .pf-btn-ref:active {
+        transform: scale(0.96);
     }
 </style>
 
 <div class="profile-page-wrapper">
 
-    <!-- Header -->
-    <div class="pf-header">
-        <h1 class="pf-title" data-i18n="pageTitle">Profile</h1>
-        <button class="pf-btn pf-btn-edit" onclick="handleEditProfile()">
-            <i class="fa-solid fa-pen"></i> <span data-i18n="editBtn">Edit</span>
-        </button>
-    </div>
-
-    <!-- [# PROFILE #] -->
+    <!-- [# PROFILE SECTION #] -->
     <div class="pf-card pf-profile-top">
-        <button class="pf-btn pf-btn-icon pf-qr-btn" onclick="handleOpenQrCode()">
-            <i class="fa-solid fa-qrcode"></i>
+        <!-- Floating Actions -->
+        <!-- นำ Daily Check-in มาไว้ซ้ายบนแทน (จะถูกซ่อน/แสดงอัตโนมัติตามตั้งค่า) -->
+        <button class="pf-floating-btn pf-btn-left pf-hover-up pf-active-scale pf-hidden" id="pf-btn-daily"
+            onclick="handleDailyCheckin()">
+            <span id="pf-ui-daily-dot" class="pf-red-dot pf-hidden" style="top: -2px; right: -2px;"></span>
+            <i class="fa-solid fa-calendar-check"></i>
+        </button>
+        <button class="pf-floating-btn pf-btn-right pf-hover-up pf-active-scale" onclick="handleEditProfile()">
+            <i class="fa-solid fa-pen"></i>
         </button>
 
         <div class="pf-avatar-wrap">
@@ -599,189 +935,207 @@
         </div>
 
         <h2 id="pf-ui-name" class="pf-name">-</h2>
-        <div class="pf-contact-info">
-            <span id="pf-ui-phone"></span>
-            <span id="pf-ui-email"></span>
-        </div>
 
-        <div class="pf-tags">
-            <div class="pf-tag pf-hidden" id="pf-wrap-gender"><i id="pf-icon-gender" class="fa-solid fa-venus-mars"></i>
-                <span id="pf-ui-gender"></span></div>
-            <div class="pf-tag pf-hidden" id="pf-wrap-birthday"><i class="fa-solid fa-cake-candles"
-                    style="color: #f472b6;"></i> <span id="pf-ui-birthday"></span></div>
-            <div class="pf-tag"><i class="fa-solid fa-globe" style="color: #60a5fa;"></i> <span id="pf-ui-lang"></span>
-            </div>
-        </div>
-
-        <div id="pf-wrap-consent" class="pf-hidden mt-2">
-            <div class="pf-tag consent"><i class="fa-solid fa-check-circle"></i> <span
-                    data-i18n="consentText">Subscribed</span></div>
+        <div class="pf-badges-wrap" id="pf-badges-container">
+            <!-- Injected via JS -->
         </div>
     </div>
 
-    <!-- [# PROFILE MENU #] -->
-    <div class="pf-card">
-        <div class="pf-menu-list">
-            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('inventory')">
-                <div class="pf-menu-left">
-                    <div class="pf-menu-icon"><i class="fa-solid fa-box-open"></i></div>
-                    <span class="pf-menu-label" data-i18n="menuInventory">Inventory</span>
-                </div>
-                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
-            </button>
-            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('shipping')">
-                <div class="pf-menu-left">
-                    <div class="pf-menu-icon"><i class="fa-solid fa-truck-fast"></i></div>
-                    <span class="pf-menu-label" data-i18n="menuShipping">Shipping</span>
-                </div>
-                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
-            </button>
-            <button class="pf-btn pf-menu-item" onclick="PageManager.openModal('history')">
-                <div class="pf-menu-left">
-                    <div class="pf-menu-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <span class="pf-menu-label" data-i18n="menuHistory">History</span>
-                </div>
-                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
-            </button>
-            <!-- Daily Checkin -->
-            <button class="pf-btn pf-menu-item pf-hidden" id="pf-btn-daily"
-                onclick="PageManager.openModal('dailyCheckin')">
-                <div class="pf-menu-left">
-                    <div class="pf-menu-icon">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span id="pf-ui-daily-dot" class="pf-red-dot pf-hidden"></span>
-                    </div>
-                    <span class="pf-menu-label" data-i18n="menuDaily">Daily Check-in</span>
-                </div>
-                <i class="fa-solid fa-chevron-right pf-menu-chevron"></i>
-            </button>
-        </div>
+    <!-- [# MENU GRID #] -->
+    <div class="pf-menu-container">
+        <button class="pf-menu-btn pf-hover-up pf-active-scale" onclick="handleOpenQrCode()">
+            <div class="pf-menu-icon-wrap"><i class="fa-solid fa-qrcode"></i></div>
+            <span class="pf-menu-label" data-i18n="menuQR">QR Code</span>
+        </button>
+        <button class="pf-menu-btn pf-hover-up pf-active-scale" onclick="PageManager.openModal('inventory')">
+            <div class="pf-menu-icon-wrap"><i class="fa-solid fa-box-open"></i></div>
+            <span class="pf-menu-label" data-i18n="menuInventory">Inventory</span>
+        </button>
+        <button class="pf-menu-btn pf-hover-up pf-active-scale" onclick="PageManager.openModal('history')">
+            <div class="pf-menu-icon-wrap"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span class="pf-menu-label" data-i18n="menuHistory">History</span>
+        </button>
+        <button class="pf-menu-btn pf-hover-up pf-active-scale" onclick="PageManager.openModal('shipping')">
+            <div class="pf-menu-icon-wrap"><i class="fa-solid fa-truck-fast"></i></div>
+            <span class="pf-menu-label" data-i18n="menuShipping">Shipping</span>
+        </button>
     </div>
 
-    <!-- Custom Widget 1 -->
-    <div id="custom-widget-1" class="pf-custom-widget"></div>
+    <!-- Custom Widget 1: บนสุดต่อจาก menu -->
+    <div id="custom-widget-1"></div>
 
-    <!-- [# POINT #] & [# POINT DETAIL #] -->
-    <div class="pf-card">
+    <!-- [# POINT SECTION #] -->
+    <div class="pf-card pf-hover-up">
         <div class="pf-card-header">
-            <h3 class="pf-card-title"><i class="fa-solid fa-coins text-amber-500 text-xl"></i> <span
-                    data-i18n="pointTitle">My Points</span></h3>
-            <button class="pf-btn pf-btn-icon" onclick="togglePointDetail()"><i id="pf-pt-expand-icon"
-                    class="fa-solid fa-chevron-down pf-icon-rotate"></i></button>
+            <h3 class="pf-card-title">
+                <i class="fa-solid fa-coins pf-icon-gold"></i>
+                <span data-i18n="pointTitle">คะแนนสะสม</span>
+            </h3>
+            <button class="pf-panel-btn" id="pf-btn-point-detail" onclick="togglePointDetail()">
+                <span data-i18n="btnPointDetail">รายละเอียด</span>
+                <i id="pf-pt-expand-icon" class="fa-solid fa-chevron-down pf-icon-rotate"></i>
+            </button>
         </div>
 
-        <div class="pf-point-overview" onclick="togglePointDetail()" style="cursor:pointer;">
-            <div class="pf-pt-main">
-                <span class="pf-stat-lbl" data-i18n="pointAvailable">Available</span>
-                <div class="pf-pt-val-wrap">
-                    <img id="pf-ui-pt-icon" class="pf-pt-icon-img" src="" alt="pt">
-                    <span id="pf-ui-pt-bal" class="pf-pt-val">0</span>
+        <!-- Main Points Box -->
+        <div class="pf-wallet-card" onclick="togglePointDetail()">
+            <div class="pf-wallet-top">
+                <div>
+                    <span class="pf-wallet-label" data-i18n="pointAvailable">Remaining Point</span>
+                    <div class="pf-wallet-amount-wrap">
+                        <span id="pf-ui-pt-bal" class="pf-wallet-amount">0</span>
+                        <img id="pf-ui-pt-icon" src="" class="pf-wallet-icon" alt="pt">
+                    </div>
                 </div>
             </div>
-            <div class="pf-pt-stats">
-                <div class="pf-stat-row">
-                    <span class="pf-stat-lbl" data-i18n="statSpend">Total Spend</span>
-                    <span id="pf-ui-stat-spend" class="pf-stat-val">0</span>
+            <div class="pf-wallet-stats">
+                <div class="pf-wallet-stat-item">
+                    <span class="pf-wallet-stat-label" data-i18n="statSpend">Total Spend</span>
+                    <span id="pf-ui-stat-spend" class="pf-wallet-stat-val">0</span>
                 </div>
-                <div class="pf-stat-row">
-                    <span class="pf-stat-lbl" data-i18n="statOrder">Total Orders</span>
-                    <span id="pf-ui-stat-order" class="pf-stat-val">0</span>
+                <div class="pf-wallet-divider"></div>
+                <div class="pf-wallet-stat-item">
+                    <span class="pf-wallet-stat-label" data-i18n="statOrder">Total Orders</span>
+                    <span id="pf-ui-stat-order" class="pf-wallet-stat-val">0</span>
                 </div>
             </div>
         </div>
 
+        <!-- Expanded Details (2x2 Grid) -->
         <div id="pf-pt-detail-panel" class="pf-pt-details">
-            <div class="pf-pt-grid">
-                <div class="pf-pt-grid-item">
-                    <span class="pf-pt-grid-lbl" data-i18n="ptTotal">Total Earned</span>
-                    <span id="pf-ui-pt-total" class="pf-pt-grid-val" style="color: #10b981;">0</span>
+            <div class="pf-detail-grid">
+                <div class="pf-detail-box">
+                    <div class="pf-box-top">
+                        <div class="pf-box-icon-wrap earned"><i class="fa-solid fa-arrow-trend-up pf-icon-earned"></i>
+                        </div>
+                        <span id="pf-ui-pt-total" class="pf-box-val pf-txt-earned">0</span>
+                    </div>
+                    <span class="pf-box-lbl" data-i18n="ptTotal">Total Earned</span>
                 </div>
-                <div class="pf-pt-grid-item">
-                    <span class="pf-pt-grid-lbl" data-i18n="ptRedeem">Redeemed</span>
-                    <span id="pf-ui-pt-redeem" class="pf-pt-grid-val" style="color: #ef4444;">0</span>
+                <div class="pf-detail-box">
+                    <div class="pf-box-top">
+                        <div class="pf-box-icon-wrap redeemed"><i class="fa-solid fa-gift pf-icon-redeemed"></i></div>
+                        <span id="pf-ui-pt-redeem" class="pf-box-val pf-txt-redeemed">0</span>
+                    </div>
+                    <span class="pf-box-lbl" data-i18n="ptRedeem">Redeemed</span>
                 </div>
-                <div class="pf-pt-grid-item">
-                    <span class="pf-pt-grid-lbl" data-i18n="ptPending">Pending</span>
-                    <span id="pf-ui-pt-pending" class="pf-pt-grid-val" style="color: #f59e0b;">0</span>
+                <div class="pf-detail-box">
+                    <div class="pf-box-top">
+                        <div class="pf-box-icon-wrap pending"><i class="fa-solid fa-hourglass-half pf-icon-pending"></i>
+                        </div>
+                        <span id="pf-ui-pt-pending" class="pf-box-val pf-txt-pending">0</span>
+                    </div>
+                    <span class="pf-box-lbl" data-i18n="ptPending">Pending</span>
                 </div>
-                <div class="pf-pt-grid-item">
-                    <span class="pf-pt-grid-lbl" data-i18n="ptApi">API Deducted</span>
-                    <span id="pf-ui-pt-api" class="pf-pt-grid-val" style="color: #6b7280;">0</span>
+                <div class="pf-detail-box">
+                    <div class="pf-box-top">
+                        <div class="pf-box-icon-wrap api"><i class="fa-solid fa-code pf-icon-api"></i></div>
+                        <span id="pf-ui-pt-api" class="pf-box-val pf-txt-api">0</span>
+                    </div>
+                    <span class="pf-box-lbl" data-i18n="ptApi">API Deducted</span>
                 </div>
             </div>
 
             <!-- Expiring Soon -->
-            <div id="pf-wrap-expiring" class="pf-expiring-box pf-hidden">
-                <div class="pf-ex-left">
-                    <span class="pf-ex-lbl"><i class="fa-solid fa-circle-exclamation"
-                            style="animation: pulse 2s infinite;"></i> <span data-i18n="ptExpiring">Expiring
-                            Soon</span></span>
-                    <span id="pf-ui-ex-pts" class="pf-ex-val">0</span>
+            <div id="pf-wrap-expiring" class="pf-hidden pf-expiring-banner">
+                <div class="pf-expiring-left">
+                    <span class="pf-expiring-lbl">
+                        <i class="fa-solid fa-circle-exclamation" style="animation: pulse 2s infinite;"></i>
+                        <span data-i18n="ptExpiring">Expiring Soon</span>
+                    </span>
+                    <span id="pf-ui-ex-pts" class="pf-expiring-val">0</span>
                 </div>
-                <div class="pf-ex-right">
-                    <span id="pf-ui-ex-date" class="pf-ex-date"></span>
-                    <span id="pf-ui-ex-days" class="pf-ex-days"></span>
+                <div class="pf-expiring-right">
+                    <span id="pf-ui-ex-date" class="pf-expiring-date"></span>
+                    <span id="pf-ui-ex-days" class="pf-expiring-days"></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- [# REFERRAL CODE #] (Conditional) -->
-    <div id="pf-widget-referral" class="pf-card pf-ref-widget pf-hidden">
-        <div class="pf-ref-text">
-            <h3 data-i18n="refTitle">Invite Friends</h3>
-            <p data-i18n="refDesc">Get bonus points for every friend!</p>
-        </div>
-        <button class="pf-btn pf-btn-ref" onclick="PageManager.openModal('referralCode', { mode: 'me' })"
-            data-i18n="btnGetCode">Get Code</button>
-    </div>
-
-    <!-- [# Tier #] (Conditional) -->
-    <div id="pf-widget-tier" class="pf-card pf-hidden">
+    <!-- [# TIER SECTION #] -->
+    <div id="pf-widget-tier" class="pf-card pf-hover-up pf-hidden">
         <div class="pf-card-header">
-            <h3 class="pf-card-title"><i class="fa-solid fa-ranking-star text-indigo-500 text-xl"></i> <span
-                    data-i18n="tierTitle">Membership Tier</span></h3>
-            <button class="pf-btn pf-btn-icon" onclick="PageManager.openModal('rank')"><i
-                    class="fa-solid fa-expand"></i></button>
-        </div>
-        <div class="pf-tier-content">
-            <div class="pf-tier-info">
-                <img id="pf-ui-tier-icon" class="pf-tier-icon-lg" src="" alt="Rank">
-                <h4 id="pf-ui-tier-name" class="pf-tier-name"></h4>
-            </div>
-            <div class="pf-prog-container">
-                <div class="pf-prog-labels">
-                    <span id="pf-ui-prog-curr">0</span>
-                    <span id="pf-ui-prog-max">Max</span>
-                </div>
-                <div class="pf-prog-bg">
-                    <div id="pf-ui-prog-fill" class="pf-prog-fill"></div>
-                </div>
-                <p id="pf-ui-prog-msg" class="pf-prog-msg"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Widget 2 -->
-    <div id="custom-widget-2" class="pf-custom-widget"></div>
-
-    <!-- [# ADDRESS #] -->
-    <div class="pf-card">
-        <div class="pf-card-header">
-            <h3 class="pf-card-title"><i class="fa-solid fa-map-location-dot text-blue-500 text-xl"></i> <span
-                    data-i18n="addrTitle">My Address</span></h3>
-            <button class="pf-btn pf-btn-edit" onclick="handleEditAddress()">
-                <i class="fa-solid fa-pen"></i> <span id="pf-ui-btn-addr-txt" data-i18n="editBtn">Edit</span>
+            <h3 class="pf-card-title">
+                <i class="fa-solid fa-ranking-star pf-icon-indigo"></i>
+                <span data-i18n="tierTitle">Membership Tier</span>
+            </h3>
+            <button class="pf-panel-btn" onclick="PageManager.openModal('rank')">
+                <span data-i18n="btnViewTier">More Tiers</span>
+                <i class="fa-solid fa-crown" style="font-size: 0.8rem;"></i>
             </button>
         </div>
 
-        <div id="pf-addr-content" class="pf-addr-box">
+        <div class="pf-member-card">
+            <div class="pf-member-bg-pattern"></div>
+
+            <div class="pf-member-top">
+                <div class="pf-member-icon-wrap">
+                    <img id="pf-ui-tier-main-icon" src="" alt="Rank">
+                </div>
+                <div class="pf-member-info">
+                    <h4 id="pf-ui-tier-name" class="pf-member-name"></h4>
+                    <span class="pf-member-badge">LEVEL <span id="pf-ui-tier-level">1</span></span>
+                </div>
+            </div>
+
+            <div class="pf-member-progress">
+                <div class="pf-prog-header">
+                    <span id="pf-ui-req-type" class="pf-prog-label">Spend</span>
+                    <div class="pf-prog-values">
+                        <strong id="pf-ui-prog-curr">0</strong>
+                        <span class="pf-prog-separator">/</span>
+                        <span id="pf-ui-prog-max" class="pf-prog-max">Max</span>
+                        <span id="pf-ui-prog-percent" class="pf-prog-badge">0%</span>
+                    </div>
+                </div>
+
+                <div class="pf-prog-track">
+                    <div id="pf-ui-prog-fill" class="pf-prog-fill" style="width: 0%;"></div>
+                </div>
+                <span id="pf-ui-prog-msg" class="pf-prog-msg"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Widget 2: ตรงกลางด้านบน address -->
+    <div id="custom-widget-2"></div>
+
+    <!-- [# ADDRESS #] -->
+    <div class="pf-card pf-hover-up">
+        <div class="pf-card-header">
+            <h3 class="pf-card-title">
+                <i class="fa-solid fa-map-location-dot pf-icon-rose"></i>
+                <span data-i18n="addrTitle">Shipping Address</span>
+            </h3>
+            <button class="pf-panel-btn" onclick="handleEditAddress()">
+                <span id="pf-ui-btn-addr-txt" data-i18n="editBtn">แก้ไข</span>
+                <i class="fa-solid fa-pen" style="font-size: 0.65rem;"></i>
+            </button>
+        </div>
+
+        <div id="pf-addr-content">
             <!-- Dynamic Content -->
         </div>
     </div>
 
-    <!-- Custom Widget 3 -->
-    <div id="custom-widget-3" class="pf-custom-widget"></div>
+    <!-- Custom Widget 3: ด้านล่างใต้ address -->
+    <div id="custom-widget-3"></div>
+
+    <!-- [# REFERRAL SECTION #] -->
+    <div id="pf-widget-referral" class="pf-card pf-ref-widget pf-hidden pf-hover-up">
+        <div class="pf-ref-content">
+            <h3 class="pf-ref-title">
+                <i class="fa-solid fa-user-plus pf-icon-gold"></i>
+                <span data-i18n="refTitle">Invite Friends</span>
+            </h3>
+            <p class="pf-ref-desc" data-i18n="refDesc">Get bonus points for every friend you invite!</p>
+            <button class="pf-btn-ref" onclick="PageManager.openModal('referralCode', { mode: 'me' })"
+                data-i18n="btnGetCode">
+                Get Your Code
+            </button>
+        </div>
+    </div>
 
 </div>
 
@@ -793,22 +1147,24 @@
         const pageSetting = {
             defaultAvatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png",
             emptyAddressImg: "https://cdn-icons-png.flaticon.com/512/7465/7465691.png",
-            defaultPointIcon: "https://cdn-icons-png.flaticon.com/512/2583/2583133.png",
             defaultTierIcon: "https://cdn-icons-png.flaticon.com/512/610/610333.png",
+            defaultPointIcon: "https://cdn-icons-png.flaticon.com/512/2583/2583133.png"
         };
 
         const i18nDict = {
             Th: {
                 pageTitle: "โปรไฟล์ของฉัน",
-                editBtn: "แก้ไข",
+                menuQR: "คิวอาร์โค้ด",
                 menuInventory: "กระเป๋าของฉัน",
                 menuShipping: "สถานะการจัดส่ง",
-                menuHistory: "ประวัติการทำรายการ",
-                menuDaily: "เช็คอินรับแต้ม",
+                menuHistory: "ประวัติ",
+                menuDaily: "เช็คอิน",
                 pointTitle: "คะแนนสะสม",
-                pointAvailable: "คะแนนที่ใช้ได้",
-                statSpend: "ยอดใช้จ่ายสะสม",
-                statOrder: "จำนวนคำสั่งซื้อ",
+                btnPointDetail: "รายละเอียด",
+                pointAvailable: "Remaining Point",
+                ptsUnit: "คะแนน",
+                statSpend: "ยอดใช้จ่าย",
+                statOrder: "ออเดอร์",
                 ptTotal: "ได้รับทั้งหมด",
                 ptRedeem: "แลกไปแล้ว",
                 ptPending: "รอดำเนินการ",
@@ -817,45 +1173,55 @@
                 daysLeft: "เหลือเวลา {days} วัน",
                 refTitle: "แนะนำเพื่อน",
                 refDesc: "ชวนเพื่อนรับคะแนนฟรีทันที!",
-                btnGetCode: "รับโค้ด",
+                btnGetCode: "ดูรหัสแนะนำ",
                 tierTitle: "ระดับสมาชิก",
+                btnViewTier: "More Tiers",
                 tierMaxMsg: "คุณอยู่ระดับสูงสุดแล้ว!",
-                tierNextMsg: "อีก {diff} {currency} เพื่ออัพเกรด",
+                tierRemaining: "Remaining: {diff} {unit}",
+                reqSpend: "ยอดใช้จ่ายสะสม",
+                reqOrder: "จำนวนออเดอร์",
                 addrTitle: "ที่อยู่จัดส่ง",
                 addrEmpty: "ยังไม่มีที่อยู่จัดส่ง",
                 addrAddBtn: "เพิ่มที่อยู่",
-                consentText: "รับข่าวสารแล้ว",
-                genderMale: "ผู้ชาย",
-                genderFemale: "ผู้หญิง",
+                editBtn: "แก้ไข",
+                consentText: "รับข่าวสาร",
+                genderMale: "ชาย",
+                genderFemale: "หญิง",
                 genderOther: "อื่นๆ",
                 unspecified: "ไม่ระบุ"
             },
             En: {
                 pageTitle: "My Profile",
-                editBtn: "Edit",
-                menuInventory: "My Inventory",
-                menuShipping: "Shipping Status",
+                menuQR: "My QR",
+                menuInventory: "Inventory",
+                menuShipping: "Shipping",
                 menuHistory: "History",
-                menuDaily: "Daily Check-in",
+                menuDaily: "Check-in",
                 pointTitle: "My Points",
-                pointAvailable: "Available Balance",
-                statSpend: "Total Spending",
+                btnPointDetail: "Details",
+                pointAvailable: "Remaining Point",
+                ptsUnit: "Pts",
+                statSpend: "Total Spend",
                 statOrder: "Total Orders",
                 ptTotal: "Total Earned",
                 ptRedeem: "Redeemed",
                 ptPending: "Pending",
-                ptApi: "System Deducted",
+                ptApi: "System Deduct",
                 ptExpiring: "Expiring Soon",
                 daysLeft: "{days} days left",
                 refTitle: "Refer a Friend",
                 refDesc: "Invite friends, earn free points!",
-                btnGetCode: "Get Code",
+                btnGetCode: "Get Your Code",
                 tierTitle: "Membership Tier",
-                tierMaxMsg: "You have reached the maximum tier!",
-                tierNextMsg: "{diff} {currency} more to upgrade",
+                btnViewTier: "More Tiers",
+                tierMaxMsg: "You have reached the max tier!",
+                tierRemaining: "Remaining: {diff} {unit}",
+                reqSpend: "Total Spend",
+                reqOrder: "Total Orders",
                 addrTitle: "Shipping Address",
-                addrEmpty: "No shipping address found",
+                addrEmpty: "No shipping address",
                 addrAddBtn: "Add Address",
+                editBtn: "Edit",
                 consentText: "Subscribed",
                 genderMale: "Male",
                 genderFemale: "Female",
@@ -865,12 +1231,12 @@
         };
 
         let currentLang = 'Th';
+        let isPointExpanded = false;
 
         // ==========================================
         // 2. MAIN LOGIC & DATA BINDING
         // ==========================================
         async function initProfilePage() {
-            // Use safe fallback if global variables are not ready
             const data = window.crmData || {};
             currentLang = (data.language === 'En') ? 'En' : 'Th';
 
@@ -909,34 +1275,27 @@
         function bindProfileInfo(data) {
             const user = data.crmUser?.user || {};
 
-            // Basic
             document.getElementById('pf-ui-avatar').src = user.pictureUrl || pageSetting.defaultAvatar;
             document.getElementById('pf-ui-name').innerText = user.displayName || "-";
 
-            const elPhone = document.getElementById('pf-ui-phone');
-            if (user.phone) {
-                elPhone.innerHTML = `<i class="fa-solid fa-phone text-xs mr-1"></i> ${user.phone}`;
-                elPhone.style.display = 'block';
-            } else {
-                elPhone.style.display = 'none';
-            }
+            const badgesContainer = document.getElementById('pf-badges-container');
+            badgesContainer.innerHTML = ''; // Clear old badges
 
-            const elEmail = document.getElementById('pf-ui-email');
-            if (user.email) {
-                elEmail.innerHTML = `<i class="fa-solid fa-envelope text-xs mr-1"></i> ${user.email}`;
-                elEmail.style.display = 'block';
-            } else {
-                elEmail.style.display = 'none';
-            }
+            const createBadge = (iconHtml, text, isHighlight = false, isTruncate = false) => {
+                const div = document.createElement('div');
+                div.className = `pf-badge-item ${isHighlight ? 'highlight' : ''}`;
+                const textSpanClass = isTruncate ? 'text-truncate-sm' : '';
+                div.innerHTML = `${iconHtml} <span class="${textSpanClass}" title="${text}">${text}</span>`;
+                badgesContainer.appendChild(div);
+            };
 
-            // Custom Fields (Gender, Birthday, Consent)
+            // โทรศัพท์ และ อีเมล บนบรรทัดเดียวกัน
+            if (user.phone) createBadge('<i class="fa-solid fa-phone" style="color: #3b82f6;"></i>', user.phone);
+            if (user.email) createBadge('<i class="fa-solid fa-envelope" style="color: #f43f5e;"></i>', user.email, false, true);
+
+            // Custom Fields
             const custom = user.customFields || {};
-
-            // Dynamic Keys via TYPES if available
-            let genderKey = 'gender';
-            let bdayKey = 'birthday';
-            let consentKey = 'consentnotif';
-
+            let genderKey = 'gender', bdayKey = 'birthday', consentKey = 'consentnotif';
             if (window.TYPES && window.TYPES.customFields) {
                 genderKey = window.TYPES.customFields.gender || genderKey;
                 bdayKey = window.TYPES.customFields.birthday || bdayKey;
@@ -945,42 +1304,44 @@
 
             // Gender
             const genderVal = custom[genderKey];
-            const wrapGender = document.getElementById('pf-wrap-gender');
-            const uiGender = document.getElementById('pf-ui-gender');
-            const iconGender = document.getElementById('pf-icon-gender');
-
             if (genderVal) {
                 const gLower = String(genderVal).toLowerCase();
-                if (gLower === 'male') { uiGender.innerText = getDictText('genderMale'); iconGender.className = "fa-solid fa-mars text-blue-500"; }
-                else if (gLower === 'female') { uiGender.innerText = getDictText('genderFemale'); iconGender.className = "fa-solid fa-venus text-pink-500"; }
-                else if (gLower === 'other') { uiGender.innerText = getDictText('genderOther'); iconGender.className = "fa-solid fa-venus-mars text-purple-500"; }
-                else { uiGender.innerText = genderVal; }
-                wrapGender.classList.remove('pf-hidden');
-            } else {
-                wrapGender.classList.add('pf-hidden');
+                if (gLower === 'male') createBadge('<i class="fa-solid fa-mars" style="color: #3b82f6;"></i>', getDictText('genderMale'));
+                else if (gLower === 'female') createBadge('<i class="fa-solid fa-venus" style="color: #ec4899;"></i>', getDictText('genderFemale'));
+                else if (gLower === 'other') createBadge('<i class="fa-solid fa-venus-mars" style="color: #a855f7;"></i>', getDictText('genderOther'));
+                else createBadge('<i class="fa-solid fa-venus-mars" style="color: #64748b;"></i>', genderVal);
             }
 
-            // Birthday
+            // Birthday (เอาแค่ DD/MM/YYYY หรือจัดรูปแบบสวยงาม)
             const bdayVal = custom[bdayKey];
-            const wrapBirthday = document.getElementById('pf-wrap-birthday');
             if (bdayVal) {
-                // If it's an array [d, m, y], join it. If string, just display.
-                document.getElementById('pf-ui-birthday').innerText = Array.isArray(bdayVal) ? bdayVal.join('/') : bdayVal;
-                wrapBirthday.classList.remove('pf-hidden');
-            } else {
-                wrapBirthday.classList.add('pf-hidden');
+                let displayDate = Array.isArray(bdayVal) ? bdayVal.join('/') : bdayVal;
+                if (typeof displayDate === 'string' && displayDate.includes('T')) {
+                    displayDate = displayDate.split('T')[0];
+                }
+
+                try {
+                    const d = new Date(displayDate);
+                    if (!isNaN(d)) {
+                        const mTh = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                        const mEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        const m = currentLang === 'En' ? mEn[d.getMonth()] : mTh[d.getMonth()];
+                        const y = currentLang === 'En' ? d.getFullYear() : d.getFullYear() + 543;
+                        displayDate = `${d.getDate()} ${m} ${y}`;
+                    }
+                } catch (e) { }
+
+                createBadge('<i class="fa-solid fa-cake-candles" style="color: #f472b6;"></i>', displayDate);
             }
 
             // Language
-            document.getElementById('pf-ui-lang').innerText = currentLang === 'En' ? 'English' : 'ภาษาไทย';
+            const langTxt = currentLang === 'En' ? 'English' : 'ภาษาไทย';
+            createBadge('<i class="fa-solid fa-globe" style="color: #0ea5e9;"></i>', langTxt);
 
             // Consent
             const consentVal = custom[consentKey];
-            const wrapConsent = document.getElementById('pf-wrap-consent');
             if (consentVal === true || consentVal === "true") {
-                wrapConsent.classList.remove('pf-hidden');
-            } else {
-                wrapConsent.classList.add('pf-hidden');
+                createBadge('<i class="fa-solid fa-check-circle"></i>', getDictText('consentText'), true);
             }
         }
 
@@ -989,8 +1350,6 @@
             const btnDaily = document.getElementById('pf-btn-daily');
             if (data.marketData?.enableDailyCheckIn) {
                 btnDaily.classList.remove('pf-hidden');
-
-                // Show red dot if can check-in
                 if (data.daily?.canCheckIn) {
                     document.getElementById('pf-ui-daily-dot').classList.remove('pf-hidden');
                 } else {
@@ -1003,47 +1362,41 @@
 
         // --- Points ---
         function bindPointWidget(data) {
-            // Set Icon
             let ptIcon = pageSetting.defaultPointIcon;
             if (window.Utility && typeof Utility.getAssetPath === 'function') {
                 ptIcon = Utility.getAssetPath("pointIcon") || ptIcon;
             }
             document.getElementById('pf-ui-pt-icon').src = ptIcon;
 
-            // Stats data
+            const pts = window.Utility && typeof Utility.getPoints === 'function' ? Utility.getPoints() : (data.crmUser?.user?.points || 0);
+            document.getElementById('pf-ui-pt-bal').innerText = Math.floor(pts).toLocaleString();
+
             const stats = data.crmUser?.statisticsData || data.crmUser?.statistics || {};
             const spend = stats.spending || {};
             const orders = stats.orders || {};
-            const points = stats.points || {};
 
-            // Value & Stats
-            const myPoint = window.Utility && typeof Utility.getPoints === 'function' ? Utility.getPoints() : (data.crmUser?.user?.points || 0);
-            document.getElementById('pf-ui-pt-bal').innerText = myPoint.toLocaleString();
-
-            const totalSpending = spend.total || 0;
+            const totalSpend = spend.total || 0;
             const currency = spend.currency || "THB";
-            document.getElementById('pf-ui-stat-spend').innerText = `${totalSpending.toLocaleString()} ${currency}`;
-            document.getElementById('pf-ui-stat-order').innerText = (orders.total || 0).toLocaleString();
+            document.getElementById('pf-ui-stat-spend').innerText = `${Math.floor(totalSpend).toLocaleString()} ${currency}`;
+            document.getElementById('pf-ui-stat-order').innerText = Math.floor(orders.total || 0).toLocaleString();
 
-            // Details
-            document.getElementById('pf-ui-pt-total').innerText = (points.totalEarned || 0).toLocaleString();
-            document.getElementById('pf-ui-pt-redeem').innerText = (points.redeemed || 0).toLocaleString();
-            document.getElementById('pf-ui-pt-pending').innerText = (points.pending || 0).toLocaleString();
-            document.getElementById('pf-ui-pt-api').innerText = (points.apiDeducted || 0).toLocaleString();
+            const pData = stats.points || {};
+            document.getElementById('pf-ui-pt-total').innerText = Math.floor(pData.totalEarned || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-redeem').innerText = Math.floor(pData.redeemed || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-pending').innerText = Math.floor(pData.pending || 0).toLocaleString();
+            document.getElementById('pf-ui-pt-api').innerText = Math.floor(pData.apiDeducted || 0).toLocaleString();
 
-            // Expiring
-            const expiring = points.expiringSoon;
+            const expiring = pData.expiringSoon;
             const wrapEx = document.getElementById('pf-wrap-expiring');
+
             if (expiring && expiring.total > 0 && expiring.nextBatch) {
                 wrapEx.classList.remove('pf-hidden');
-                document.getElementById('pf-ui-ex-pts').innerText = expiring.total.toLocaleString();
-
+                document.getElementById('pf-ui-ex-pts').innerText = Math.floor(expiring.total).toLocaleString();
                 let dateStr = expiring.nextBatch.expiresAt;
                 try {
                     const d = new Date(dateStr);
                     dateStr = d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH');
                 } catch (e) { }
-
                 document.getElementById('pf-ui-ex-date').innerText = dateStr;
                 document.getElementById('pf-ui-ex-days').innerText = getDictText('daysLeft', { days: expiring.nextBatch.daysLeft });
             } else {
@@ -1073,64 +1426,74 @@
 
             wTier.classList.remove('pf-hidden');
 
-            const currentTier = window.Utility ? Utility.getUserTier() : null;
-            const nextTier = window.Utility ? Utility.getUserNextTier() : null;
+            const currentTier = window.Utility && typeof Utility.getUserTier === 'function' ? Utility.getUserTier() : null;
+            const nextTier = window.Utility && typeof Utility.getUserNextTier === 'function' ? Utility.getUserNextTier() : null;
 
             if (!currentTier) return;
 
-            // Tier Visuals
+            // Visuals
             const tierIcon = currentTier.icon || pageSetting.defaultTierIcon;
-            document.getElementById('pf-ui-tier-icon').src = tierIcon;
+            document.getElementById('pf-ui-tier-main-icon').src = tierIcon;
 
             const tierNameEl = document.getElementById('pf-ui-tier-name');
             tierNameEl.innerText = currentTier.name;
-            if (currentTier.color) tierNameEl.style.color = currentTier.color;
-
-            // Update main avatar badge too
-            const avatarBadge = document.querySelector('.avatar-tier-icon');
-            if (avatarBadge) {
-                avatarBadge.src = tierIcon;
-                avatarBadge.style.display = 'block';
+            if (currentTier.color) {
+                tierNameEl.style.color = currentTier.color;
+                document.getElementById('pf-ui-prog-fill').style.backgroundColor = currentTier.color;
+            } else {
+                tierNameEl.style.color = 'var(--theme-primary, #3b82f6)';
+                document.getElementById('pf-ui-prog-fill').style.backgroundColor = 'var(--theme-primary, #3b82f6)';
             }
 
-            // Calculation
-            const stats = data.crmUser?.statisticsData || data.crmUser?.statistics || {};
-            const totalSpending = stats.spending?.total || 0;
-            const currency = stats.spending?.currency || "THB";
+            document.getElementById('pf-ui-tier-level').innerText = currentTier.level || 1;
 
-            const elCurr = document.getElementById('pf-ui-prog-curr');
-            const elMax = document.getElementById('pf-ui-prog-max');
+            const stats = data.crmUser?.statisticsData || data.crmUser?.statistics || {};
+            const spendTotal = stats.spending?.total || 0;
+            const orderTotal = stats.orders?.total || 0;
+
             const elFill = document.getElementById('pf-ui-prog-fill');
             const elMsg = document.getElementById('pf-ui-prog-msg');
 
-            if (currentTier.color) elFill.style.backgroundColor = currentTier.color;
-
             if (nextTier != null) {
-                const nextValue = nextTier.requireSpending || 1;
-                let percent = (totalSpending / nextValue) * 100;
-                if (percent > 100) percent = 100; // Can overflow if update is scheduled
+                let reqInfo = { type: "total_spending", current: spendTotal, require: nextTier.requireSpending || 1 };
 
-                elCurr.innerText = totalSpending.toLocaleString();
-                elMax.innerText = nextValue.toLocaleString();
+                if (window.Utility && typeof Utility.getRequireTier === 'function') {
+                    reqInfo = Utility.getRequireTier(nextTier);
+                }
 
-                // Anim
-                setTimeout(() => { elFill.style.width = `${percent}%`; }, 100);
+                const reqLabel = reqInfo.type === 'total_spending' ? getDictText('reqSpend') : getDictText('reqOrder');
+                document.getElementById('pf-ui-req-type').innerText = reqLabel;
 
-                const diff = nextValue - totalSpending;
+                // ใช้ Math.floor ปัดเป็นจำนวนเต็มตาม requirement
+                const currentVal = Math.floor(reqInfo.current);
+                const reqVal = Math.floor(reqInfo.require);
+
+                let percent = (currentVal / reqVal) * 100;
+                if (percent > 100) percent = 100;
+
+                document.getElementById('pf-ui-prog-curr').innerText = currentVal.toLocaleString();
+                document.getElementById('pf-ui-prog-max').innerText = reqVal.toLocaleString();
+                document.getElementById('pf-ui-prog-percent').innerText = `${Math.floor(percent)}%`;
+
+                setTimeout(() => { elFill.style.width = `${percent}%`; }, 300);
+
+                const diff = reqVal - currentVal;
                 if (diff > 0) {
-                    elMsg.innerText = getDictText('tierNextMsg', { diff: diff.toLocaleString(), currency: currency });
+                    const unit = reqInfo.type === 'total_spending' ? (currentLang === 'En' ? 'THB' : 'บาท') : (currentLang === 'En' ? 'Orders' : 'ออเดอร์');
+                    elMsg.innerText = getDictText('tierRemaining', { diff: Math.floor(diff).toLocaleString(), unit: unit });
                 } else {
-                    elMsg.innerText = "Maximized / Awaiting daily rank update";
+                    elMsg.innerText = "Processing upgrade...";
                 }
             } else {
-                // Maxed Out
-                elCurr.innerText = totalSpending.toLocaleString();
-                elMax.innerText = "MAX";
-                setTimeout(() => { elFill.style.width = `100%`; }, 100);
+                // Max Tier
+                document.getElementById('pf-ui-req-type').innerText = "MAX TIER";
+                document.getElementById('pf-ui-prog-curr').innerText = Math.floor(spendTotal).toLocaleString();
+                document.getElementById('pf-ui-prog-max').innerText = "MAX";
+                document.getElementById('pf-ui-prog-percent').innerText = "100%";
 
+                setTimeout(() => { elFill.style.width = `100%`; }, 300);
                 elMsg.innerText = getDictText('tierMaxMsg');
-                elMsg.style.color = currentTier.color || 'var(--theme-primary, #2563eb)';
-                elMsg.style.fontWeight = 'bold';
+                elMsg.style.color = currentTier.color || 'var(--theme-primary, #3b82f6)';
             }
         }
 
@@ -1145,23 +1508,29 @@
                 if (!addr) addr = addresses[0];
 
                 let html = `
-                    <h4 class="pf-addr-name">
-                        ${addr.contactPerson || '-'} 
-                        ${addr.isDefault ? `<span class="pf-addr-badge">Default</span>` : ''}
-                    </h4>
-                    <p class="pf-addr-phone"><i class="fa-solid fa-phone text-xs mr-1"></i> ${addr.contactPhone || '-'}</p>
-                    <p class="pf-addr-detail">
-                        ${addr.addressLine1 || ''} ${addr.addressLine2 || ''}<br>
-                        ${addr.subdistrict || ''} ${addr.district || ''} ${addr.province || ''} ${addr.postalCode || ''}
-                    </p>
+                    <div class="pf-addr-container">
+                        <div class="pf-addr-header-row">
+                            <div class="pf-addr-icon-wrap"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="pf-addr-contact-info">
+                                <h4>${addr.contactPerson || '-'}</h4>
+                                <p><i class="fa-solid fa-phone" style="font-size: 0.65rem;"></i> ${addr.contactPhone || '-'}</p>
+                            </div>
+                        </div>
+                        <p class="pf-addr-full-text">
+                            ${addr.addressLine1 || ''} ${addr.addressLine2 || ''}<br>
+                            ${addr.subdistrict || ''} ${addr.district || ''} ${addr.province || ''} ${addr.postalCode || ''}
+                        </p>
+                    </div>
                 `;
                 content.innerHTML = html;
                 btnTxt.innerText = getDictText('editBtn');
             } else {
                 content.innerHTML = `
-                    <div class="pf-addr-empty">
-                        <img src="${pageSetting.emptyAddressImg}" alt="empty">
-                        <p>${getDictText('addrEmpty')}</p>
+                    <div class="pf-addr-container">
+                        <div class="pf-addr-empty">
+                            <img src="${pageSetting.emptyAddressImg}" alt="empty">
+                            <p>${getDictText('addrEmpty')}</p>
+                        </div>
                     </div>
                 `;
                 btnTxt.innerText = getDictText('addrAddBtn');
@@ -1173,16 +1542,37 @@
         // ==========================================
 
         window.togglePointDetail = function () {
+            isPointExpanded = !isPointExpanded;
             const panel = document.getElementById('pf-pt-detail-panel');
             const icon = document.getElementById('pf-pt-expand-icon');
+            const btn = document.getElementById('pf-btn-point-detail');
 
-            panel.classList.toggle('pf-expanded');
-            icon.classList.toggle('pf-open');
+            if (isPointExpanded) {
+                panel.classList.add('pf-expanded');
+                icon.classList.add('pf-open');
+                btn.classList.add('active');
+            } else {
+                panel.classList.remove('pf-expanded');
+                icon.classList.remove('pf-open');
+                btn.classList.remove('active');
+            }
         }
 
         window.handleEditProfile = function () {
             if (window.PageManager) {
                 PageManager.openModal("editProfile", {}, async (res) => {
+                    console.log("callback----me profile----", res);
+                    if (res && res.success) {
+                        await window.updateProfile();
+                    }
+                });
+            } else {
+                console.log("Mock: Edit Profile clicked");
+            }
+        }
+        window.handleDailyCheckin = function () {
+            if (window.PageManager) {
+                PageManager.openModal("dailyCheckin", {}, async (res) => {
                     if (res && res.success) {
                         await window.updateProfile();
                     }
@@ -1208,16 +1598,14 @@
             }
         }
 
-        // Global functions requested by user
         window.updateProfile = async function () {
             if (window.PageManager) PageManager.showLoading("Updating...");
             try {
-                if (window.CrmApi && typeof CrmApi.getProfile === 'function') {
-                    await CrmApi.getProfile();
-                    await CrmApi.getAddress(); // Update addresses
-                }
-                // Re-initialize with updated crmData
-                if (window.crmData) initProfilePage();
+
+                await CrmApi.getProfile();
+                await CrmApi.getAddress();
+                initProfilePage();
+
             } catch (e) {
                 console.error("Failed to update profile", e);
                 if (window.PageManager) PageManager.showToast("Failed to update", "❌");
@@ -1226,14 +1614,22 @@
             }
         }
 
+        // ==========================================
+        // 4. CUSTOM WIDGET FUNCTION (Added)
+        // ==========================================
         window.customWidget = function (widgetId, html) {
-            const el = document.getElementById(widgetId);
-            if (el) {
-                el.innerHTML = html;
+
+            // custom-widget-1
+            // custom-widget-2
+            // custom-widget-3
+
+            const widgetContainer = document.getElementById(widgetId);
+            if (widgetContainer) {
+                widgetContainer.innerHTML = html;
             } else {
-                console.warn(`Widget slot ${widgetId} not found.`);
+                console.warn("Custom widget placeholder not found: " + widgetId);
             }
-        }
+        };
 
         // Kick off initialization
         initProfilePage();

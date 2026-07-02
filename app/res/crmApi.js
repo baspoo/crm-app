@@ -246,6 +246,7 @@
             /** @type { ResponseData } */
             const res = await AppApi.callApiInternal('crm_updateProfile', { profile: profile });
             if (res.result.code == 200) {
+                console.log("OK upload done");
                 currentData.crmUser = res.result.data.crmUser;
                 return currentData.crmUser;
             }
@@ -262,6 +263,21 @@
             return await this.updateProfile(profile);
         },
 
+
+        searchAddress: async function (province, amphoe, district) {
+
+            // `?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}&district=${encodeURIComponent(district)}`
+            // `?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}&district=${encodeURIComponent(district)}`
+            const path = "getAddress";
+            if (province) path += `?province=${encodeURIComponent(province)}`;
+            if (amphoe) path += `&amphoe=${encodeURIComponent(amphoe)}`;
+            if (district) path += `&district=${encodeURIComponent(district)}`;
+
+            /** @type { ResponseData } */
+            const res = await AppApi.callApiOpen(path, {});
+            if (!res.ok) throw new Error("API Error");
+            return await res.json();
+        },
 
 
         //** Address **/

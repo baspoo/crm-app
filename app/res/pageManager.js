@@ -55,9 +55,10 @@ window.PageManager = (function () {
             this.activeBot(show);
         },
 
-        activeTop: function (show) {
+        activeTop: function (show, showPoint = true) {
             const el = this._getHeader();
             if (el) el.style.display = show ? '' : 'none';
+            document.getElementById('header-right').style.display = showPoint ? '' : 'none';
             this.updateConsole();
         },
 
@@ -158,9 +159,9 @@ window.PageManager = (function () {
             if (!route) return console.error("Route not found:", pageKey);
 
             const defaultTitle = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
-            this.console.setTitle(defaultTitle);
+            this.console.setTitle(route.title ? route.title : defaultTitle);
 
-            this.console.activeTop(route.top);
+            this.console.activeTop(route.top, route.showPoint != undefined ? route.showPoint : true);
 
             if (htmlCache[pageKey] && appConfig.setting.cachePage) {
                 setInnerHTMLAndExecuteScripts(contentContainer, htmlCache[pageKey]);

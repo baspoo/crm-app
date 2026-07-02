@@ -36,6 +36,18 @@
             currency: 'currency',
             _event: 'event',
             gacha: 'gacha'
+        },
+        bannerActions: {
+            none: 'none',
+            url: 'url',
+            iframe: 'iframe',
+            detail: 'detail',
+            game: 'game',
+            reward: 'reward',
+            page: 'page',
+            leaderboard: 'leaderboard',
+            ocr: 'ocr',
+            qrHunt: 'qrHunt'
         }
     };
 
@@ -55,7 +67,7 @@
             sessionStorage.setItem('VERSION', Date.now());
             location.reload();
         }
-        
+
     });
 
 
@@ -67,6 +79,8 @@
         awake: async function () {
             //Tittle
             document.title = crmData.storeInfo.storeName;
+            this.getLanguage();
+
         },
 
         getDomainOrSubdomain: function () {
@@ -161,6 +175,41 @@
 
         startApp: async function () {
 
+            crmData.initializeData.form = {};
+            crmData.initializeData.form.profile = {
+                "company": {
+                    "en": "Company",
+                    "th": "บริษัท",
+                    "type": "textbox"
+                },
+                "salary": {
+                    "en": "Salary",
+                    "th": "เงินเดือน",
+                    "type": "numbox"
+                },
+                "role": {
+                    "en": "Role",
+                    "th": "หน้าที่",
+                    "type": "dropdown",
+                    "option": ["Dev", "Admin", "Member"]
+                },
+                "acceptPermission": {
+                    "en": "Permission",
+                    "th": "อนุญาติ",
+                    "type": "checkbox"
+                },
+                "skill": {
+                    "en": "Skill",
+                    "th": "ทักษะ",
+                    "type": "ratio",
+                    "option": ["Low", "Normal", "High"]
+                },
+                "duedate": {
+                    "en": "Due Date",
+                    "th": "วันส่องมอบ",
+                    "type": "datetime"
+                }
+            };
 
             if (crmData.user) {
                 // first time popup!..
@@ -204,6 +253,19 @@
             console.log("[Utility] Global Theme Applied.");
         },
 
+        setLanguage: function (language) {
+            crmData.language = language;
+            localStorage.setItem("CRM_LANG", language);
+        },
+        getLanguage: function () {
+            var language = localStorage.getItem("CRM_LANG");
+            if (!language) {
+                language = crmData?.initializeData?.defaultLanguage || "En";
+            }
+            crmData.language = language;
+            return language;
+        },
+
         getPoints: function () {
             var points = crmData?.crmUser?.user?.points || 0;
             return points;
@@ -239,25 +301,25 @@
             const stats = crmData.crmUser?.statisticsData || crmData.crmUser?.statistics || {};
             const spend = stats.spending?.total || 0; 
             const orders = stats.orders?.total || 0;
-            if(rule.ruleType === "total_spending"){
+            if (rule.ruleType === "total_spending") {
                 return {
-                    type : rule.ruleType,
-                    current : spend,
-                    require : rule.value
+                    type: rule.ruleType,
+                    current: spend,
+                    require: rule.value
                 };
             }
-            else if(rule.ruleType === "order_count"){
+            else if (rule.ruleType === "order_count") {
                 return {
-                    type : rule.ruleType,
-                    current : orders,
-                    require : rule.value
+                    type: rule.ruleType,
+                    current: orders,
+                    require: rule.value
                 };
             }
-            else{
+            else {
                 return {
-                    type : "none",
-                    current : 0,
-                    require : 0
+                    type: "none",
+                    current: 0,
+                    require: 0
                 };
             }
         },
@@ -354,13 +416,14 @@
             if (this.isGacha(reward)) {
                 var game = this.getRewardGameCampaign(reward);
                 if (game) {
-                    // OPEN GAME DETAIL PANEL...
+                    // OPEN GAME DETAIL PANEL ...
                 }
             }
             else {
                 PageManager.openModal("redeemReward", { id: reward.id }, (res) => {
                     if (res && res.success) {
                         if (callback != null) {
+                            // REFRESH REDEEM PAGE ...
                             callback();
                         }
                     }
@@ -387,6 +450,85 @@
             }
             return null;
         },
+
+        onBannerAction: function (banner) {
+
+            if (!banner) return;
+            if (!banner.action) {
+                if (banner.bannerUrl) {
+                    //** open URL */
+                }
+                return;
+            }
+            else if (banner.action.type) {
+                // none, url, iframe, detail, game, reward, page, leaderboard, ocr
+                var action = banner.action;
+
+                if (action.type === TYPES.bannerActions.iframe) {
+                    const url = action.url;
+                    const x = action.x || 90;
+                    const y = action.y || 90;
+                    PageManager.openIframe(url, x, y);
+                }
+
+                if (action.type === TYPES.bannerActions.game) {
+
+                    const gameId = action.gameId;
+                    const game = this.getGameCampaign(gameId);
+                    if (game) {
+                        PageManager.openModal("contentDetail", {
+                            game: game
+                        });
+                    }
+                }
+
+                if (action.type === TYPES.bannerActions.detail) {
+
+                    //const more = action.moreURL || banner.bannerUrl;
+                    PageManager.openModal("contentDetail", {
+                        banner: banner
+                    });
+                }
+
+                if (action.type === TYPES.bannerActions.reward) {
+                    const rewardId = action.rewardId;
+                    const reward = this.getReward(rewardId);
+                    if (reward) this.openRedeem(reward);
+                }
+
+                if (action.type === TYPES.bannerActions.page) {
+                    const pageName = action.pageName;
+                    const pageType = action.pageType;
+                    const payload = action.payload;
+                    if (pageType === "mainPage")
+                        PageManager.loadPage(pageName);
+                    else (pageType === "subPage")
+                    PageManager.openModal(pageName, payload);
+                }
+
+                if (action.type === TYPES.bannerActions.leaderboard) {
+                    const gameId = action.gameId;
+                    // goto leaderboard
+                }
+
+                if (action.type === TYPES.bannerActions.ocr) {
+                    const tag = action.tag;
+                    const labelName = action.labelName;
+                    const bannerImg = action.imageUrl || banner.imageUrl;
+                    PageManager.openModal("ocr", {
+                        tag: [tag],
+                        labelName: labelName,
+                        bannerImg: bannerImg
+                    });
+
+                }
+                if (action.type === TYPES.bannerActions.qrHunt) {
+                    const url = action.url || appConfig.iframe.qrHunt.path;
+                    PageManager.openIframe(url, 0, 0);
+                }
+            }
+        },
+
         /** @returns {GameCampaignData} */
         getGameCampaign: function (gameId) {
             var gameCampaigns = crmData.marketData?.gameCampaigns || [];
