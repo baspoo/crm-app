@@ -67,9 +67,9 @@ PageManager.hideLoading(   );
 
 
 
-[## Legacy Code ##]
 
-
+[## Requirement ##]
+สร้างหน้า สำหรับ เพิ่ม/ลบ แก้ไข
 
 
 
@@ -91,7 +91,7 @@ const addresses = crmData.crmUser.userAddresses;
     }
 ]
 
-
+สร้างใหม่ไม่มี id
 const newAddress = {
     contactPerson,
     addressLine1,
@@ -103,7 +103,8 @@ const newAddress = {
 };
 await crmApi.createAddress(newAddress);
 
-const newAddress = {
+อัพเดทมี id
+const updateAddress = {
     id,
     contactPerson,
     addressLine1,
@@ -113,14 +114,45 @@ const newAddress = {
     contactPhone,
     ..
 };
-await crmApi.updateAddress(newAddress);
+await crmApi.updateAddress(updateAddress);
 
 
 
 await crmApi.setDefaultAddress(address.id);
 
 
+
 await crmApi.onRemoveAddress(address.id);
+
+
+
+
+
+
+
+
+
+
+[## Legacy Code ##]
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
