@@ -175,6 +175,7 @@
 
         startApp: async function () {
 
+            /*
             crmData.initializeData.form = {};
             crmData.initializeData.form.profile = {
                 "company": {
@@ -210,6 +211,7 @@
                     "type": "datetime"
                 }
             };
+            */
 
             if (crmData.user) {
                 // first time popup!..
@@ -299,7 +301,7 @@
             if (!this.isTierReady() || !tier || !tier.rules || tier.rules.length == 0) return 0;
             const rule = tier.rules[0];
             const stats = crmData.crmUser?.statisticsData || crmData.crmUser?.statistics || {};
-            const spend = stats.spending?.total || 0; 
+            const spend = stats.spending?.total || 0;
             const orders = stats.orders?.total || 0;
             if (rule.ruleType === "total_spending") {
                 return {

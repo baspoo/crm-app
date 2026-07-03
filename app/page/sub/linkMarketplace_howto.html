@@ -902,12 +902,5 @@
         window.HowToLinkCtrl.init(payload, response);
     };
 
-    // สำหรับเทสแบบเปิดไฟล์ตรงๆ
-    if (!window.parent || window.parent === window) {
-        setTimeout(() => {
-            if (typeof window.onInit === 'function') {
-                window.onInit({}, {});
-            }
-        }, 200);
-    }
+
 </script>

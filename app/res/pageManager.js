@@ -13,10 +13,9 @@ window.PageManager = (function () {
     let currentIframeOnClose = null;
     let currentIframeResponse = null;
 
-    // --- ตัวแปรสำหรับจัดการ Modal Callback ---
-    let currentModalOnClose = null;
-    let currentModalResponse = null;
-    let modalCloseTimeout = null;
+    // --- ตัวแปรสำหรับจัดการ Modal Callback (ปรับเป็น Stack สำหรับซ้อนเลเยอร์) ---
+    let modalStack = [];
+
 
     // ฟังก์ชันสำคัญ: แปะ HTML และบังคับให้เบราว์เซอร์รันแท็ก <script>
     function setInnerHTMLAndExecuteScripts(element, htmlContent, useAnimation = true) {
@@ -186,17 +185,13 @@ window.PageManager = (function () {
 
 
         // --- ระบบ Modal (ลูกผสมระหว่าง loadPage และ openIframe) ---
+        // --- ระบบ Modal (แบบ Stack ซ้อนทับกัน A ล่าง B บน) ---
         openModal: async function (pageKey, payload = null, onclose = null, showCloseBtn = true) {
             const route = configRoutes[pageKey];
             if (!route) return console.error("Route not found for modal:", pageKey);
 
             const x = route.full ? 100 : route.x !== undefined ? Number(route.x) : 90;
             const y = route.full ? 100 : route.y !== undefined ? Number(route.y) : 90;
-
-            currentModalOnClose = onclose;
-            currentModalResponse = {};
-            window.currentModalPayload = payload;
-            window.currentModalResponse = currentModalResponse;
 
             // ชี้ไปที่ Container ที่เตรียมไว้แล้วใน console.html
             const container = document.getElementById('sys-modal-container');
@@ -210,7 +205,7 @@ window.PageManager = (function () {
 
             if (closeBtnEl) closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
 
-            // จัดการ Layout แบบเดียวกับ Iframe
+            // 1. จัดการขนาด Layout ให้ตรงกับ Modal ชั้นบนสุด
             if (x === 100 && y === 100) {
                 container.classList.add('fullscreen');
                 if (backdrop) backdrop.style.display = 'none';
@@ -223,9 +218,45 @@ window.PageManager = (function () {
                 if (backdrop) backdrop.style.display = 'block';
             }
 
-            // แสดงกล่องขึ้นมา และแสดงตัวโหลด
+            // แสดงกล่องขึ้นมา
             container.classList.add('show');
-            contentWrap.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#9ca3af;">กำลังโหลด...</div>';
+
+            // 2. ซ่อน Modal ชั้นล่าง (A) ถ้ามี เพื่อพัก State ไว้
+            if (modalStack.length > 0) {
+                const currentTop = modalStack[modalStack.length - 1];
+                currentTop.scrollTop = contentWrap.scrollTop; // จำตำแหน่ง Scroll
+                if (currentTop.element) currentTop.element.style.display = 'none'; // ซ่อน
+            }
+
+            // 3. สร้าง Layer ใหม่สำหรับ Modal ตัวใหม่ (B)
+            const newModalPage = document.createElement('div');
+            newModalPage.className = 'modal-page-instance';
+            newModalPage.style.width = '100%';
+            newModalPage.style.minHeight = '100%';
+            newModalPage.style.display = 'flex';
+            newModalPage.style.flexDirection = 'column';
+            newModalPage.style.position = 'relative';
+            newModalPage.style.backgroundColor = 'inherit';
+
+            // ใส่ตัวโหลดชั่วคราว
+            newModalPage.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; min-height: 200px; color:#9ca3af;">กำลังโหลด...</div>';
+            contentWrap.appendChild(newModalPage);
+            contentWrap.scrollTop = 0; // รีเซ็ต Scroll ให้ชั้นใหม่
+
+            // 4. บันทึก State ของชั้นนี้ลง Stack
+            const modalState = {
+                pageKey: pageKey,
+                element: newModalPage,
+                payload: payload,
+                response: { demo: true },
+                onClose: onclose,
+                scrollTop: 0
+            };
+            modalStack.push(modalState);
+
+            // เซ็ตตัวแปร Global ให้ชี้มาที่ Modal ชั้นบนสุด
+            window.currentModalPayload = modalState.payload;
+            window.currentModalResponse = modalState.response;
 
             try {
                 let html = appConfig.setting.cachePage ? htmlCache[pageKey] : null;
@@ -238,60 +269,99 @@ window.PageManager = (function () {
 
                 let processedHtml = html;
 
-                // ถอดเอาเฉพาะเนื้อหาใน <body> เพื่อรักษาสไตล์และโครงสร้าง (ป้องกัน css ทะลุ)
+                // ถอดเอาเฉพาะเนื้อหาใน <body> เพื่อรักษาสไตล์และโครงสร้าง
                 const bodyRegex = /<body([^>]*)>([\s\S]*?)<\/body>/i;
                 const bodyMatch = html.match(bodyRegex);
                 if (bodyMatch) {
-                    const bodyAttributes = bodyMatch[1];
                     const bodyContent = bodyMatch[2];
-                    processedHtml = `<div ${bodyAttributes} style="width:100%; min-height:100%; display:flex; flex-direction:column; position:relative; background-color:inherit;">${bodyContent}</div>`;
+                    processedHtml = bodyContent;
                 }
 
-                // สับสวิตช์ฆ่า Tailwind CDN ออกจากไฟล์ลูก ป้องกันการรีเซ็ตหน้าจอหลัก
+                // สับสวิตช์ฆ่า Tailwind CDN ออกจากไฟล์ลูก
                 processedHtml = processedHtml.replace(/<script[^>]*tailwindcss\.com[^>]*><\/script>/gi, '');
 
-                setInnerHTMLAndExecuteScripts(contentWrap, processedHtml, false);
+                // แปะลงใน Layer ใหม่
+                setInnerHTMLAndExecuteScripts(newModalPage, processedHtml, false);
 
                 // ส่ง Callback ให้ทำงานเมื่อโหลดเสร็จ
                 setTimeout(() => {
                     if (typeof window.onInit === 'function') {
-                        console.log("onInit call");
-                        window.onInit(payload, currentModalResponse);
+                        console.log("onInit call for", pageKey);
+                        console.log("onInit call payload", modalState.payload);
+                        console.log("onInit call response", modalState.response);
+                        window.onInit(modalState.payload, modalState.response);
                     }
                 }, 50);
 
             } catch (e) {
                 console.error("Modal Error:", e);
-                contentWrap.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #ef4444;">เกิดข้อผิดพลาดในการโหลดหน้า</div>';
+                newModalPage.innerHTML = '<div style="padding: 2.5rem; text-align: center; color: #ef4444;">เกิดข้อผิดพลาดในการโหลดหน้า</div>';
             }
         },
 
         closeModal: function () {
+            if (modalStack.length === 0) return;
+
             const container = document.getElementById('sys-modal-container');
             const backdrop = document.getElementById('sys-modal-backdrop');
             const contentWrap = document.getElementById('sys-modal-content-wrap');
 
-            if (container) container.classList.remove('show');
-            if (backdrop) backdrop.style.display = 'none';
+            // 1. ดึง Modal ตัวบนสุด (B) ออกจาก Stack
+            const topModal = modalStack.pop();
 
-            // ล้างหน้าจอหลังซ่อนเสร็จแล้ว
-            setTimeout(() => {
-                if (contentWrap) contentWrap.innerHTML = '';
-            }, 300);
+            // ลบ DOM Layer ตัวบนสุดทิ้ง
+            if (topModal.element) topModal.element.remove();
 
-            if (typeof currentModalOnClose === 'function') {
+            // เรียก Callback ของตัวบนสุด
+            if (typeof topModal.onClose === 'function') {
                 try {
-                    currentModalOnClose(currentModalResponse);
+                    topModal.onClose(topModal.response);
                 } catch (e) {
                     console.error("Error executing modal onclose callback:", e);
                 }
             }
 
-            currentModalOnClose = null;
-            currentModalResponse = null;
+            // เคลียร์ Global ก่อน
             window.currentModalPayload = null;
             window.currentModalResponse = null;
-            window.oninit = null;
+            window.onInit = null;
+
+            // 2. ตรวจสอบว่ายังมีชั้นล่าง (A) รออยู่หรือไม่
+            if (modalStack.length > 0) {
+                const previousModal = modalStack[modalStack.length - 1];
+
+                // แสดงผลชั้นล่าง (A) กลับมา
+                if (previousModal.element) previousModal.element.style.display = 'flex';
+
+                // คืนตำแหน่ง Scroll ให้ชั้นล่าง
+                if (contentWrap) contentWrap.scrollTop = previousModal.scrollTop;
+
+                // คืนค่า Global ให้กลับเป็นของชั้นล่าง (A)
+                window.currentModalPayload = previousModal.payload;
+                window.currentModalResponse = previousModal.response;
+
+                // ปรับขนาด Container ให้ตรงกับ Config ของชั้นล่าง
+                const route = configRoutes[previousModal.pageKey];
+                if (route) {
+                    const x = route.full ? 100 : route.x !== undefined ? Number(route.x) : 90;
+                    const y = route.full ? 100 : route.y !== undefined ? Number(route.y) : 90;
+                    if (x === 100 && y === 100) {
+                        container.classList.add('fullscreen');
+                        if (backdrop) backdrop.style.display = 'none';
+                    } else {
+                        container.classList.remove('fullscreen');
+                        container.style.width = `${x}%`;
+                        container.style.height = `${y}%`;
+                        container.style.top = `${(100 - y) / 2}%`;
+                        container.style.left = `${(100 - x) / 2}%`;
+                        if (backdrop) backdrop.style.display = 'block';
+                    }
+                }
+            } else {
+                // ไม่มีเหลือแล้ว (ปิด A) ปิดกล่องใหญ่ทิ้งกลับหน้า Home
+                if (container) container.classList.remove('show');
+                if (backdrop) backdrop.style.display = 'none';
+            }
         },
 
 

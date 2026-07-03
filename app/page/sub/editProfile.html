@@ -407,205 +407,202 @@
 </div>
 
 <script>
-    // ==========================================
-    // 1. PAGE SETTINGS
-    // ==========================================
-    /*
-      pageSetting ควบคุมการแสดงผลเบื้องต้นและ Fallback
-    */
-    const pageSetting = {
-        defaultAvatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-    };
+    (() => {
+        // ==========================================
+        // 1. PAGE SETTINGS
+        // ==========================================
+        /*
+          pageSetting ควบคุมการแสดงผลเบื้องต้นและ Fallback
+        */
+        const pageSetting = {
+            defaultAvatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+        };
 
-    // ==========================================
-    // 2. DICTIONARY & I18N
-    // ==========================================
-    const i18nDict = {
-        Th: {
-            titleBasic: "ข้อมูลพื้นฐาน",
-            titleAdditional: "ข้อมูลเพิ่มเติม",
-            titleSettings: "การตั้งค่า",
-            labelEmail: "อีเมล (Email)",
-            labelGender: "เพศ (Gender)",
-            genderNone: "ไม่ระบุ",
-            genderMale: "ชาย (Male)",
-            genderFemale: "หญิง (Female)",
-            genderOther: "อื่นๆ (Other)",
-            labelBirthday: "วันเกิด (Birthday)",
-            labelConsent: "รับข่าวสารโปรโมชั่น",
-            descConsent: "ยินยอมรับข่าวสารและสิทธิพิเศษจากแบรนด์",
-            labelLanguage: "ภาษาของระบบ (Language)",
-            langCurrentTh: "ปัจจุบัน: ภาษาไทย",
-            langCurrentEn: "Current: English",
-            btnCancel: "ยกเลิก",
-            btnSave: "บันทึกข้อมูล",
-            langConfirmTitle: "เปลี่ยนภาษา",
-            langConfirmDesc: "คุณต้องการเปลี่ยนภาษาของระบบและรีเฟรชหน้าต่างใหม่หรือไม่?",
-            saveSuccessTitle: "สำเร็จ",
-            saveSuccessDesc: "อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว",
-            saveErrorTitle: "ผิดพลาด",
-            saveErrorDesc: "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง"
-        },
-        En: {
-            titleBasic: "Basic Information",
-            titleAdditional: "Additional Information",
-            titleSettings: "Settings",
-            labelEmail: "Email",
-            labelGender: "Gender",
-            genderNone: "Not specified",
-            genderMale: "Male",
-            genderFemale: "Female",
-            genderOther: "Other",
-            labelBirthday: "Birthday",
-            labelConsent: "Receive Promotions",
-            descConsent: "Consent to receive news and privileges from the brand",
-            labelLanguage: "System Language",
-            langCurrentTh: "ปัจจุบัน: ภาษาไทย",
-            langCurrentEn: "Current: English",
-            btnCancel: "Cancel",
-            btnSave: "Save Profile",
-            langConfirmTitle: "Change Language",
-            langConfirmDesc: "Do you want to change the system language and refresh the page?",
-            saveSuccessTitle: "Success",
-            saveSuccessDesc: "Profile updated successfully.",
-            saveErrorTitle: "Error",
-            saveErrorDesc: "Cannot save profile. Please try again."
-        }
-    };
-
-    // ==========================================
-    // 3. GLOBAL VARIABLES
-    // ==========================================
-    let currentLang = 'Th';
-    let responseRef = null;
-    let customFieldsSchema = {};
-
-    // Keys สำหรับข้อมูลระบบ
-    let keys = {
-        gender: 'gender',
-        birthday: 'birthday',
-        consent_notif: 'consentnotif'
-    };
-
-    // ==========================================
-    // 4. CORE FUNCTIONS
-    // ==========================================
-
-    // ฟังก์ชันอัปเดตข้อความตามภาษาที่เลือก
-    function applyLanguage() {
-        const dict = i18nDict[currentLang] || i18nDict['Th'];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (dict[key]) {
-                el.innerText = dict[key];
+        // ==========================================
+        // 2. DICTIONARY & I18N
+        // ==========================================
+        const i18nDict = {
+            Th: {
+                titleBasic: "ข้อมูลพื้นฐาน",
+                titleAdditional: "ข้อมูลเพิ่มเติม",
+                titleSettings: "การตั้งค่า",
+                labelEmail: "อีเมล (Email)",
+                labelGender: "เพศ (Gender)",
+                genderNone: "ไม่ระบุ",
+                genderMale: "ชาย (Male)",
+                genderFemale: "หญิง (Female)",
+                genderOther: "อื่นๆ (Other)",
+                labelBirthday: "วันเกิด (Birthday)",
+                labelConsent: "รับข่าวสารโปรโมชั่น",
+                descConsent: "ยินยอมรับข่าวสารและสิทธิพิเศษจากแบรนด์",
+                labelLanguage: "ภาษาของระบบ (Language)",
+                langCurrentTh: "ปัจจุบัน: ภาษาไทย",
+                langCurrentEn: "Current: English",
+                btnCancel: "ยกเลิก",
+                btnSave: "บันทึกข้อมูล",
+                langConfirmTitle: "เปลี่ยนภาษา",
+                langConfirmDesc: "คุณต้องการเปลี่ยนภาษาของระบบและรีเฟรชหน้าต่างใหม่หรือไม่?",
+                saveSuccessTitle: "สำเร็จ",
+                saveSuccessDesc: "อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว",
+                saveErrorTitle: "ผิดพลาด",
+                saveErrorDesc: "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง"
+            },
+            En: {
+                titleBasic: "Basic Information",
+                titleAdditional: "Additional Information",
+                titleSettings: "Settings",
+                labelEmail: "Email",
+                labelGender: "Gender",
+                genderNone: "Not specified",
+                genderMale: "Male",
+                genderFemale: "Female",
+                genderOther: "Other",
+                labelBirthday: "Birthday",
+                labelConsent: "Receive Promotions",
+                descConsent: "Consent to receive news and privileges from the brand",
+                labelLanguage: "System Language",
+                langCurrentTh: "ปัจจุบัน: ภาษาไทย",
+                langCurrentEn: "Current: English",
+                btnCancel: "Cancel",
+                btnSave: "Save Profile",
+                langConfirmTitle: "Change Language",
+                langConfirmDesc: "Do you want to change the system language and refresh the page?",
+                saveSuccessTitle: "Success",
+                saveSuccessDesc: "Profile updated successfully.",
+                saveErrorTitle: "Error",
+                saveErrorDesc: "Cannot save profile. Please try again."
             }
-        });
+        };
 
-        // อัปเดตคำอธิบายภาษาปัจจุบัน
-        const langDesc = document.getElementById('ep-lang-desc');
-        if (langDesc) {
-            langDesc.innerText = currentLang === 'En' ? dict.langCurrentEn : dict.langCurrentTh;
-        }
-    }
+        // ==========================================
+        // 3. GLOBAL VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let responseRef = null;
+        let customFieldsSchema = {};
 
-    // ฟังก์ชันโหลดข้อมูลเข้าฟอร์ม
-    function populateData() {
-        const crmData = window.crmData || (window.parent && window.parent.crmData);
-        if (!crmData) {
-            console.error("[EditProfile] crmData is missing!");
-            return;
-        }
+        // Keys สำหรับข้อมูลระบบ
+        let keys = {
+            gender: 'gender',
+            birthday: 'birthday',
+            consent_notif: 'consentnotif'
+        };
 
-        const user = crmData.crmUser?.user || {};
-        const customValues = user.customFields || {};
+        // ==========================================
+        // 4. CORE FUNCTIONS
+        // ==========================================
 
-        // ตั้งค่า Keys จากระบบ (ถ้ามี)
-        const sysTypes = window.TYPES || (window.parent && window.parent.TYPES);
-        if (sysTypes && sysTypes.customFields) {
-            keys.gender = sysTypes.customFields.gender || keys.gender;
-            keys.birthday = sysTypes.customFields.birthday || keys.birthday;
-            keys.consent_notif = sysTypes.customFields.consent_notif || keys.consent_notif;
-        }
-
-        // 1. Basic Read-only Info
-        document.getElementById('ep-avatar').src = user.pictureUrl || pageSetting.defaultAvatar;
-        document.getElementById('ep-name').innerText = user.displayName || 'Unknown';
-        document.getElementById('ep-phone').querySelector('span').innerText = user.phone || '-';
-
-        // 2. Standard Form Fields
-        document.getElementById('ep-input-email').value = user.email || '';
-        document.getElementById('ep-input-gender').value = customValues[keys.gender] || 'none';
-
-        // จัดการรูปแบบวันที่ (สมมติว่าเป็น YYYY-MM-DD หรือ ISO String)
-        let bdayRaw = customValues[keys.birthday];
-        if (bdayRaw) {
-            // พยายามตัดแค่ YYYY-MM-DD
-            try {
-                if (typeof bdayRaw === 'string' && bdayRaw.includes('T')) {
-                    bdayRaw = bdayRaw.split('T')[0];
+        // ฟังก์ชันอัปเดตข้อความตามภาษาที่เลือก
+        function applyLanguage() {
+            const dict = i18nDict[currentLang] || i18nDict['Th'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
                 }
-                document.getElementById('ep-input-birthday').value = bdayRaw;
-            } catch (e) { console.error(e); }
+            });
+
+            // อัปเดตคำอธิบายภาษาปัจจุบัน
+            const langDesc = document.getElementById('ep-lang-desc');
+            if (langDesc) {
+                langDesc.innerText = currentLang === 'En' ? dict.langCurrentEn : dict.langCurrentTh;
+            }
         }
 
-        // 3. Settings Toggles
-        const consentVal = customValues[keys.consent_notif];
-        document.getElementById('ep-input-consent').checked = (consentVal === true || consentVal === "true");
+        // ฟังก์ชันโหลดข้อมูลเข้าฟอร์ม
+        function populateData() {
+            const crmData = window.crmData || (window.parent && window.parent.crmData);
+            if (!crmData) {
+                console.error("[EditProfile] crmData is missing!");
+                return;
+            }
 
-        // Language
-        currentLang = (crmData.language === 'En') ? 'En' : 'Th';
-        document.getElementById('ep-input-language').checked = (currentLang === 'En');
+            const user = crmData.crmUser?.user || {};
+            const customValues = user.customFields || {};
 
-        // 4. Dynamic Custom Fields
-        customFieldsSchema = crmData.initializeData?.form?.profile || {};
-        renderDynamicFields(customValues);
+            // ตั้งค่า Keys จากระบบ (ถ้ามี)
+            const sysTypes = window.TYPES || (window.parent && window.parent.TYPES);
+            if (sysTypes && sysTypes.customFields) {
+                keys.gender = sysTypes.customFields.gender || keys.gender;
+                keys.birthday = sysTypes.customFields.birthday || keys.birthday;
+                keys.consent_notif = sysTypes.customFields.consent_notif || keys.consent_notif;
+            }
 
-        // อัปเดตภาษา UI
-        applyLanguage();
-    }
+            // 1. Basic Read-only Info
+            document.getElementById('ep-avatar').src = user.pictureUrl || pageSetting.defaultAvatar;
+            document.getElementById('ep-name').innerText = user.displayName || 'Unknown';
+            document.getElementById('ep-phone').querySelector('span').innerText = user.phone || '-';
 
-    // ฟังก์ชันสร้าง Dynamic Fields จาก Schema
-    function renderDynamicFields(currentCustomValues) {
+            // 2. Standard Form Fields
+            document.getElementById('ep-input-email').value = user.email || '';
+            document.getElementById('ep-input-gender').value = customValues[keys.gender] || 'none';
 
+            // จัดการรูปแบบวันที่ (สมมติว่าเป็น YYYY-MM-DD หรือ ISO String)
+            let bdayRaw = customValues[keys.birthday];
+            if (bdayRaw) {
+                // พยายามตัดแค่ YYYY-MM-DD
+                try {
+                    if (typeof bdayRaw === 'string' && bdayRaw.includes('T')) {
+                        bdayRaw = bdayRaw.split('T')[0];
+                    }
+                    document.getElementById('ep-input-birthday').value = bdayRaw;
+                } catch (e) { console.error(e); }
+            }
 
-        console.log(currentCustomValues);
-        console.log(customFieldsSchema);
+            // 3. Settings Toggles
+            const consentVal = customValues[keys.consent_notif];
+            document.getElementById('ep-input-consent').checked = (consentVal === true || consentVal === "true");
 
-        const container = document.getElementById('ep-dynamic-fields-container');
-        const card = document.getElementById('ep-custom-card');
-        container.innerHTML = '';
+            // Language
+            currentLang = (crmData.language === 'En') ? 'En' : 'Th';
+            document.getElementById('ep-input-language').checked = (currentLang === 'En');
 
-        const fieldKeys = Object.keys(customFieldsSchema);
-        if (fieldKeys.length === 0) {
-            card.classList.add('ep-hidden');
-            return;
+            // 4. Dynamic Custom Fields
+            customFieldsSchema = crmData.initializeData?.form?.profile || {};
+            renderDynamicFields(customValues);
+
+            // อัปเดตภาษา UI
+            applyLanguage();
         }
 
-        card.classList.remove('ep-hidden');
+        // ฟังก์ชันสร้าง Dynamic Fields จาก Schema
+        function renderDynamicFields(currentCustomValues) {
 
-        fieldKeys.forEach(key => {
-            const fieldDef = customFieldsSchema[key];
-            const type = fieldDef.type || 'textbox';
-            const options = fieldDef.option || [];
+            const container = document.getElementById('ep-dynamic-fields-container');
+            const card = document.getElementById('ep-custom-card');
+            container.innerHTML = '';
 
-            // ดึง Label ตามภาษาปัจจุบัน ถ้าไม่มีใช้ fallback
-            const langKey = currentLang.toLowerCase();
-            const labelText = fieldDef[langKey] || fieldDef.en || fieldDef.th || key;
+            const fieldKeys = Object.keys(customFieldsSchema);
+            if (fieldKeys.length === 0) {
+                card.classList.add('ep-hidden');
+                return;
+            }
 
-            const value = currentCustomValues[key] !== undefined ? currentCustomValues[key] : '';
+            card.classList.remove('ep-hidden');
 
-            let fieldHtml = '';
+            fieldKeys.forEach(key => {
+                const fieldDef = customFieldsSchema[key];
+                const type = fieldDef.type || 'textbox';
+                const options = fieldDef.option || [];
 
-            if (type === 'textbox') {
-                fieldHtml = `<input type="text" id="dyn_${key}" class="ep-input" value="${value}" placeholder="...">`;
-            } else if (type === 'numbox') {
-                fieldHtml = `<input type="number" id="dyn_${key}" class="ep-input" value="${value}" placeholder="0">`;
-            } else if (type === 'dropdown') {
-                let opts = options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('');
-                fieldHtml = `<select id="dyn_${key}" class="ep-select"><option value="">-- Select --</option>${opts}</select>`;
-            } else if (type === 'checkbox') {
-                const checked = (value === true || value === "true") ? 'checked' : '';
-                fieldHtml = `
+                // ดึง Label ตามภาษาปัจจุบัน ถ้าไม่มีใช้ fallback
+                const langKey = currentLang.toLowerCase();
+                const labelText = fieldDef[langKey] || fieldDef.en || fieldDef.th || key;
+
+                const value = currentCustomValues[key] !== undefined ? currentCustomValues[key] : '';
+
+                let fieldHtml = '';
+
+                if (type === 'textbox') {
+                    fieldHtml = `<input type="text" id="dyn_${key}" class="ep-input" value="${value}" placeholder="...">`;
+                } else if (type === 'numbox') {
+                    fieldHtml = `<input type="number" id="dyn_${key}" class="ep-input" value="${value}" placeholder="0">`;
+                } else if (type === 'dropdown') {
+                    let opts = options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('');
+                    fieldHtml = `<select id="dyn_${key}" class="ep-select"><option value="">-- Select --</option>${opts}</select>`;
+                } else if (type === 'checkbox') {
+                    const checked = (value === true || value === "true") ? 'checked' : '';
+                    fieldHtml = `
                     <div class="ep-toggle-wrap" style="padding: 0.75rem 1rem;">
                         <span class="ep-toggle-label" style="font-weight: 500;">${labelText}</span>
                         <label class="ep-switch">
@@ -613,174 +610,168 @@
                             <span class="ep-slider"></span>
                         </label>
                     </div>`;
-            } else if (type === 'ratio' || type === 'radio') {
-                let radios = options.map(o => `
+                } else if (type === 'ratio' || type === 'radio') {
+                    let radios = options.map(o => `
                     <label class="ep-radio-item">
                         <input type="radio" name="dyn_${key}" value="${o}" ${value === o ? 'checked' : ''}>
                         <span>${o}</span>
                     </label>
                 `).join('');
-                fieldHtml = `<div class="ep-radio-group">${radios}</div>`;
-            } else if (type === 'datetime') {
-                // หากค่ามีเวลารวมอยู่ด้วย ให้ตัดเหลือแค่วันที่ (รองรับ input type date)
-                let dateVal = value;
-                if (typeof dateVal === 'string' && dateVal.includes('T')) dateVal = dateVal.split('T')[0];
-                fieldHtml = `<input type="date" id="dyn_${key}" class="ep-input" value="${dateVal}">`;
-            }
+                    fieldHtml = `<div class="ep-radio-group">${radios}</div>`;
+                } else if (type === 'datetime') {
+                    // หากค่ามีเวลารวมอยู่ด้วย ให้ตัดเหลือแค่วันที่ (รองรับ input type date)
+                    let dateVal = value;
+                    if (typeof dateVal === 'string' && dateVal.includes('T')) dateVal = dateVal.split('T')[0];
+                    fieldHtml = `<input type="date" id="dyn_${key}" class="ep-input" value="${dateVal}">`;
+                }
 
-            const group = document.createElement('div');
-            group.className = 'ep-form-group';
+                const group = document.createElement('div');
+                group.className = 'ep-form-group';
 
-            // ถ้าเป็น checkbox เราสร้าง label เข้าไปใน wrap แล้ว ไม่ต้องสร้าง label ซ้ำ
-            if (type !== 'checkbox') {
-                group.innerHTML = `<label class="ep-label">${labelText}</label>${fieldHtml}`;
-            } else {
-                group.innerHTML = fieldHtml;
-            }
+                // ถ้าเป็น checkbox เราสร้าง label เข้าไปใน wrap แล้ว ไม่ต้องสร้าง label ซ้ำ
+                if (type !== 'checkbox') {
+                    group.innerHTML = `<label class="ep-label">${labelText}</label>${fieldHtml}`;
+                } else {
+                    group.innerHTML = fieldHtml;
+                }
 
-            container.appendChild(group);
-        });
-    }
+                container.appendChild(group);
+            });
+        }
 
-    // ==========================================
-    // 5. ACTIONS
-    // ==========================================
+        // ==========================================
+        // 5. ACTIONS
+        // ==========================================
 
-    // Handle Language Toggle
-    window.handleLanguageChange = function (checkbox) {
-        const dict = i18nDict[currentLang];
-        const newLang = checkbox.checked ? 'En' : 'Th';
+        // Handle Language Toggle
+        window.handleLanguageChange = function (checkbox) {
+            const dict = i18nDict[currentLang];
+            const newLang = checkbox.checked ? 'En' : 'Th';
 
-        if (window.PageManager && typeof PageManager.showConfirm === 'function') {
-            PageManager.showConfirm(
-                dict.langConfirmTitle,
-                dict.langConfirmDesc,
-                "🌍",
-                () => {
-                    // กดยืนยัน: เปลี่ยนภาษาและ Refresh
-                    if (window.Utility && typeof Utility.setLanguage === 'function') {
-                        Utility.setLanguage(newLang);
+            if (window.PageManager && typeof PageManager.showConfirm === 'function') {
+                PageManager.showConfirm(
+                    dict.langConfirmTitle,
+                    dict.langConfirmDesc,
+                    "🌍",
+                    () => {
+                        // กดยืนยัน: เปลี่ยนภาษาและ Refresh
+                        if (window.Utility && typeof Utility.setLanguage === 'function') {
+                            Utility.setLanguage(newLang);
+                        }
+                        window.location.reload();
+                    },
+                    () => {
+                        // กดยกเลิก: Revert switch state
+                        checkbox.checked = !checkbox.checked;
                     }
+                );
+            } else {
+                // กรณีไม่มี PageManager (ทดสอบ)
+                if (confirm(dict.langConfirmDesc)) {
+                    if (window.Utility && typeof Utility.setLanguage === 'function') Utility.setLanguage(newLang);
                     window.location.reload();
-                },
-                () => {
-                    // กดยกเลิก: Revert switch state
+                } else {
                     checkbox.checked = !checkbox.checked;
                 }
-            );
-        } else {
-            // กรณีไม่มี PageManager (ทดสอบ)
-            if (confirm(dict.langConfirmDesc)) {
-                if (window.Utility && typeof Utility.setLanguage === 'function') Utility.setLanguage(newLang);
-                window.location.reload();
-            } else {
-                checkbox.checked = !checkbox.checked;
             }
-        }
-    };
+        };
 
-    window.handleCancel = function () {
-        if (window.PageManager && typeof PageManager.closeModal === 'function') {
-            PageManager.closeModal();
-        } else {
-            console.log("Mock: Close Modal");
-        }
-    };
-
-    window.handleSave = async function () {
-        if (window.PageManager) PageManager.showLoading('Saving...');
-        const dict = i18nDict[currentLang];
-
-        try {
-            // สร้าง Payload Object
-            const body = {
-                email: document.getElementById('ep-input-email').value.trim(),
-                customFields: {}
-            };
-
-            // ดึงค่า Standard Custom Fields
-            body.customFields[keys.gender] = document.getElementById('ep-input-gender').value;
-
-            const bday = document.getElementById('ep-input-birthday').value;
-            if (bday) body.customFields[keys.birthday] = bday;
-
-            body.customFields[keys.consent_notif] = document.getElementById('ep-input-consent').checked;
-
-            // ดึงค่า Dynamic Custom Fields
-            Object.keys(customFieldsSchema).forEach(key => {
-                const type = customFieldsSchema[key].type || 'textbox';
-
-                if (type === 'checkbox') {
-                    const el = document.getElementById(`dyn_${key}`);
-                    if (el) body.customFields[key] = el.checked;
-                } else if (type === 'ratio' || type === 'radio') {
-                    const el = document.querySelector(`input[name="dyn_${key}"]:checked`);
-                    if (el) body.customFields[key] = el.value;
-                } else {
-                    const el = document.getElementById(`dyn_${key}`);
-                    if (el) body.customFields[key] = el.value;
-                }
-            });
-
-            // เรียก API อัปเดต Profile
-            if (window.CrmApi && typeof CrmApi.updateProfile === 'function') {
-                const res = await CrmApi.updateProfile(body);
-                if (window.PageManager) PageManager.hideLoading();
-
-                if (res) {
-                    // สำเร็จ
-                    if (responseRef) responseRef.success = true;
-
-                    if (window.PageManager) {
-                        PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
-                            PageManager.closeModal();
-                        });
-                    }
-                } else {
-                    // กรณี Error จาก API
-                    throw new Error(res?.result?.message || 'Update failed');
-                }
+        window.handleCancel = function () {
+            if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                PageManager.closeModal();
             } else {
-                // Mock Saving
-                console.log("Mock Saving Payload:", body);
-                setTimeout(() => {
+                console.log("Mock: Close Modal");
+            }
+        };
+
+        window.handleSave = async function () {
+            if (window.PageManager) PageManager.showLoading('Saving...');
+            const dict = i18nDict[currentLang];
+
+            try {
+                // สร้าง Payload Object
+                const body = {
+                    email: document.getElementById('ep-input-email').value.trim(),
+                    customFields: {}
+                };
+
+                // ดึงค่า Standard Custom Fields
+                body.customFields[keys.gender] = document.getElementById('ep-input-gender').value;
+
+                const bday = document.getElementById('ep-input-birthday').value;
+                if (bday) body.customFields[keys.birthday] = bday;
+
+                body.customFields[keys.consent_notif] = document.getElementById('ep-input-consent').checked;
+
+                // ดึงค่า Dynamic Custom Fields
+                Object.keys(customFieldsSchema).forEach(key => {
+                    const type = customFieldsSchema[key].type || 'textbox';
+
+                    if (type === 'checkbox') {
+                        const el = document.getElementById(`dyn_${key}`);
+                        if (el) body.customFields[key] = el.checked;
+                    } else if (type === 'ratio' || type === 'radio') {
+                        const el = document.querySelector(`input[name="dyn_${key}"]:checked`);
+                        if (el) body.customFields[key] = el.value;
+                    } else {
+                        const el = document.getElementById(`dyn_${key}`);
+                        if (el) body.customFields[key] = el.value;
+                    }
+                });
+
+                // เรียก API อัปเดต Profile
+                if (window.CrmApi && typeof CrmApi.updateProfile === 'function') {
+                    const res = await CrmApi.updateProfile(body);
                     if (window.PageManager) PageManager.hideLoading();
-                    if (responseRef) responseRef.success = true;
-                    if (window.PageManager) {
-                        PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
-                            PageManager.closeModal();
-                        });
+
+                    if (res) {
+                        // สำเร็จ
+                        if (responseRef) responseRef.success = true;
+
+                        console.log("responseRef", responseRef);
+                        if (window.PageManager) {
+                            PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
+                                PageManager.closeModal();
+                            });
+                        }
+                    } else {
+                        // กรณี Error จาก API
+                        throw new Error(res?.result?.message || 'Update failed');
                     }
-                }, 800);
+                } else {
+                    // Mock Saving
+                    console.log("Mock Saving Payload:", body);
+                    setTimeout(() => {
+                        if (window.PageManager) PageManager.hideLoading();
+                        if (responseRef) responseRef.success = true;
+                        if (window.PageManager) {
+                            PageManager.showComplete(dict.saveSuccessTitle, dict.saveSuccessDesc, null, () => {
+                                PageManager.closeModal();
+                            });
+                        }
+                    }, 800);
+                }
+
+            } catch (error) {
+                console.error("Save Profile Error:", error);
+                if (window.PageManager) PageManager.hideLoading();
+                if (window.PageManager) {
+                    PageManager.showFailed(dict.saveErrorTitle, dict.saveErrorDesc);
+                } else {
+                    alert(dict.saveErrorDesc);
+                }
             }
+        };
 
-        } catch (error) {
-            console.error("Save Profile Error:", error);
-            if (window.PageManager) PageManager.hideLoading();
-            if (window.PageManager) {
-                PageManager.showFailed(dict.saveErrorTitle, dict.saveErrorDesc);
-            } else {
-                alert(dict.saveErrorDesc);
-            }
-        }
-    };
+        // ==========================================
+        // 6. SYSTEM BINDING (INIT)
+        // ==========================================
+        window.onInit = function (payload, response) {
+            console.log("[OPEN-onInit] EditProfile : ", payload);
+            responseRef = response;
+            populateData();
+        };
 
-    // ==========================================
-    // 6. SYSTEM BINDING (INIT)
-    // ==========================================
-    window.onInit = function (payload, response) {
-        console.log("EditProfile Initialized with payload:", payload);
-        responseRef = response;
-        populateData();
-    };
 
-    // Fallback for standalone testing without iframe/PageManager
-    if (!window.parent || window.parent === window) {
-        setTimeout(() => {
-            if (typeof window.onInit === 'function') {
-                window.onInit({}, {});
-            }
-        }, 300);
-    }
-
+    })();
 </script>

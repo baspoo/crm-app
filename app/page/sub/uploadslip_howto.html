@@ -283,7 +283,8 @@
         <div class="htu-intro">
             <h1 class="htu-title" data-i18n="introTitle">คู่มือการส่งใบเสร็จ</h1>
             <p class="htu-subtitle" data-i18n="introDesc">เพื่อให้การตรวจสอบเป็นไปอย่างรวดเร็ว
-                <br>รบกวนตรวจสอบรูปถ่ายตามคำแนะนำด้านล่างนี้นะครับ</p>
+                <br>รบกวนตรวจสอบรูปถ่ายตามคำแนะนำด้านล่างนี้นะครับ
+            </p>
         </div>
 
         <!-- ==========================================
@@ -418,7 +419,8 @@
                     <h3 class="error" data-i18n="wrong4Title">ห้ามถ่ายเบลอ แสงจ้า</h3>
                 </div>
                 <p data-i18n="wrong4Desc">เช็กความชัดเจนก่อนส่งนิดนึงนะครับ
-                    <b>หากตัวหนังสือหรือยอดเงินเบลอจนอ่านไม่ได้</b> ระบบจะไม่สามารถตรวจสอบข้อมูลได้</p>
+                    <b>หากตัวหนังสือหรือยอดเงินเบลอจนอ่านไม่ได้</b> ระบบจะไม่สามารถตรวจสอบข้อมูลได้
+                </p>
             </div>
         </div>
 
@@ -437,197 +439,194 @@
 </div>
 
 <script>
-    window.HowToUploadCtrl = (function () {
-        // ==========================================
-        // 1. SETTINGS & ASSETS
-        // ==========================================
-        const pageSetting = {
-            // Asset paths (Will prepend currentResPath dynamically)
-            imgCorrect1: '/upload_tutorials/correct_1.png',
-            imgCorrect2: '/upload_tutorials/correct_2.png',
-            imgCorrect3: '/upload_tutorials/correct_3.png',
-            imgCorrect4: '/upload_tutorials/correct_4.png',
-            imgWrong1: '/upload_tutorials/wrong_1.png',
-            imgWrong2: '/upload_tutorials/wrong_2.png',
-            imgWrong3: '/upload_tutorials/wrong_3.png',
-            imgWrong4: '/upload_tutorials/wrong_4.png'
-        };
-
-        // ==========================================
-        // 2. LANGUAGE DICTIONARY
-        // ==========================================
-        const i18nDict = {
-            Th: {
-                introTitle: "คู่มือการส่งใบเสร็จ",
-                introDesc: "เพื่อให้การตรวจสอบเป็นไปอย่างรวดเร็ว <br>รบกวนตรวจสอบรูปถ่ายตามคำแนะนำด้านล่างนี้นะครับ",
-                doTitle: "วิธีถ่ายใบเสร็จที่ถูกต้อง ✨",
-                doSub: "ตัวอย่างการส่งที่ระบบตรวจสอบได้ทันที",
-                correct1Title: "ใบเสร็จหน้าตรง ชัดเจน",
-                correct1Desc: "วางใบเสร็จในแนวตั้ง ถ่ายรูปหน้าตรง ให้เห็นตัวอักษรและยอดเงินชัดเจนทุกบรรทัด",
-                correct2Title: "ใบเสร็จยาว แบ่งถ่ายได้",
-                correct2Desc: "สามารถถ่ายแยกหลายรูปได้ในครั้งเดียวครับ แต่ต้องเห็น \"หัวใบเสร็จ\" ชัดเจนในรูปแรกเสมอ",
-                correct3Title: "พับให้เห็น หัว-ท้าย",
-                correct3Desc: "ถ้าใบเสร็จยาวมาก พับช่วงกลางได้ครับ เพื่อให้เห็นข้อมูลสำคัญทั้งส่วนบนและส่วนล่างในรูปเดียว",
-                dontTitle: "ตัวอย่างที่ระบบไม่รองรับ ⚠️",
-                dontSub: "หลีกเลี่ยงการถ่ายลักษณะนี้ เพื่อความรวดเร็ว",
-                wrong1Title: "ห้ามถ่ายหลายใบพร้อมกัน",
-                wrong1Desc: "รบกวน <b>ส่งทีละ 1 ใบเสร็จ ต่อการทำรายการ 1 ครั้ง</b> นะครับ เพราะระบบอัตโนมัติจะไม่สามารถแยกยอดเงินจากใบเสร็จหลายใบที่อยู่ในรูปเดียวกันได้",
-                wrong2Title: "ห้ามถ่ายติดแค่บางส่วน",
-                wrong2Desc: "ภาพถ่าย <b>ต้องเห็นใบเสร็จเต็มใบชัดเจน</b> ตั้งแต่ชื่อร้านค้าด้านบนไปจนถึงยอดชำระเงินด้านล่างสุด หากข้อมูลขาดหายไป ระบบจะไม่สามารถอนุมัติได้",
-                wrong3Title: "ห้ามถ่ายเบี้ยว ขอบขาด",
-                wrong3Desc: "รบกวนถ่ายให้ <b>เห็นขอบกระดาษใบเสร็จครบทั้ง 4 ด้าน</b> และจัดวางในแนวตรง ไม่เอียงจนเกินไป เพื่อยืนยันว่าเป็นใบเสร็จที่สมบูรณ์",
-                wrong4Title: "ห้ามถ่ายเบลอ แสงจ้า",
-                wrong4Desc: "เช็กความชัดเจนก่อนส่งนิดนึงนะครับ <b>หากตัวหนังสือหรือยอดเงินเบลอจนอ่านไม่ได้</b> ระบบจะไม่สามารถตรวจสอบข้อมูลได้",
-                ctaTitle: "เข้าใจครบถ้วนแล้วนะ?",
-                ctaSub: "ถ่ายใบเสร็จให้ชัดเจน แล้วกดปุ่มด้านล่างได้เลย!",
-                ctaBtn: "รับทราบและเริ่มอัปโหลด"
-            },
-            En: {
-                introTitle: "Receipt Submission Guide",
-                introDesc: "To ensure quick verification process,<br>please review the photo guidelines below.",
-                doTitle: "Correct Photo Guidelines ✨",
-                doSub: "Examples of submissions that can be instantly verified.",
-                correct1Title: "Straight & Clear",
-                correct1Desc: "Place the receipt vertically and take a straight photo, ensuring all text and the total amount are clearly visible.",
-                correct2Title: "Too long? Split it",
-                correct2Desc: "You can take multiple photos at once. Just make sure the 'header' of the receipt is clearly visible in the first photo.",
-                correct3Title: "Fold to show Top-Bottom",
-                correct3Desc: "If the receipt is very long, you can fold the middle section to show both the top and bottom details in a single photo.",
-                dontTitle: "Unsupported Examples ⚠️",
-                dontSub: "Avoid these to ensure quick verification.",
-                wrong1Title: "No multiple receipts",
-                wrong1Desc: "Please <b>submit 1 receipt per transaction</b>. The automated system cannot separate amounts from multiple receipts in the same photo.",
-                wrong2Title: "No partial photos",
-                wrong2Desc: "The photo <b>must show the full receipt clearly</b>, from the store name at the top to the total amount at the bottom. If any part is missing, it cannot be approved.",
-                wrong3Title: "No skewed or cropped",
-                wrong3Desc: "Please ensure <b>all 4 edges of the receipt are visible</b> and aligned straight. This confirms it is a complete and valid receipt.",
-                wrong4Title: "No blurry or glare",
-                wrong4Desc: "Please check the clarity before submitting. <b>If the text or amount is too blurry to read</b>, the system cannot verify the data.",
-                ctaTitle: "Understood everything?",
-                ctaSub: "Take a clear photo of your receipt and click the button below!",
-                ctaBtn: "I understand, start uploading"
-            }
-        };
-
-        let currentLang = 'Th';
-        let responseRef = null;
-
-        // ==========================================
-        // 3. CORE LOGIC
-        // ==========================================
-        function applyLang() {
-            const dict = i18nDict[currentLang] || i18nDict['Th'];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dict[key]) el.innerHTML = dict[key];
-            });
-        }
-
-        function setupImages() {
-            const headerImg = document.getElementById('htu-header-img');
-            let resPath = 'page/assets'; // Default fallback
-            let cacheVer = '';
-
-            if (window.appData && window.appData.resPath) {
-                resPath = window.appData.resPath;
-            }
-            if (window.htmlCacheVersion) {
-                cacheVer = `?v=${window.htmlCacheVersion}`;
-            }
-
-            // 1. Header Image (Try custom asset first, then default)
-            if (window.Utility && typeof Utility.getAssetPath === 'function') {
-                const hPath = Utility.getAssetPath('uploadslip_howtoHeader') || Utility.getAssetPath('uploadHeader');
-                if (hPath) {
-                    headerImg.src = hPath;
-                    headerImg.style.display = 'block';
-                }
-            } else if (window.appData && window.appData.customAssets && window.appData.customAssets.uploadHeader) {
-                headerImg.src = window.appData.customAssets.uploadHeader;
-                headerImg.style.display = 'block';
-            }
-
-            // 2. Tutorial Images
-            document.getElementById('img-c1').src = `${resPath}${pageSetting.imgCorrect1}${cacheVer}`;
-            document.getElementById('img-c2').src = `${resPath}${pageSetting.imgCorrect2}${cacheVer}`;
-            document.getElementById('img-c3').src = `${resPath}${pageSetting.imgCorrect3}${cacheVer}`;
-            document.getElementById('img-c4').src = `${resPath}${pageSetting.imgCorrect4}${cacheVer}`;
-
-            document.getElementById('img-w1').src = `${resPath}${pageSetting.imgWrong1}${cacheVer}`;
-            document.getElementById('img-w2').src = `${resPath}${pageSetting.imgWrong2}${cacheVer}`;
-            document.getElementById('img-w3').src = `${resPath}${pageSetting.imgWrong3}${cacheVer}`;
-            document.getElementById('img-w4').src = `${resPath}${pageSetting.imgWrong4}${cacheVer}`;
-        }
-
-        function setupScrollReveal() {
-            const observerOptions = {
-                root: null, // use viewport
-                rootMargin: '0px 0px -50px 0px', // trigger slightly before it enters viewport completely
-                threshold: 0.1
+    (() => {
+        window.HowToUploadCtrl = (function () {
+            // ==========================================
+            // 1. SETTINGS & ASSETS
+            // ==========================================
+            const pageSetting = {
+                // Asset paths (Will prepend currentResPath dynamically)
+                imgCorrect1: '/upload_tutorials/correct_1.png',
+                imgCorrect2: '/upload_tutorials/correct_2.png',
+                imgCorrect3: '/upload_tutorials/correct_3.png',
+                imgCorrect4: '/upload_tutorials/correct_4.png',
+                imgWrong1: '/upload_tutorials/wrong_1.png',
+                imgWrong2: '/upload_tutorials/wrong_2.png',
+                imgWrong3: '/upload_tutorials/wrong_3.png',
+                imgWrong4: '/upload_tutorials/wrong_4.png'
             };
 
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target); // Animate only once
-                    }
+            // ==========================================
+            // 2. LANGUAGE DICTIONARY
+            // ==========================================
+            const i18nDict = {
+                Th: {
+                    introTitle: "คู่มือการส่งใบเสร็จ",
+                    introDesc: "เพื่อให้การตรวจสอบเป็นไปอย่างรวดเร็ว <br>รบกวนตรวจสอบรูปถ่ายตามคำแนะนำด้านล่างนี้นะครับ",
+                    doTitle: "วิธีถ่ายใบเสร็จที่ถูกต้อง ✨",
+                    doSub: "ตัวอย่างการส่งที่ระบบตรวจสอบได้ทันที",
+                    correct1Title: "ใบเสร็จหน้าตรง ชัดเจน",
+                    correct1Desc: "วางใบเสร็จในแนวตั้ง ถ่ายรูปหน้าตรง ให้เห็นตัวอักษรและยอดเงินชัดเจนทุกบรรทัด",
+                    correct2Title: "ใบเสร็จยาว แบ่งถ่ายได้",
+                    correct2Desc: "สามารถถ่ายแยกหลายรูปได้ในครั้งเดียวครับ แต่ต้องเห็น \"หัวใบเสร็จ\" ชัดเจนในรูปแรกเสมอ",
+                    correct3Title: "พับให้เห็น หัว-ท้าย",
+                    correct3Desc: "ถ้าใบเสร็จยาวมาก พับช่วงกลางได้ครับ เพื่อให้เห็นข้อมูลสำคัญทั้งส่วนบนและส่วนล่างในรูปเดียว",
+                    dontTitle: "ตัวอย่างที่ระบบไม่รองรับ ⚠️",
+                    dontSub: "หลีกเลี่ยงการถ่ายลักษณะนี้ เพื่อความรวดเร็ว",
+                    wrong1Title: "ห้ามถ่ายหลายใบพร้อมกัน",
+                    wrong1Desc: "รบกวน <b>ส่งทีละ 1 ใบเสร็จ ต่อการทำรายการ 1 ครั้ง</b> นะครับ เพราะระบบอัตโนมัติจะไม่สามารถแยกยอดเงินจากใบเสร็จหลายใบที่อยู่ในรูปเดียวกันได้",
+                    wrong2Title: "ห้ามถ่ายติดแค่บางส่วน",
+                    wrong2Desc: "ภาพถ่าย <b>ต้องเห็นใบเสร็จเต็มใบชัดเจน</b> ตั้งแต่ชื่อร้านค้าด้านบนไปจนถึงยอดชำระเงินด้านล่างสุด หากข้อมูลขาดหายไป ระบบจะไม่สามารถอนุมัติได้",
+                    wrong3Title: "ห้ามถ่ายเบี้ยว ขอบขาด",
+                    wrong3Desc: "รบกวนถ่ายให้ <b>เห็นขอบกระดาษใบเสร็จครบทั้ง 4 ด้าน</b> และจัดวางในแนวตรง ไม่เอียงจนเกินไป เพื่อยืนยันว่าเป็นใบเสร็จที่สมบูรณ์",
+                    wrong4Title: "ห้ามถ่ายเบลอ แสงจ้า",
+                    wrong4Desc: "เช็กความชัดเจนก่อนส่งนิดนึงนะครับ <b>หากตัวหนังสือหรือยอดเงินเบลอจนอ่านไม่ได้</b> ระบบจะไม่สามารถตรวจสอบข้อมูลได้",
+                    ctaTitle: "เข้าใจครบถ้วนแล้วนะ?",
+                    ctaSub: "ถ่ายใบเสร็จให้ชัดเจน แล้วกดปุ่มด้านล่างได้เลย!",
+                    ctaBtn: "รับทราบและเริ่มอัปโหลด"
+                },
+                En: {
+                    introTitle: "Receipt Submission Guide",
+                    introDesc: "To ensure quick verification process,<br>please review the photo guidelines below.",
+                    doTitle: "Correct Photo Guidelines ✨",
+                    doSub: "Examples of submissions that can be instantly verified.",
+                    correct1Title: "Straight & Clear",
+                    correct1Desc: "Place the receipt vertically and take a straight photo, ensuring all text and the total amount are clearly visible.",
+                    correct2Title: "Too long? Split it",
+                    correct2Desc: "You can take multiple photos at once. Just make sure the 'header' of the receipt is clearly visible in the first photo.",
+                    correct3Title: "Fold to show Top-Bottom",
+                    correct3Desc: "If the receipt is very long, you can fold the middle section to show both the top and bottom details in a single photo.",
+                    dontTitle: "Unsupported Examples ⚠️",
+                    dontSub: "Avoid these to ensure quick verification.",
+                    wrong1Title: "No multiple receipts",
+                    wrong1Desc: "Please <b>submit 1 receipt per transaction</b>. The automated system cannot separate amounts from multiple receipts in the same photo.",
+                    wrong2Title: "No partial photos",
+                    wrong2Desc: "The photo <b>must show the full receipt clearly</b>, from the store name at the top to the total amount at the bottom. If any part is missing, it cannot be approved.",
+                    wrong3Title: "No skewed or cropped",
+                    wrong3Desc: "Please ensure <b>all 4 edges of the receipt are visible</b> and aligned straight. This confirms it is a complete and valid receipt.",
+                    wrong4Title: "No blurry or glare",
+                    wrong4Desc: "Please check the clarity before submitting. <b>If the text or amount is too blurry to read</b>, the system cannot verify the data.",
+                    ctaTitle: "Understood everything?",
+                    ctaSub: "Take a clear photo of your receipt and click the button below!",
+                    ctaBtn: "I understand, start uploading"
+                }
+            };
+
+            let currentLang = 'Th';
+            let responseRef = null;
+
+            // ==========================================
+            // 3. CORE LOGIC
+            // ==========================================
+            function applyLang() {
+                const dict = i18nDict[currentLang] || i18nDict['Th'];
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (dict[key]) el.innerHTML = dict[key];
                 });
-            }, observerOptions);
-
-            document.querySelectorAll('.htu-reveal').forEach(el => {
-                observer.observe(el);
-            });
-        }
-
-        return {
-            init: function (payload, response) {
-                responseRef = response; // เก็บ reference เพื่ออัปเดตข้อมูลกลับไปตอนปิด
-
-                // Set Language
-                if (window.crmData && window.crmData.language) {
-                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
-                } else if (window.appData && window.appData.language) {
-                    currentLang = window.appData.language === 'En' ? 'En' : 'Th';
-                }
-
-                applyLang();
-                setupImages();
-
-                // Delay setup scroll reveal slightly to ensure DOM is fully rendered in Modal
-                setTimeout(setupScrollReveal, 100);
-            },
-
-            finish: function () {
-                // อัปเดต Response ก่อนปิด เพื่อให้หน้าหลักรู้ว่าดูจบแล้ว (ถ้าต้องการใช้)
-                if (responseRef) {
-                    responseRef.tutorialCompleted = true;
-                    responseRef.action = 'proceed_to_upload';
-                }
-
-                // สั่งปิด Modal ผ่าน PageManager
-                if (window.PageManager && typeof PageManager.closeModal === 'function') {
-                    PageManager.closeModal();
-                } else {
-                    console.log("Mock Close Modal: Tutorial Completed.");
-                }
             }
+
+            function setupImages() {
+                const headerImg = document.getElementById('htu-header-img');
+                let resPath = 'page/assets'; // Default fallback
+                let cacheVer = '';
+
+                if (window.appData && window.appData.resPath) {
+                    resPath = window.appData.resPath;
+                }
+                if (window.htmlCacheVersion) {
+                    cacheVer = `?v=${window.htmlCacheVersion}`;
+                }
+
+                // 1. Header Image (Try custom asset first, then default)
+                if (window.Utility && typeof Utility.getAssetPath === 'function') {
+
+                    const hPath = Utility.getAssetPath('uploadslip_howtoHeader') || Utility.getAssetPath('uploadHeader');
+                    console.log(hPath);
+                    if (hPath) {
+                        headerImg.src = hPath;
+                        headerImg.style.display = 'block';
+                    }
+                } else if (window.appData && window.appData.customAssets && window.appData.customAssets.uploadHeader) {
+                    headerImg.src = window.appData.customAssets.uploadHeader;
+                    headerImg.style.display = 'block';
+                }
+
+                // 2. Tutorial Images
+                document.getElementById('img-c1').src = `${resPath}${pageSetting.imgCorrect1}${cacheVer}`;
+                document.getElementById('img-c2').src = `${resPath}${pageSetting.imgCorrect2}${cacheVer}`;
+                document.getElementById('img-c3').src = `${resPath}${pageSetting.imgCorrect3}${cacheVer}`;
+                document.getElementById('img-c4').src = `${resPath}${pageSetting.imgCorrect4}${cacheVer}`;
+
+                document.getElementById('img-w1').src = `${resPath}${pageSetting.imgWrong1}${cacheVer}`;
+                document.getElementById('img-w2').src = `${resPath}${pageSetting.imgWrong2}${cacheVer}`;
+                document.getElementById('img-w3').src = `${resPath}${pageSetting.imgWrong3}${cacheVer}`;
+                document.getElementById('img-w4').src = `${resPath}${pageSetting.imgWrong4}${cacheVer}`;
+            }
+
+            function setupScrollReveal() {
+                const observerOptions = {
+                    root: null, // use viewport
+                    rootMargin: '0px 0px -50px 0px', // trigger slightly before it enters viewport completely
+                    threshold: 0.1
+                };
+
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target); // Animate only once
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.htu-reveal').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+
+            return {
+                init: function (payload, response) {
+                    responseRef = response; // เก็บ reference เพื่ออัปเดตข้อมูลกลับไปตอนปิด
+
+                    // Set Language
+                    if (window.crmData && window.crmData.language) {
+                        currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                    } else if (window.appData && window.appData.language) {
+                        currentLang = window.appData.language === 'En' ? 'En' : 'Th';
+                    }
+
+                    applyLang();
+                    setupImages();
+
+                    // Delay setup scroll reveal slightly to ensure DOM is fully rendered in Modal
+                    setTimeout(setupScrollReveal, 100);
+                },
+
+                finish: function () {
+                    // อัปเดต Response ก่อนปิด เพื่อให้หน้าหลักรู้ว่าดูจบแล้ว (ถ้าต้องการใช้)
+                    if (responseRef) {
+                        responseRef.tutorialCompleted = true;
+                        responseRef.action = 'proceed_to_upload';
+                    }
+
+                    // สั่งปิด Modal ผ่าน PageManager
+                    if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                        PageManager.closeModal();
+                    } else {
+                        console.log("Mock Close Modal: Tutorial Completed.");
+                    }
+                }
+            };
+        })();
+
+        // ==========================================
+        // 4. BIND TO PARENT SYSTEM
+        // ==========================================
+        window.onInit = function (payload, response) {
+            console.log("[OPEN-onInit] Upload HowTo : ", payload);
+            window.HowToUploadCtrl.init(payload, response);
         };
+
     })();
-
-    // ==========================================
-    // 4. BIND TO PARENT SYSTEM
-    // ==========================================
-    window.onInit = function (payload, response) {
-        window.HowToUploadCtrl.init(payload, response);
-    };
-
-    // สำหรับเทสแบบเปิดไฟล์ตรงๆ
-    if (!window.parent || window.parent === window) {
-        setTimeout(() => {
-            if (typeof window.onInit === 'function') {
-                window.onInit({}, {});
-            }
-        }, 200);
-    }
 </script>

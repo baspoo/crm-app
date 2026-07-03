@@ -377,13 +377,13 @@
 
         //## IndexedDB ##
         // 1. ฟังก์ชันเปิดฐานข้อมูล และล้างข้อมูลทันทีหาก APP_VERSION เปลี่ยน
-        let db;
-        function openHTMLCacheDB(APP_VERSION) {
+        async function openHTMLCacheDB(APP_VERSION) {
             return new Promise((resolve, reject) => {
                 const dbName = 'CRM_Page_Cache_DB';
                 const request = indexedDB.open(dbName);
-
+                console.log("open");
                 request.onsuccess = (e) => {
+                    console.log("success");
                     const db = e.target.result;
 
                     // อ่านเวอร์ชันที่เคยบันทึกไว้ในเครื่องผู้ใช้มาเทียบกับเวอร์ชันปัจจุบัน
@@ -414,6 +414,7 @@
 
                 // ส่วนนี้จะทำงานเฉพาะตอนที่สร้างฐานข้อมูลครั้งแรก หรือหลังจากถูกลบไป
                 request.onupgradeneeded = (e) => {
+                    console.log("upgrade");
                     const db = e.target.result;
                     if (!db.objectStoreNames.contains('pages')) {
                         db.createObjectStore('pages', { keyPath: 'pageKey' });
@@ -423,7 +424,11 @@
                     }
                 };
 
-                request.onerror = (e) => reject(e.target.error);
+                request.onerror = (e) => {
+                    console.log("error");
+                    reject(e.target.error);
+                };
+                console.log("open-b");
             });
         }
         // 2. ฟังก์ชันดึงและบันทึกข้อมูล (นำไปแทนที่โค้ดเดิมของคุณ)
