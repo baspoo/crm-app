@@ -1,0 +1,119 @@
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+จึงห้ามมี tag HTML เต็มรูปแบบในไฟล์ ให้มีเฉพาะ code สำหรับดึงไปใส่ในหน้าหลักผ่าน innerHTML เท่านั้น
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+[## Code Structure ##]
+รับค่าเข้าด้วย window.onInit แบบนี้ และเก็บ response เอาไว้เป็น ref สำหรับส่งค่ากลับ
+window.onInit = function(payload, response) {
+  PageNameCtr.init();
+};
+
+ปิด code ทั้งหมดด้วย LIFF เพื่อป้องกันไม่ให้ code ชนกันในหน้าอื่นๆที่อยู่ global
+รอเรียก init จาก window.onInit เข้ามาทำงานต่อ
+PageNameCtr {
+    init();
+}();
+
+
+[## สำคัญ ##]
+1. ห้ามใช้ Tailwind เปลี่ยนไปใช้ CSS ธรรมดา
+2. มันต้องไม่เป็นไฟล์ HTML แบบเต็มยศ มันจะเป็นค่าที่เอาไปใช้ใน inner html อยู่แล้ว
+-----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+[## Requirement ##]
+-----------------------------------------------------------------------------------------
+
+ 
+const offset = 0;
+const limit = 20;
+const res = await CrmApi.getEarnedPoints(limit, offset);
+EarnedPointsTransactionData {
+    id: number;
+    orderId: string;
+    channel: string;  // shopee, lazada, tiktok, own_channel, other
+    amount: number;
+    points: number;
+    status: string; // pending , approved
+    orderStatus: string;
+    orderDate: string;
+    customerName: string;
+    customerPhone: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+
+
+const offset = 0;
+const limit = 20;
+const res = await CrmApi.getDeductPoints(limit, offset);
+DeductionHistoryTransactionData {
+    id: number;
+    transaction_id: string;
+    reference_id: string;
+    points_deducted: number;
+    points_before: number;
+    points_after: number;
+    reason: string;
+    metadata: MetaData;
+    status: string;
+    created_at: string;
+}
+
+const deductName = Utility.getTransactionName(DeductionHistoryTransactionData);
+
+
+
+
+
+
+
+
+
+
+
+
+

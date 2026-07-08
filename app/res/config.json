@@ -71,7 +71,7 @@
         "contentDetail": {
             "path": "page/sub/contentDetail.html",
             "anim": "fade-in",
-            "full": true
+            "full": false
         },
         "expiring": {
             "path": "page/sub/expiring.html",
@@ -91,17 +91,19 @@
         "qrcode": {
             "path": "page/sub/qrcode.html",
             "anim": "fade-in",
-            "full": true
+            "full": false,
+            "x": 80,
+            "y": 65
         },
         "rank": {
             "path": "page/sub/rank.html",
             "anim": "fade-in",
-            "full": true
+            "full": false
         },
         "redeemReward": {
             "path": "page/sub/redeemReward.html",
             "anim": "fade-in",
-            "full": true
+            "full": false
         },
         "shipping": {
             "path": "page/sub/shipping.html",

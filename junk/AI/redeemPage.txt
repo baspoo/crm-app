@@ -1,28 +1,7 @@
 
 
-[FORM]
+[FORM] สร้างหน้า RedeemReward
 -----------------------------------------------------------------------------------------
-
-
-
-
-นี้คือหน้า page เดิมใช้สำหรับเปิดใน iframe ที่ใช้งานไม่ได้แล้ว
-ให้เปลี่ยนเป็นระบบใหม่ทั้งหมด  สำหรับนำไป inner เข้าหน้าหลักเหมือนกับหน้าอื่นๆ ในโปรเจ็คใหม่นี้ 
-วิเคาะห์การทำงานเดิมของหน้านี้และเปลี่ยน โครงสร้างให้สามารภทำงานได้เหมือนเดิม โดยใช้ระบบเรียก api ใหม่
-เปลี่ยนโครงสร้าง css สร้าง pageSetting สำหรับตั้งค่า และอื่นๆที่จำเป็น
-ยกเลิกการใช้ tailwind ใน code ให้เขียนแปลงเป็น css 100%
-
-ใช้ Utility.getAssetPath("xxxxxx"); สำหรับ load image path โดยใช้ key เดิม
-
-
-รับค่าเข้าด้วย window.onInit แบบนี้ และเก็บ response เอาไว้เป็น ref สำหรับส่งค่ากลับ
-window.onInit = function(payload, response) {
-    console.log("ได้รับ Payload:", payload);
-    // เซ็ตข้อมูลกลับได้ผ่าน response
-    response.status = "ok";
-};
-
-
 
 
 [## Basic ##]
@@ -68,4 +47,177 @@ PageManager.hideLoading(   );
 
 
 
-[## Legacy Code ##]
+[## Requirement ##]
+สร้างหน้าสำหรับ redeem reward ที่สามารถเห็นรายละเอียดของรางวัลได้ครบถ้วน เลือก เพิ่ม/ลด จำนวน
+เห็นเรายละเอียดและเงื่อนไขต่างๆ เลือกที่อยู่จัดส่ง / และ confirm มีการตรวจเช็คประเภทรางวัลและจัดการตามเงื่อนไขแต่ละประเภท
+
+เริ่มต้นตอนโหลด page ให้เก็บ rewardId ที่ส่งเข้ามาเอาไว้เพื่อนำไปดึงข้อมูลรางวัลมาแสดงผล
+window.onInit = function(payload, response) {
+    REWARD_ID = payload.rewardId;
+};
+
+[API getReward] ส่ง REWARD_ID ไปดึงค่ามาจาก API นี้
+reward = await crmApi.getReward(REWARD_ID);
+{
+    id: number;
+    name: string;
+    description?: string;
+    termsConditions?: string;
+    image?: string;
+    points: number;
+    quantity: number;
+    rewardType: string; // "physical" | "digital" | "game"
+    oneTimeRedemption: boolean;
+    tierRestricted: boolean;
+    tierEligible: boolean;
+    requiredTiers?: TierData[];
+    startDate?: string;
+    endDate?: string;
+    status: string; // "active" | etc.
+    alreadyRedeemed: boolean;
+    canRedeem: boolean;
+    displayAtShop: boolean;
+    gameMetadata?: {
+        gameId?: string;
+        itemId?: string;
+        type?: string; // "item" | "currency" | "event" | "gacha"
+        amount?: number;
+        displayAtShop?: boolean;
+    };
+}
+TierData {
+    id: number;
+    name: string;
+    level: number;
+    color?: string;
+    icon?: string;
+    benefitCard?: string;
+    description?: string;
+    benefits?: string[];
+    rules?: TierRuleData[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+
+หน้า interface จะแบ่งเป็น 2 หน้า 
+1. information :
+- แสดงรุป rewardimage
+- ชื่อ / ราคา (points ที่ใช้)
+- ประเภทรางวัล rewardType ("physical" | "digital" | "game") :  แสดงเป็นแบชพร้อมไอคอนประเภท
+- description / termsConditions :  แสดงเป็นแท็ป กดเพื่อสลับกันแสดง
+- oneTimeRedemption --> alreadyRedeemed
+- tierRestricted --> requiredTiers
+- ปุ่ม เพิ่ม/ลด จำนวน
+- ปุ่ม กดต่อไป (แสดงจำนวนรวม points ที่ใช้แลก ราคา x จำนวน)
+- ดึง path รูป icon point มาแสดงจาก Utility.getAssetPath("pointIcon");
+
+const canRedeem = Utility.RewardCanRedeem( reward );
+
+
+
+2. หน้า final confirm
+
+- เฉพาะ reward.rewardType == "physical" สินค้าที่ต้องทำการ shipping ต้องแสดงส่วนของที่อยู่จัดส่ง
+ให้แสดงที่อยู่จัดส่ง ดึงค่า default มาจาก function นี้ หากไม่มี address = null ปุ่มยืนยันการแลกจะไม่สามารถกดได้
+let address = Utility.getDefaultAddress();
+- มีปุ่มเปลี่ยน/แก้ไข ที่อยู่จัดส่ง หากกดปุ่มนี้ให้จะเปิดหน้า Modal เปิดหน้า address ขึ้นมาให้เลือกที่อยู่จัดส่งใหม่
+PageManager.openModal("address",{ mode : "selete" }, function (res)=>{
+
+    if(res.success){
+        // ทำการ refresh ที่อยู่จัดส่งที่ user เลือกมาใหม่
+        address = res.address;
+    }
+
+});
+- กรณีเป็นสินค้าที่ไม่ต้องทำการ shipping ให้แสดงข้อความ
+ "หมายเหตุ : รางวัลนี้เป็นสินค้าที่ไม่ต้องทำการจัดส่ง" แสดงให้สวยงาม
+- สรุปรายการสินค้าที่แลก แบบระเอียด
+- ด้านล่าง แสดง จำนวน points final ที่ใข้ และปุ่ม ยืนยันการแลก
+
+
+//-------------------------
+เมื่อกดยินยัน ทำการ Redeem reward
+
+[API Redeem Reward]
+const rewardId = reward.id;
+const quantity = QUANTITY;
+const addressId = address.id;
+const res = await crmApi.onRedeemReward(rewardId,quantity,addressId);
+if(res){
+    //OK Completed..
+    PageManager.updatePoints();
+}
+else{
+    // Failed...
+}
+
+
+หากเป็น reward ประเภท digital ให้ทำการเปิดหน้า inventory ขึ้นมา
+เปิด popup complete ที่ใส่ yes/no เข้าไปด้วย
+if(reward.rewardType == "digital"){
+    PageManager.openModal("inventory");
+}
+
+
+หากเป็น reward ประเภทอื่น 
+popup complete จะไม่ถาม yes/no มีเฉพาะปุ่มตกลงให้กด
+
+popup ใส่ภาพรางวัลเข้าไปด้วย
+
+[## End Requirement ##]
+-----------------------------------------------------------------------------------------
+
+
+
+ปรับปรุง
+
+- รูปมีขนาดใหญ่เกินไป ทำให้เป็นจตุรัส และกรอบที่สวยงาม
+- ด้านบนไม่ต้องมีปุ่ม back เพราะหน้า iframe มีปุ่มปิดของมันอยู่แล้ว 
+- ตอนนี้มันโดน mask สีดำบังอยู่ทำให้กดไม่ได้ และไม่สวยงาม ปุ่มปิดของ iframe ต้องอยู่ด้านบนสุด
+- ต้องการปรับให้การแสดงผลมันพอดีในหนึ่งหน้าโดยไม่ต้องไถ่สกอลงไป
+- นำแต้มที่ใช้แลก ไว้ด้านขวา ตรงข้ามกับ ชื่อ และ ประเภท น่าจะดีกว่า
+- ส่วนของรายละเอียด และ เงื่อนไข ล็อกความสูงเอาไว้ เวลากดสลับไปมา
+มันต้องไม่เปลี่ยนแปลงขนาด และ ทำให้มันไถ่สกอดูข้อมูลได้สะดวก
+- ปุ่มกดเพิ่ม/ลดจำนวน และ ปุ่มถัดไปให้อยู่บรรทัดเดียวกัน ย้ายปุ่มเพิ่มลดมาไว้ซ้ายล่าง
+และนำแต้มที่ใช้แลกไปไว้ในปุ่มด้านขวาสุดเลย ให้ปุ่มแสดงจำนวนแต้มไปเลย เพื่อประหยัดพื้นที่
+
+- หน้ายืนยัน ให้แสดงข้อมูลสินค้าที่ต้องการแลกให้ละเอียดขึ้นอีก
+ใส่รูป และ ประเภทสินค้า คำอธิยายหากยาวไปให้ตัดทิ้งเลยและเติม ... ด้านหลัง
+
+- แสดง icon points ไว้ด้วยตอนจำนวน point สุดท้ายก่อนยืนยันการแลก
+
+- การเปลี่ยนที่อยู่จัดส่ง ตอนกดปุ่มเปลี่ยน/แก้ไข ที่อยู่จัดส่ง 
+หากกดปุ่มนี้ให้จะเปิดหน้า Modal เปิดหน้า address ขึ้นมาให้เลือกที่อยู่จัดส่งใหม่
+เปลี่ยนการรับค่าจาก page address ไปใช้แบบที่ฉันเขียนไว้นี้
+PageManager.openModal("address",{ mode : "selete" }, function (res){
+    if(res.success){
+        // ทำการ refresh ที่อยู่จัดส่งที่ user เลือกมาใหม่
+        address = res.address;
+    }
+}); 
+
+- กรณีไม่มีที่อยู่จัดส่ง แสดงข้อความ
+ปรับปรุงให้สวยงามขึ้น เติม icon เข้าไปให้ดูดี
+
+
+- หน้ายืนยัน ทั้งสองโซน "ที่อยู่จัดส่ง" และ "ของรางวัล"
+ให้เติม header และ icon ด้านหน้า text ไว้ทั้งสอง panel เพื่อแยกแต่ละโซนให้ชัดเจน
+และทำให้ โซนที่อยู่จัดส่งมีบอกชัดเจนว่าเป็นโซนที่อยู่จัดส่ง ตอนนี้มันโผล่มาก็หมายเหตุเลย
+ทำให้ไม่รู้ว่ามันคือเรื่องอะไร
+-------------------------------------------
+
+[หน้าแรก]
+1.ย้ายคำว่า ใช้ : 10 ขึ้นไปไว้ขวาบน ตรงข้ามกับ ชื่อรางวัล และเติม icon point ไว้ด้านหน้าตัวเลข จะทำให้ได้พื้นที่เพิ่มมาอีกบรรทัด
+2.ตรงปุ่มถัดไปให้ ย้าย icon point มาไว้ด้านหน้าตัวเลขเช่นกัน และตามหลังด้วย xxx Pts หรือ คะแนน
+
+[หน้ายืนยัน]
+1.ตรงจุดแสดงรางวัล ให้ icon กับจำนวนคะแนนอยู่บรรทัดเดียวกัน icon อยู่ด้านหน้าตัวเลข และตามด้วยคะแนน
+2.  panel แสดงผลรวม ให้ total point: อยู่ด้านซ้าย และ Point ที่ใช้อยู่ด้านขวา บรรทัดเดียวกัน
+ย้าย icon มาด้านหน้า และตามหลังด้วยคำว่า Pts หรือ คะแนน
+3.  panel แสดงผลรวม ย้ายมาชิดกรอบล่าง ตอนนี้มันขึ้นมาทับตัวรางวัล มันบังการแสดงผล 
+ให้มันย้ายลงไปชิดกรอบด้านล่างของหน้านี้ จะได้มีพื้นที่แสดงผลรางวัลเต็มๆ
+
+
+
+

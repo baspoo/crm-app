@@ -1,4 +1,4 @@
-
+ 
 [FORM]
 -----------------------------------------------------------------------------------------
 
@@ -69,10 +69,32 @@ PageManager.hideLoading(   );
 
 
 [## Requirement ##]
-สร้างหน้า สำหรับ เพิ่ม/ลบ แก้ไข
+สร้างหน้า สำหรับ เพิ่ม/ลบ แก้ไข ที่อยู่ของ user ในแอป crm ของฉัน
+หน้าเดิมที่ฉันทำไวจะเป็นเพียงการแก้ไขที่อยู่เท่านั้น ตอนนี้ฉันต้องการทำให้มันแสดงรายการที่อยู่ที่มี และ สามารถ เพิ่ม/ลบ หรือ แก้ไขในรายการนั้นๆได้
+เมื่อกดรายการใดๆ จะพาไปเปิดหน้า edit คล้ายๆ code เดิมของฉันที่ได้ส่งไปให้
+ออกแบบ UI ให้ดูทันสมัย สวยงาม และจัดวางปุ่ม เพิ่ม ลบ แก้ไข ให้ดูมืออาชีพ เข้าใจง่าย เติม icon ในจุดต่างๆเพื่อช่วยอธิบายในการใช้งาน
 
 
+การเปิดหน้านี้ จะมีลูกเล่นนิดหน่อยเพื่อสามารถใช้ซ้ำได้ในกรณีเปิดเข้ามาเพื่อเลือกที่อยู่นำไปใช้งาน
+โดยจะแบ่งเป็น 2 mode คือ edit และ select
+edit : คือโหมดปกติที่จะเข้ามาเพิ่ม ลด แก้ไข ที่อยู่ของ user
+select : คือโหมดที่จะเข้ามาเพื่อเลือกที่อยู่สำหรับนำไปใช้แต่ละ feature เปิดมาเลือกรายการที่ต้องการและส่ง address id กลับไป
 
+window.onInit = function(payload, response) {
+   
+    // จะส่ง mode เข้ามาทาง init หากไม่ส่งมาคือ edit เป็น default  ["edit" , "select"]
+    MODE = payload.mode || "edit";
+
+    // หากเป็น select mode ให้ส่งค่ากลับเข้าไปผ่าน response ที่ส่งเข้ามา
+    response.selete = addressId;
+
+    // ส่ง success เป็น true เสมอ หากโหมด edit มีการแก้ไข เกิดขึ้น หรือ มีการกดเลือกเพื่อส่งกลับในโหมด select
+    response.success = true;
+
+};
+
+
+เริ่มต้นจากการดึงค่า รายการ ที่อยู่ที่มีตอนนี้ของ user ออกมาแสดงผลจากตัวแปลนี้
 const addresses = crmData.crmUser.userAddresses;
 [
     {
@@ -91,6 +113,10 @@ const addresses = crmData.crmUser.userAddresses;
     }
 ]
 
+
+นี้คือ function สำหรับ ใช้งาน api function ต่างๆที่ฉันเตรียมไว้แล้ว
+
+[API Create New Address]
 สร้างใหม่ไม่มี id
 const newAddress = {
     contactPerson,
@@ -103,7 +129,8 @@ const newAddress = {
 };
 await crmApi.createAddress(newAddress);
 
-อัพเดทมี id
+[API Update Address]
+หากเป็นการอัพเดทต้องแนบ id ไปด้วยเสมอ
 const updateAddress = {
     id,
     contactPerson,
@@ -117,11 +144,11 @@ const updateAddress = {
 await crmApi.updateAddress(updateAddress);
 
 
-
+[API Set Default Address] สำหรับปุ่มตั้งค่าให้ที่อยู่นี้เป็นที่อยู่เริ่มต้นสำหรับใช้งาน แอป CRM 
+มักใช้ในกรณี redeem reward จะจัดส่งไปที่อยู่ default เสมอ ยกเว้นจะกดเข้ามา selete รายการที่ต้องการเอง
 await crmApi.setDefaultAddress(address.id);
 
-
-
+[API Remove Address] สำหรับลบที่อยู่
 await crmApi.onRemoveAddress(address.id);
 
 

@@ -1,0 +1,1394 @@
+<!-- Libraries สำหรับสร้าง QR และ Barcode -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+<style>
+    /* ==========================================
+       INVENTORY PAGE STYLES (PURE CSS)
+       อ้างอิงสีจาก Global Theme (--theme-primary, ฯลฯ)
+       ========================================== */
+
+    .inv-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        color: var(--theme-text-main, #1f2937);
+        background-color: transparent;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .inv-wrapper *,
+    .inv-wrapper *::before,
+    .inv-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    /* คลาสสำหรับการซ่อน Element (แก้ไขให้เป็น Global) */
+    .inv-hidden {
+        display: none !important;
+    }
+
+    /* --- Header Section --- */
+    .inv-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 180px;
+        object-fit: cover;
+        display: block;
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        background-color: var(--theme-bg-card, #fff);
+        flex-shrink: 0;
+    }
+
+    /* --- View Containers --- */
+    .inv-view {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 1.25rem;
+        padding-bottom: 6rem;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .inv-view::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* --- Animations --- */
+    .inv-fade-in {
+        animation: invFadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes invFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ==========================================
+       VIEW 1: ITEM LIST
+       ========================================== */
+
+    .inv-page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 1rem 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .inv-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .inv-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.25rem);
+        padding: 0.75rem;
+        display: flex;
+        gap: 1rem;
+        box-shadow: var(--theme-shadow, 0 2px 4px rgba(0, 0, 0, 0.02));
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: visible;
+    }
+
+    .inv-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--theme-shadow-hover, 0 8px 15px -3px rgba(0, 0, 0, 0.1));
+        border-color: var(--theme-primary, #3b82f6);
+    }
+
+    .inv-card:active {
+        transform: scale(0.98);
+    }
+
+    .inv-card-img-wrap {
+        width: 80px;
+        height: 80px;
+        border-radius: 0.75rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .inv-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .inv-card-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .inv-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0 0 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .inv-card-desc {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
+    }
+
+    /* States */
+    .inv-badge-new {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background-color: #ef4444;
+        /* Red */
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 800;
+        padding: 0.15rem 0.4rem;
+        border-radius: 999px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: invPulse 2s infinite;
+        z-index: 10;
+    }
+
+    @keyframes invPulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.08);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .inv-card.is-used .inv-card-img {
+        filter: grayscale(100%) brightness(0.8);
+    }
+
+    .inv-card.is-used .inv-card-title {
+        color: var(--theme-text-muted, #9ca3af);
+    }
+
+    .inv-card-used-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #ef4444;
+        background-color: #fef2f2;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.25rem;
+        width: fit-content;
+        margin-top: 0.35rem;
+        border: 1px solid #fecdd3;
+    }
+
+    .inv-loading-more {
+        text-align: center;
+        padding: 1rem;
+        color: var(--theme-text-muted, #9ca3af);
+        font-size: 0.85rem;
+    }
+
+    .inv-btn-load-more {
+        width: 100%;
+        background-color: transparent;
+        color: var(--theme-primary, #2563eb);
+        border: 1px solid var(--theme-primary, #2563eb);
+        padding: 0.75rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .inv-btn-load-more:active {
+        transform: scale(0.98);
+    }
+
+    .inv-btn-load-more:hover {
+        background-color: var(--theme-primary-light, #eff6ff);
+    }
+
+    .inv-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: var(--theme-text-muted, #9ca3af);
+    }
+
+    .inv-empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* ==========================================
+       VIEW 2: ITEM DETAIL
+       ========================================== */
+
+    .inv-detail-nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .inv-btn-back {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--theme-text-main, #374151);
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+    }
+
+    .inv-btn-back:active {
+        transform: scale(0.9);
+    }
+
+    .inv-detail-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .inv-detail-img-box {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background-color: var(--theme-bg-app, #f8fafc);
+        position: relative;
+    }
+
+    .inv-detail-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .inv-detail-used-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+        display: flex;
+        align-items: flex-end;
+        padding: 1.25rem;
+    }
+
+    .inv-detail-used-badge {
+        background: rgba(16, 185, 129, 0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .inv-detail-info {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .inv-detail-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem 0;
+        color: var(--theme-text-main, #111827);
+        line-height: 1.3;
+    }
+
+    .inv-detail-meta {
+        font-size: 0.85rem;
+        color: var(--theme-text-muted, #6b7280);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    /* Tabs inside Detail */
+    .inv-tabs-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .inv-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+        background-color: var(--theme-bg-card, #ffffff);
+        border-top-left-radius: var(--theme-radius, 1.5rem);
+        border-top-right-radius: var(--theme-radius, 1.5rem);
+        flex-shrink: 0;
+    }
+
+    .inv-tab-btn {
+        flex: 1;
+        padding: 1rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #9ca3af);
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .inv-tab-btn.active {
+        color: var(--theme-primary, #2563eb);
+        border-bottom-color: var(--theme-primary, #2563eb);
+    }
+
+    .inv-tab-content-area {
+        background-color: var(--theme-bg-card, #ffffff);
+        padding: 1.5rem;
+        border-bottom-left-radius: var(--theme-radius, 1.5rem);
+        border-bottom-right-radius: var(--theme-radius, 1.5rem);
+        font-size: 0.875rem;
+        color: var(--theme-text-main, #4b5563);
+        line-height: 1.6;
+        white-space: pre-wrap;
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-top: none;
+        /* Lock Content Height & Make Scrollable */
+        max-height: var(--tab-max-height, 45vh);
+        overflow-y: auto;
+    }
+
+    /* สกอร์บาร์สำหรับช่องรายละเอียด */
+    .inv-tab-content-area::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .inv-tab-content-area::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    /* Action Button Sticky Bottom */
+    .inv-btn-primary {
+        width: 100%;
+        background-color: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        border: none;
+        padding: 1rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 1.05rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+        transition: all 0.2s ease;
+        margin-top: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .inv-btn-primary:active {
+        transform: scale(0.97);
+    }
+
+    .inv-btn-primary:disabled {
+        background-color: var(--theme-border-color, #e2e8f0);
+        color: var(--theme-text-muted, #94a3b8);
+        box-shadow: none;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ==========================================
+       MODAL: CODE DISPLAY
+       ========================================== */
+    .inv-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .inv-modal-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .inv-modal-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        width: 100%;
+        max-width: 36rem;
+        margin: 0 auto;
+        border-top-left-radius: 2.5rem;
+        border-top-right-radius: 2.5rem;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inv-modal-overlay.show .inv-modal-card {
+        transform: translateY(0);
+    }
+
+    .inv-modal-header {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--theme-border-color, #f1f5f9);
+    }
+
+    .inv-modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .inv-modal-close {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-app, #f1f5f9);
+        color: var(--theme-text-muted, #64748b);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: absolute;
+        left: 1.5rem;
+    }
+
+    .inv-modal-close:hover {
+        background-color: #e2e8f0;
+    }
+
+    .inv-modal-body {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Mode Switcher - Modern Segmented Control Style */
+    .inv-mode-switcher {
+        display: flex;
+        width: 100%;
+        background-color: var(--theme-bg-app, #f1f5f9);
+        padding: 0.35rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .inv-mode-btn {
+        flex: 1;
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border-radius: 0.75rem;
+        border: none;
+        background: transparent;
+        color: var(--theme-text-muted, #64748b);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .inv-mode-btn.active {
+        background-color: var(--theme-bg-card, #ffffff);
+        color: var(--theme-primary, #2563eb);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Display Box - Fixed Height to prevent bouncing/flickering */
+    .inv-display-box {
+        width: 100%;
+        height: 360px;
+        /* Lock height fixed */
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 2px dashed var(--theme-border-color, #e2e8f0);
+        border-radius: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        position: relative;
+        box-sizing: border-box;
+    }
+
+    /* Text Mode */
+    .inv-code-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #9ca3af);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+    }
+
+    .inv-code-text {
+        font-size: 2.75rem;
+        /* ตัวหนังสือใหญ่ขึ้น */
+        font-weight: 900;
+        color: var(--theme-text-main, #1f2937);
+        letter-spacing: 0.05em;
+        word-break: break-all;
+        margin: 0 0 1.5rem 0;
+        user-select: all;
+        text-align: center;
+    }
+
+    .inv-btn-copy {
+        background-color: transparent;
+        color: var(--theme-primary, #2563eb);
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: background 0.2s;
+        margin: 0 auto;
+    }
+
+    .inv-btn-copy:hover {
+        background-color: var(--theme-primary-light, #eff6ff);
+    }
+
+    /* QR & Barcode Mode Container Styles */
+    .inv-qr-container {
+        padding: 1rem;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .inv-barcode-container {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .inv-scan-hint {
+        font-size: 0.8rem;
+        color: var(--theme-text-muted, #6b7280);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .inv-fallback-hint {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #9ca3af);
+        margin-top: 1.5rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="inv-wrapper">
+    <!-- Image Header (แสดงเฉพาะหน้า List) -->
+    <img id="inv-header-img" src="" alt="Inventory" class="inv-header-img" onerror="this.style.display='none'">
+
+    <!-- ==========================================
+         VIEW 1: ITEM LIST
+         ========================================== -->
+    <div id="inv-view-list" class="inv-view inv-fade-in">
+        <h1 class="inv-page-title" data-i18n="pageTitle">กระเป๋าของฉัน</h1>
+
+        <div id="inv-grid" class="inv-grid">
+            <!-- Items injected here -->
+        </div>
+
+        <button id="inv-load-more-btn" class="inv-btn-load-more inv-hidden" onclick="InventoryCtrl.loadMore()">
+            <i class="fa-solid fa-chevron-down"></i> <span data-i18n="loadMoreBtn">โหลดเพิ่มเติม</span>
+        </button>
+
+        <div id="inv-loader" class="inv-loading-more inv-hidden">
+            <i class="fa-solid fa-circle-notch fa-spin"></i> <span data-i18n="loading">กำลังโหลด...</span>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 2: ITEM DETAIL
+         ========================================== -->
+    <div id="inv-view-detail" class="inv-view inv-hidden">
+
+        <!-- Header Nav -->
+        <div class="inv-detail-nav">
+            <button class="inv-btn-back" onclick="InventoryCtrl.goBackToList()">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="inv-page-title" style="margin:0; font-size:1.25rem;" data-i18n="detailTitle">รายละเอียดรางวัล
+            </h2>
+        </div>
+
+        <!-- Detail Card -->
+        <div class="inv-detail-card inv-fade-in">
+            <div class="inv-detail-img-box">
+                <img id="det-img" src="" alt="Reward" class="inv-detail-img"
+                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+
+                <!-- Overlay "Used" -->
+                <div id="det-used-overlay" class="inv-detail-used-overlay inv-hidden">
+                    <div class="inv-detail-used-badge">
+                        <div style="background-color: #10b981; border-radius: 50%; padding: 0.2rem 0.35rem;"><i
+                                class="fa-solid fa-check text-xs"></i></div>
+                        <span data-i18n="statusUsed">ใช้งานแล้ว</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inv-detail-info">
+                <h1 id="det-name" class="inv-detail-title">Reward Name</h1>
+                <p class="inv-detail-meta">
+                    <i class="fa-regular fa-clock"></i>
+                    <span data-i18n="redeemedOn">ได้รับเมื่อ: </span>
+                    <span id="det-date"
+                        style="font-weight: 600; color: var(--theme-text-main, #374151);">--/--/----</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Tabs & Content -->
+        <div class="inv-tabs-container inv-fade-in" style="animation-delay: 0.1s;">
+            <div class="inv-tabs">
+                <button id="tab-desc" class="inv-tab-btn active" onclick="InventoryCtrl.switchTab('desc')"
+                    data-i18n="tabDetails">รายละเอียด</button>
+                <button id="tab-terms" class="inv-tab-btn" onclick="InventoryCtrl.switchTab('terms')"
+                    data-i18n="tabTerms">เงื่อนไข</button>
+            </div>
+            <div class="inv-tab-content-area">
+                <div id="content-desc"></div>
+                <div id="content-terms" class="inv-hidden"></div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="det-btn-action" class="inv-btn-primary inv-fade-in" style="animation-delay: 0.2s;"
+            onclick="InventoryCtrl.openCodeModal()">
+            <i class="fa-solid fa-ticket"></i>
+            <span id="det-btn-text" data-i18n="showCouponBtn">แสดงรหัสคูปอง</span>
+        </button>
+
+    </div>
+</div>
+
+<!-- ==========================================
+     MODAL: CODE DISPLAY
+     ========================================== -->
+<div id="code-modal" class="inv-modal-overlay">
+    <div class="inv-modal-card">
+
+        <div class="inv-modal-header">
+            <button onclick="InventoryCtrl.closeCodeModal()" class="inv-modal-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="inv-modal-title" data-i18n="modalTitle">รหัสคูปองของคุณ</h3>
+            <div style="width:2.5rem;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="inv-modal-body">
+            <!-- Mode Switcher -->
+            <div class="inv-mode-switcher">
+                <button id="mode-text" class="inv-mode-btn active" onclick="InventoryCtrl.setCodeMode('text')"
+                    data-i18n="modeText">ข้อความ</button>
+                <button id="mode-qr" class="inv-mode-btn" onclick="InventoryCtrl.setCodeMode('qr')"
+                    data-i18n="modeQR">QR Code</button>
+                <button id="mode-barcode" class="inv-mode-btn" onclick="InventoryCtrl.setCodeMode('barcode')"
+                    data-i18n="modeBarcode">Barcode</button>
+            </div>
+
+            <!-- Display Area -->
+            <div class="inv-display-box">
+
+                <!-- Text Mode -->
+                <div id="disp-text" class=""
+                    style="width:100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <p class="inv-code-label" data-i18n="yourCode">Your Code</p>
+                    <p id="ui-code-text" class="inv-code-text">--------</p>
+                    <button class="inv-btn-copy" onclick="InventoryCtrl.copyToClipboard()">
+                        <i class="fa-regular fa-copy"></i>
+                        <span data-i18n="copyBtn">คัดลอกรหัส</span>
+                    </button>
+                </div>
+
+                <!-- QR Mode -->
+                <div id="disp-qr" class="inv-hidden"
+                    style="width:100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="ui-qrcode" class="inv-qr-container"></div>
+                    <p class="inv-scan-hint" data-i18n="scanQR">Scan QR Code</p>
+                </div>
+
+                <!-- Barcode Mode -->
+                <div id="disp-barcode" class="inv-hidden"
+                    style="width:100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div class="inv-barcode-container">
+                        <svg id="ui-barcode" style="max-width: 100%; height: auto;"></svg>
+                    </div>
+                    <p class="inv-scan-hint" data-i18n="scanBarcode">Scan Barcode</p>
+                </div>
+
+            </div>
+
+            <p class="inv-fallback-hint" data-i18n="scanFallback">หากไม่สามารถสแกนได้ กรุณาใช้รหัสตัวเลขแทน
+                หรือปรับความสว่างหน้าจอให้สูงสุด</p>
+            <div style="height: 1rem;"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Template: List Item -->
+<template id="tpl-inv-item">
+    <div class="inv-card">
+        <div class="inv-badge-new inv-hidden">NEW!</div>
+        <div class="inv-card-img-wrap">
+            <img class="inv-card-img slot-img" src="" alt="Item"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+        </div>
+        <div class="inv-card-info">
+            <h3 class="inv-card-title slot-name">Item Name</h3>
+            <p class="inv-card-desc slot-desc">Item Description</p>
+            <div class="inv-card-used-tag slot-used-tag inv-hidden" data-i18n="statusUsed">ใช้งานแล้ว</div>
+        </div>
+    </div>
+</template>
+
+<script>
+    window.InventoryCtrl = (function () {
+        'use strict';
+
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            limit: 20,
+            headerAssetKey: 'rewardHeader', // อ้างอิงจาก resPath
+            lsKeyViewed: 'crm_inv_viewed_ids',
+            newDaysLimit: 7, // ถ้ารางวัลได้มาเกิน 7 วัน จะไม่ขึ้น NEW ถึงแม้จะยังไม่เคยเปิดดูก็ตาม
+            tabContentMaxHeight: '20vh', // ล็อกความสูงสูงสุดของกล่องรายละเอียด/เงื่อนไข ให้ Scroll ได้
+            defaultImg: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=="
+        };
+
+        const i18n = {
+            Th: {
+                pageTitle: "กระเป๋าของฉัน",
+                detailTitle: "รายละเอียดรางวัล",
+                redeemedOn: "ได้รับเมื่อ: ",
+                tabDetails: "รายละเอียด",
+                tabTerms: "เงื่อนไข",
+                loading: "กำลังโหลด...",
+                loadMoreBtn: "โหลดเพิ่มเติม",
+                emptyList: "ยังไม่มีของรางวัลในกระเป๋า",
+                noDetails: "ไม่มีรายละเอียดเพิ่มเติม",
+                noTerms: "ไม่มีเงื่อนไข",
+                showCouponBtn: "แสดงรหัสคูปอง",
+                couponUsedBtn: "คูปองนี้ถูกใช้งานแล้ว",
+                statusUsed: "ใช้งานแล้ว",
+                modalTitle: "รหัสคูปองของคุณ",
+                modeText: "ข้อความ",
+                modeQR: "QR Code",
+                modeBarcode: "Barcode",
+                yourCode: "Your Code",
+                copyBtn: "คัดลอกรหัส",
+                copiedSuccess: "คัดลอกรหัสเรียบร้อยแล้ว",
+                scanQR: "Scan QR Code",
+                scanBarcode: "Scan Barcode",
+                scanFallback: "หากไม่สามารถสแกนได้ กรุณาใช้รหัสตัวเลขแทน หรือปรับความสว่างหน้าจอให้สูงสุด",
+                errLoad: "ไม่สามารถโหลดข้อมูลกระเป๋าได้"
+            },
+            En: {
+                pageTitle: "Inventory",
+                detailTitle: "Reward Detail",
+                redeemedOn: "Acquired on: ",
+                tabDetails: "Details",
+                tabTerms: "Terms",
+                loading: "Loading...",
+                loadMoreBtn: "Load More",
+                emptyList: "Your inventory is empty.",
+                noDetails: "No additional details.",
+                noTerms: "No terms available.",
+                showCouponBtn: "Show Code",
+                couponUsedBtn: "Code Already Used",
+                statusUsed: "REDEEMED",
+                modalTitle: "Your Code",
+                modeText: "Text",
+                modeQR: "QR",
+                modeBarcode: "Barcode",
+                yourCode: "Your Code",
+                copyBtn: "Copy",
+                copiedSuccess: "Code copied successfully.",
+                scanQR: "Scan QR Code",
+                scanBarcode: "Scan Barcode",
+                scanFallback: "If you cannot scan, please use the text code or adjust your screen brightness.",
+                errLoad: "Failed to load inventory."
+            }
+        };
+
+        // ==========================================
+        // 2. STATE
+        // ==========================================
+        let currentLang = 'Th';
+        let state = {
+            items: [],
+            page: 0,
+            hasMore: true,
+            isFetching: false,
+            viewedIds: [], // เก็บ Array ของ ID ที่เคยคลิกดูแล้ว
+            activeItem: null // ไอเท็มที่กำลังเปิดดู Detail
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        function initHeaderImage() {
+            const headerImg = document.getElementById('inv-header-img');
+            if (!headerImg) return;
+
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                const path = Utility.getAssetPath(pageSetting.headerAssetKey);
+                if (path) {
+                    headerImg.src = path;
+                    headerImg.style.display = 'block';
+                    return;
+                }
+            }
+            headerImg.style.display = 'none';
+        }
+
+        function loadViewedIds() {
+            try {
+                const stored = localStorage.getItem(pageSetting.lsKeyViewed);
+                if (stored) state.viewedIds = JSON.parse(stored);
+            } catch (e) { console.error("LS Error", e); }
+        }
+
+        function saveViewedId(id) {
+            if (!state.viewedIds.includes(id)) {
+                state.viewedIds.push(id);
+                try {
+                    localStorage.setItem(pageSetting.lsKeyViewed, JSON.stringify(state.viewedIds));
+                } catch (e) { }
+            }
+        }
+
+        // --- Data Fetching ---
+        async function fetchItems(isInitial = false) {
+            if (state.isFetching || !state.hasMore) return;
+            state.isFetching = true;
+
+            const grid = document.getElementById('inv-grid');
+            const loader = document.getElementById('inv-loader');
+            const loadMoreBtn = document.getElementById('inv-load-more-btn');
+
+            if (isInitial) {
+                if (window.PageManager) PageManager.showLoading();
+                state.page = 0;
+                state.items = [];
+                if (grid) grid.innerHTML = '';
+                if (loadMoreBtn) loadMoreBtn.classList.add('inv-hidden');
+            } else {
+                if (loader) loader.classList.remove('inv-hidden');
+                if (loadMoreBtn) loadMoreBtn.classList.add('inv-hidden');
+            }
+
+            try {
+                const offset = state.page * pageSetting.limit;
+                let response = null;
+
+                if (window.CrmApi && typeof CrmApi.getMyCoupons === 'function') {
+                    response = await CrmApi.getMyCoupons(pageSetting.limit, offset);
+                }
+
+                let newItems = [];
+                let hasMore = false;
+
+                if (response && response.coupons) {
+                    // รูปแบบใหม่ { coupons: [...], pagination: { hasMore: true/false } }
+                    newItems = response.coupons;
+                    hasMore = response.pagination ? response.pagination.hasMore : false;
+                } else if (Array.isArray(response)) {
+                    // รูปแบบเดิม [ ... ]
+                    newItems = response;
+                    hasMore = newItems.length >= pageSetting.limit;
+                }
+
+                if (newItems && newItems.length > 0) {
+                    state.items = state.items.concat(newItems);
+                    renderItems(newItems);
+                    state.page++;
+                    state.hasMore = hasMore;
+                } else {
+                    state.hasMore = false;
+                    if (isInitial) {
+                        showEmptyState();
+                    }
+                }
+
+                // จัดการปุ่ม Load More
+                if (state.hasMore && state.items.length > 0) {
+                    if (loadMoreBtn) loadMoreBtn.classList.remove('inv-hidden');
+                } else {
+                    if (loadMoreBtn) loadMoreBtn.classList.add('inv-hidden');
+                }
+
+            } catch (error) {
+                console.error("Inventory Fetch Error:", error);
+                if (isInitial && window.PageManager) {
+                    PageManager.showToast(i18n[currentLang].errLoad, "❌");
+                }
+            } finally {
+                state.isFetching = false;
+                if (loader) loader.classList.add('inv-hidden');
+                if (isInitial && window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        // --- Rendering List ---
+        function renderItems(itemsToRender) {
+            const dict = i18n[currentLang];
+            const now = Date.now();
+            const grid = document.getElementById('inv-grid');
+            const tplCard = document.getElementById('tpl-inv-item');
+
+            if (!grid || !tplCard) return;
+
+            itemsToRender.forEach(item => {
+                const clone = tplCard.content.cloneNode(true);
+                const card = clone.querySelector('.inv-card');
+
+                clone.querySelector('.slot-name').innerText = item.rewardName || 'Item';
+                clone.querySelector('.slot-desc').innerText = item.rewardDescription || '';
+                clone.querySelector('.slot-img').src = item.rewardImage || pageSetting.defaultImg;
+
+                // 1. ตรวจสอบสถานะ New (เช็ค 2 ชั้น: ยังไม่เคยดู + อายุไม่เกิน N วัน)
+                let isNew = !state.viewedIds.includes(item.id);
+                if (isNew && pageSetting.newDaysLimit > 0) {
+                    const itemDateStr = item.redeemedAt || item.createdAt || item.updatedAt;
+                    if (itemDateStr) {
+                        const itemTime = new Date(itemDateStr).getTime();
+                        if (!isNaN(itemTime)) {
+                            const daysDiff = (now - itemTime) / (1000 * 3600 * 24);
+                            if (daysDiff > pageSetting.newDaysLimit) {
+                                isNew = false;
+                            }
+                        }
+                    }
+                }
+
+                if (isNew) {
+                    clone.querySelector('.inv-badge-new').classList.remove('inv-hidden');
+                }
+
+                // 2. ตรวจสอบสถานะ Used อย่างเข้มงวด
+                // จะต้องเป็นค่า string "used" เท่านั้น จึงจะถือว่าใช้แล้ว
+                const itemStatus = String(item.status || '').toLowerCase();
+                const codeStatus = String(item.codeStatus || '').toLowerCase();
+                const isUsed = (itemStatus === 'used' || codeStatus === 'used');
+
+                if (isUsed) {
+                    card.classList.add('is-used');
+                    const usedTag = clone.querySelector('.slot-used-tag');
+                    usedTag.innerText = dict.statusUsed;
+                    usedTag.classList.remove('inv-hidden');
+                }
+
+                // Click Event -> Open Detail
+                card.onclick = () => openDetail(item, card);
+
+                grid.appendChild(clone);
+            });
+        }
+
+        function showEmptyState() {
+            const dict = i18n[currentLang];
+            const grid = document.getElementById('inv-grid');
+            if (grid) {
+                grid.innerHTML = `
+                <div class="inv-empty-state inv-fade-in">
+                    <i class="fa-solid fa-box-open"></i>
+                    <p>${dict.emptyList}</p>
+                </div>
+            `;
+            }
+        }
+
+        // ==========================================
+        // 4. DETAIL VIEW LOGIC
+        // ==========================================
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                return d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH');
+            } catch (e) { return dateStr; }
+        }
+
+        function openDetail(item, cardElement) {
+            state.activeItem = item;
+            const dict = i18n[currentLang];
+
+            // 1. Mark as viewed & Hide Badge
+            saveViewedId(item.id);
+            if (cardElement) {
+                const badgeNew = cardElement.querySelector('.inv-badge-new');
+                if (badgeNew) badgeNew.classList.add('inv-hidden');
+            }
+
+            // 2. Populate Detail UI
+            const detImg = document.getElementById('det-img');
+            const detName = document.getElementById('det-name');
+            const detDate = document.getElementById('det-date');
+            const contentDesc = document.getElementById('content-desc');
+
+            if (detImg) detImg.src = item.rewardImage || pageSetting.defaultImg;
+            if (detName) detName.innerText = item.rewardName || 'Reward';
+            if (detDate) detDate.innerText = formatDate(item.redeemedAt || item.createdAt);
+            if (contentDesc) contentDesc.innerHTML = item.rewardDescription || dict.noDetails;
+
+            // ดึงเงื่อนไข (ดึงจาก Reward API ถ้าทำได้ หรือ Fallback ไปหา item)
+            let condition = item.termsConditions || item.notes || null;
+            if (window.Utility && typeof Utility.getReward === 'function') {
+                const rewardData = Utility.getReward(item.rewardId);
+                if (rewardData && rewardData.termsConditions) {
+                    condition = rewardData.termsConditions;
+                }
+            }
+
+            const tabTerms = document.getElementById('tab-terms');
+            const contentTerms = document.getElementById('content-terms');
+
+            // ถ้าไม่มีข้อมูลเงื่อนไขเลย ให้ซ่อนแท็บเงื่อนไขไป
+            if (condition && condition.trim() !== '') {
+                if (tabTerms) tabTerms.style.display = 'block';
+                if (contentTerms) contentTerms.innerHTML = condition;
+            } else {
+                if (tabTerms) tabTerms.style.display = 'none';
+                if (contentTerms) contentTerms.innerHTML = '';
+            }
+
+            // Reset Tabs to Desc
+            switchTab('desc');
+
+            // 3. Handle Used Status & Action Button (Strict Check)
+            const itemStatus = String(item.status || '').toLowerCase();
+            const codeStatus = String(item.codeStatus || '').toLowerCase();
+            const isUsed = (itemStatus === 'used' || codeStatus === 'used');
+
+            const detUsedOverlay = document.getElementById('det-used-overlay');
+            const btnAction = document.getElementById('det-btn-action');
+            const btnActionText = document.getElementById('det-btn-text');
+
+            if (isUsed) {
+                if (detUsedOverlay) detUsedOverlay.classList.remove('inv-hidden');
+                if (btnAction) {
+                    btnAction.disabled = true;
+                    const icon = btnAction.querySelector('i');
+                    if (icon) icon.className = "fa-solid fa-check";
+                }
+                if (btnActionText) btnActionText.innerText = dict.couponUsedBtn;
+            } else {
+                if (detUsedOverlay) detUsedOverlay.classList.add('inv-hidden');
+                if (btnAction) {
+                    btnAction.disabled = false;
+                    const icon = btnAction.querySelector('i');
+                    if (icon) icon.className = "fa-solid fa-ticket";
+                }
+                if (btnActionText) btnActionText.innerText = dict.showCouponBtn;
+            }
+
+            // 4. Switch View
+            const headerImg = document.getElementById('inv-header-img');
+            const viewList = document.getElementById('inv-view-list');
+            const viewDetail = document.getElementById('inv-view-detail');
+
+            if (headerImg) headerImg.style.display = 'none';
+            if (viewList) viewList.classList.add('inv-hidden');
+            if (viewDetail) {
+                viewDetail.classList.remove('inv-hidden');
+                viewDetail.scrollTop = 0;
+            }
+        }
+
+        window.goBackToList = function () {
+            state.activeItem = null;
+            const viewList = document.getElementById('inv-view-list');
+            const viewDetail = document.getElementById('inv-view-detail');
+            const headerImg = document.getElementById('inv-header-img');
+
+            if (viewDetail) viewDetail.classList.add('inv-hidden');
+            if (viewList) viewList.classList.remove('inv-hidden');
+
+            if (headerImg && headerImg.src && headerImg.src !== window.location.href) {
+                headerImg.style.display = 'block';
+            }
+        };
+
+        window.switchTab = function (tabName) {
+            const tabDesc = document.getElementById('tab-desc');
+            const tabTerms = document.getElementById('tab-terms');
+            const contentDesc = document.getElementById('content-desc');
+            const contentTerms = document.getElementById('content-terms');
+
+            if (tabDesc) tabDesc.classList.remove('active');
+            if (tabTerms) tabTerms.classList.remove('active');
+            if (contentDesc) contentDesc.classList.add('inv-hidden');
+            if (contentTerms) contentTerms.classList.add('inv-hidden');
+
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            const activeContent = document.getElementById(`content-${tabName}`);
+
+            if (activeTab) activeTab.classList.add('active');
+            if (activeContent) activeContent.classList.remove('inv-hidden');
+        };
+
+        // ==========================================
+        // 5. MODAL & CODE LOGIC
+        // ==========================================
+
+        window.openCodeModal = function () {
+            if (!state.activeItem) return;
+
+            let code = state.activeItem.couponCode;
+            if (typeof code === "string") {
+                code = code.replace(/^#\[\d+\]#/, "");
+                state.activeItem.cleanCode = code;
+            }
+
+            const modalOverlay = document.getElementById('code-modal');
+            if (modalOverlay) modalOverlay.classList.add('show');
+
+            setCodeMode('text');
+        };
+
+        window.closeCodeModal = function () {
+            const modalOverlay = document.getElementById('code-modal');
+            if (modalOverlay) modalOverlay.classList.remove('show');
+        };
+
+        window.setCodeMode = function (mode) {
+            // Reset Buttons & Displays
+            ['text', 'qr', 'barcode'].forEach(m => {
+                const btn = document.getElementById(`mode-${m}`);
+                const disp = document.getElementById(`disp-${m}`);
+                if (btn) btn.classList.remove('active');
+                if (disp) disp.classList.add('inv-hidden');
+            });
+
+            // Activate Selected
+            const activeBtn = document.getElementById(`mode-${mode}`);
+            const activeDisp = document.getElementById(`disp-${mode}`);
+
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeDisp) activeDisp.classList.remove('inv-hidden');
+
+            // Generate Code
+            const code = state.activeItem?.cleanCode || state.activeItem?.couponCode;
+            if (!code) return;
+
+            if (mode === 'text') {
+                const uiCodeText = document.getElementById('ui-code-text');
+                if (uiCodeText) uiCodeText.innerText = code;
+            }
+            else if (mode === 'qr') {
+                // ไม่ต้องหน่วงเวลาแล้ว เพราะ Parent มี Fixed Height โครงสร้างไม่เปลี่ยนแล้ว
+                setTimeout(() => {
+                    try {
+                        const uiQr = document.getElementById('ui-qrcode');
+                        if (typeof QRCode !== 'undefined' && uiQr) {
+                            uiQr.innerHTML = "";
+                            new QRCode(uiQr, {
+                                text: code,
+                                width: 200, height: 200,
+                                colorDark: "#1f2937", colorLight: "#ffffff",
+                                correctLevel: QRCode.CorrectLevel.H
+                            });
+                        } else if (uiQr) {
+                            uiQr.innerHTML = "QR Library not loaded";
+                        }
+                    } catch (e) { console.error(e); }
+                }, 10);
+            }
+            else if (mode === 'barcode') {
+                setTimeout(() => {
+                    try {
+                        const uiBarcode = document.getElementById('ui-barcode');
+                        if (typeof JsBarcode !== 'undefined' && uiBarcode) {
+                            JsBarcode("#ui-barcode", code, {
+                                format: "CODE128",
+                                width: 2.5, height: 80,
+                                displayValue: true, fontSize: 18,
+                                lineColor: "#1f2937", background: "transparent", margin: 0
+                            });
+                        } else if (uiBarcode && uiBarcode.parentElement) {
+                            uiBarcode.parentElement.innerHTML = "Barcode Library not loaded";
+                        }
+                    } catch (e) { console.error(e); }
+                }, 10);
+            }
+        };
+
+        window.copyToClipboard = function () {
+            const code = state.activeItem?.cleanCode || state.activeItem?.couponCode;
+            if (!code) return;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(showCopySuccess).catch(() => fallbackCopy(code));
+            } else {
+                fallbackCopy(code);
+            }
+        };
+
+        function fallbackCopy(text) {
+            const temp = document.createElement("input");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (err) { }
+            document.body.removeChild(temp);
+        }
+
+        function showCopySuccess() {
+            if (window.PageManager) {
+                PageManager.showToast(i18n[currentLang].copiedSuccess, "✅");
+            }
+        }
+
+        // ==========================================
+        // 6. INIT (Export)
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                if (window.crmData && window.crmData.language === 'En') {
+                    currentLang = 'En';
+                }
+
+                // Set Tab Max Height จาก Setting
+                document.documentElement.style.setProperty('--tab-max-height', pageSetting.tabContentMaxHeight);
+
+                applyLanguage();
+                initHeaderImage();
+                loadViewedIds();
+
+                // Initial Fetch
+                fetchItems(true);
+
+                if (response) response.status = "ok";
+            },
+            loadMore: function () {
+                fetchItems(false);
+            },
+            goBackToList: window.goBackToList,
+            switchTab: window.switchTab,
+            openCodeModal: window.openCodeModal,
+            closeCodeModal: window.closeCodeModal,
+            setCodeMode: window.setCodeMode,
+            copyToClipboard: window.copyToClipboard
+        };
+
+    })();
+
+    // ผูกเข้ากับระบบ PageManager
+    window.onInit = function (payload, response) {
+        window.InventoryCtrl.init(payload, response);
+    };
+</script>

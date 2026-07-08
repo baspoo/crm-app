@@ -1,0 +1,213 @@
+[FORM]
+-----------------------------------------------------------------------------------------
+
+
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+-----------------------------------------------------------------------------------------
+
+
+
+[## Requirement ##]
+สร้างหน้าสำหรับ แสดงรายละเอียดกิจกรรมที่รองรับกิจกรรมหลากหลายปะรเภทเช่น เกม ,ข่าว, promotion, lucky draw
+
+
+เริ่มต้นด้วยการรับค่าเข้าด้วย window.onInit แบบนี้ เพื่อนำค่ามาแสดงผล
+window.onInit = function(payload, response) {
+ 
+    const { gameCampaign ,banner } = payload;
+
+    ข้างนอกจะส่งค่าใดค่า gameCampaign และ banner เข้ามา ให้นำ2ค่านี้ไปเช็คแล้วนำไปแสดงผลให้เหมาะสม
+    gameCampaign : GameCampaignData ?? ค่านี้อาจจะส่งหรือไม่ส่งเข้ามาก็ได้ หากส่งเข้ามาให้แสดงผลเป็น [GAME DETAIL]
+    banner : Banner ?? ค่านี้จะส่งเข้ามาด้วยเสมอ หากส่งเข้ามาแต่ banner ให้แสดงผลเป็น [BANNER DETAIL]
+
+};
+
+--------------------------------------------------------------
+
+[GAME DETAIL]
+กรณี ส่ง gameCampaign เข้ามา นี้คือโครงสร้างของมัน
+GameCampaignData {
+    gameId: string;
+    model?: string;
+    url?: string;
+    icon?: string;
+    image?: string;
+    leaderboardCoverImage?: string;
+    assets?: Record<string, string>;
+    type: string; // "game" | "gacha"
+    source: string; // "bundle" | "webmodal"
+    name: string;
+    description?: string;
+    contactCampaign?: string;
+    redeemRewardId?: string;
+    startAt: number; // unix timestamp
+    endAt: number; // unix timestamp
+    leaderboard: boolean;
+    enable: boolean;
+}
+
+## Header
+ให้แสดงส่วนของ Header กิจกรรมไว้บนสุด
+gameCampaign.icon แสดงเป็นภาพวงกลมเล็กๆ
+gameCampaign.name แสดงชื่อเกม
+gameCampaign.startAt เวลาเริ่มกิจกรรม
+gameCampaign.endAt  เวลาจบกิจกรรม
+คำนวน Time Left คงเหลือไว้หลังสุด
+
+
+## Image banner
+const image = gameCampaign.image || banner.imageUrl;
+image ใช้สำหรับแสดงรูปภาพขนาดใหญ่ถัดลงมาจาก header มักเป็นภาพโฆษณา ข้อมูล ภาพเชิญชวนร่วมกิจกรรม ขนาดใหญ่
+
+## Description Text
+const desc = gameCampaign.description || banner.description;
+
+
+ถัดลงไป จะเป็น zone ของปุ่มกด แบ่งออกเป็น game 2 ประเภท
+
+## 1. GAME : CHALANGE 
+gameCampaign.type === "game"
+มี 2 ปุ่ม
+- [Button] Leaderboard : ปุ่มกดเพื่อพาไป leaderboard ของเกม
+PageManager.closeModal(); //ปิดหน้านี้เพื่อไปหน้าอื่น
+ConsoleManager.navDirectConsole("leaderboard", {  gameId : gameCampaign.gameId }); // ไปหน้า leader board
+
+- [Button] Start Game : ปุ่มกดเพื่อเริ่มเกม ใช้คำสั่งนี้เพื่อเริ่มเล่น
+Utility.onStartGame(gameCampaign);
+
+
+## 2.GAME : GACHA 
+gameCampaign.type === "gacha"
+มี 2 ปุ่ม
+- [Button] View Lucky Draw Rate :  // ปุ่มกดเพื่อเปิดหน้าดูรายละเอียด Drop Rate ของ  Lucky Draw นี้
+เมื่อกดจะดึงค่ามาจาก API นี้ ได้มาเป็น array GachaData
+const gachaDatas = await crmApi.onGetGachaRate(gameCampaign.gameId);
+gachaDatas : GachaData[];
+GachaData {
+    reward: string;
+    name: string; //** opt
+    image: string; //** opt
+    type: string; //** opt (game,shop-digital)
+    use: number;
+    limit: number;
+    weight: number;
+}
+แสดงรายการรางวัลใน Lucky Draw นี้ name, image, type, limit, weight (percent% การออก)
+หน้านี้มีปุ่ม Back เพื่อกลับไปหน้า Game Detail
+
+- [Button] Open Gacha Game : ปุ่มกดเพื่อเปิดหน้ากาชา
+const path = Utility.getAssetPath("pointIcon");  //ดึง path icon รูป coin มาแสดงผลบนปุ่มเปิด
+const reward = Utility.getGachaRewardPricing(gameCampaign); 
+const price = reward.points; // แสดงจำนวนราคา points ที่ใช้เปิด
+const redeemEnable = Utility.isCanRedeem(reward); // check เงื่อนไขการเปิดว่าเพียงพอหรือไม่
+หากเปิดไม่ได้ให้ diable ปุ่มไป หากเปิดได้เมื่อกดให้ใช้คำสั่งนี้
+Utility.onOpenGachePage(gameCampaign);
+
+
+
+
+
+--------------------------------------------------------------
+
+[BANNER DETAIL]
+กรณี แสดงผลเป็น banner นี้คือโครงสร้างของมัน
+Banner {
+    id: number;
+    name: string;
+    description?: string;
+    type: string; // "ads" | "promotion" | "banner"
+    imageUrl?: string;
+    bannerUrl?: string;
+    displayOrder: number;
+    startDate?: string;
+    endDate?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+เป็นภาพโฆษณาขนาดใหญ่เลยไม่มี Header เหมือน Game Detail
+
+## Image banner
+const image = banner.imageUrl;
+image ใช้สำหรับแสดงรูปภาพขนาดใหญ่ถัดลงมาจาก header มักเป็นภาพโฆษณา ข้อมูล ภาพเชิญชวนร่วมกิจกรรม ขนาดใหญ่
+
+## DescName
+const name = banner.name;
+
+## Description Text
+const desc = banner.description;
+
+## More Btn : ปุ่ม more เพื่อเปิดไปยัง link ภายนอก
+กรณี banner.bannerUrl?? หากมี URL ในนี้ให้เปิดปุ่ม More / เพิ่มเติม เพื่อกดไปดูรายละเอียดกิจกรรมจากเว็ปภายนอก ด้วยคำสั่งนี้
+PageManager.showDirectLink(banner.bannerUrl);
+
+
+--------------------------------------------------------------
+
+
+
+
+ปรับปรุงหน้านี้
+- หน้านี้ถูกเปิดใน iframe ที่เป็น popup ที่มีกรอบอยู่แล้วไม่ต้อสร้าง panel กรอบซ่อนเข้าไปอีกแบบตอนนี้
+- ปุ่มในหน้า game gacha ขนาดมันไม่เท่ากับ เกม ชาเร้น ทำให้มันเท่ากัน และ ปุ่มเปิด แสดง จำนวนเงิน และ icon ในบรรทัดเดียวกัน
+ตอนนี้มันตกบรรทัดแปลกๆ ไม่สวนยเลยปรับปปรุงปุ่มนี้ให้ดีขึ้น
+- ขยายความสูงของรูปภาพขึ้นอีก ตอนนี้มันสูงน้อยไปแสดงรูปภาพไม่หมด
+- panel ปุ่ม ทุกโหลดให้ยึนติดกับ footer เอาไว้เสมอ มันเลื่อนไปเลื่อนมาตามคอนเทรน ไม่สวนยเลยปรับปปรุงปุ่มนี้ให้ดีขึ้น
+
+
+
+--------------------------------------------------------------
+
+[Game Detail]
+- ปรับปรุงส่วนของ header ให้ icon เล็กลง และพื้นที่แสดง header ทั้งหดเล็กลงอีก 
+- ปรับปรุง layout ส่วนหัวให้สวยงามขึ้น
+- เติม shadow เบาๆ หรือเส้นขีด แบ่งแยก header ออกจาก content
+- ยึดส่วนหัวไว้ เวลาไถ่ขึ้นให้ clipping ส่วนหัวทับไป
+- zone btn ให้ยึดติดกับ footer เสมอ ไม่ไหลไปตาม page ต้องแสดงปุ่มให้กดได้ตลอดเวลา
+- zone btn จะอยู่บน content เสมอ  z-index ให้สูงๆๆ ไว้  
+- desc ใหญ่ไปพื้นที่แสดงผลไม่พอ
+- ปรับหน้านี้ให่สวยงามขึ้น อย่างมืออาชีพ ดูทันสมัย น่าใช้งาน
+
+
+
+
+
+

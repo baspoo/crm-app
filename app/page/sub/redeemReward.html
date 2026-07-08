@@ -1,0 +1,1399 @@
+<style>
+    /* ==========================================
+       Redeem Reward Page (Flat Theme & Fixed Layout)
+       รองรับ Global Theme จาก style.css
+       ========================================== */
+
+    .rr-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        background-color: var(--theme-bg-app, #f8fafc);
+        color: var(--theme-text-main, #1f2937);
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .rr-wrapper *,
+    .rr-wrapper *::before,
+    .rr-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    .rr-hidden {
+        display: none !important;
+    }
+
+    .rr-fade-in {
+        animation: rrFadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes rrFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- Scrollable Content Area --- */
+    .rr-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .rr-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* ==========================================
+       VIEW 1: INFO VIEW
+       ========================================== */
+
+    /* --- Hero Image --- */
+    .rr-hero-img-wrap {
+        width: 100%;
+        height: 180px;
+        margin: 0 0 1.5rem 0;
+        background-color: #ffffff;
+        border-radius: 0;
+        /* ตัดขอบตรงตามที่ต้องการ */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        /* เพิ่มเงาเล็กน้อยให้จุดตัดดูมีมิติ */
+        overflow: hidden;
+        position: relative;
+        border-bottom: 1px solid var(--theme-border-color, #e2e8f0);
+    }
+
+    .rr-hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* --- Title & Info Section --- */
+    .rr-info-container {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .rr-title-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .rr-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .rr-badges-wrap {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+
+    .rr-badges-wrap::-webkit-scrollbar {
+        display: none;
+    }
+
+    .rr-badge {
+        flex-shrink: 0;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #1f2937);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background-color: var(--theme-bg-app, #f1f5f9);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+    }
+
+    .rr-badge.onetime {
+        background-color: #fffbeb;
+        color: #d97706;
+        border-color: #fde68a;
+    }
+
+    .rr-price-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.35rem;
+    }
+
+    .rr-use-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--theme-text-muted, #6b7280);
+    }
+
+    .rr-price-val {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .rr-price-icon {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        max-width: 24px !important;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    /* --- Folder Tabs --- */
+    .rr-tabs-container {
+        position: relative;
+    }
+
+    .rr-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: -1px;
+        position: relative;
+        z-index: 2;
+        padding: 0 1rem;
+    }
+
+    .rr-tab-btn {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #9ca3af);
+        background: #f8fafc;
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        position: relative;
+    }
+
+    .rr-tab-btn.active {
+        background: var(--theme-bg-card, #ffffff);
+        color: var(--theme-primary, #f97316);
+        border-color: var(--theme-primary, #f97316);
+        border-bottom: 2px solid var(--theme-bg-card, #ffffff);
+    }
+
+    .rr-tab-content-box {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-primary, #f97316);
+        border-radius: 1.25rem;
+        padding: 1rem 0;
+        position: relative;
+        z-index: 1;
+        height: 220px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+        transition: height 0.3s ease;
+        /* เพื่อให้การปรับความสูงดูนุ่มนวล */
+    }
+
+    /* Class ใหม่เพื่อหดกล่องตอนที่มี Tier Banner */
+    .rr-tab-content-box.with-tier-banner {
+        height: 165px;
+        /* ลดความสูงชดเชยพื้นที่ให้ Banner ด้านล่าง */
+    }
+
+    .rr-tab-content-inner {
+        height: 100%;
+        overflow-y: auto;
+        padding: 0 1.25rem;
+        margin-right: 6px;
+        padding-right: 0.75rem;
+    }
+
+    /* Scrollbar for content box */
+    .rr-tab-content-inner::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .rr-tab-content-inner::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .rr-tab-content-inner::-webkit-scrollbar-track {
+        margin: 0.75rem 0;
+    }
+
+    .rr-tab-content {
+        font-size: 0.85rem;
+        color: var(--theme-text-main, #4b5563);
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    /* Styles for Tier Requirements Banner (1 Line Redesign) */
+    .rr-tier-req-card {
+        display: flex;
+        flex-direction: row;
+        /* จัดให้อยู่ในบรรทัดเดียวกัน */
+        align-items: center;
+        gap: 0.75rem;
+        background: #fffbeb;
+        border: 1px dashed #f59e0b;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1rem;
+        margin-top: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1), 0 2px 4px -1px rgba(245, 158, 11, 0.06);
+        overflow-x: auto;
+        /* สามารถเลื่อนแนวนอนได้ถ้าข้อมูลยาว */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .rr-tier-req-card::-webkit-scrollbar {
+        display: none;
+    }
+
+    .rr-tier-req-header {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #92400e;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0;
+        white-space: nowrap;
+        /* ไม่ให้ข้อความตกบรรทัด */
+    }
+
+    .rr-tier-req-header i {
+        color: #f59e0b;
+        font-size: 1rem;
+    }
+
+    .rr-tier-list-inline {
+        display: flex;
+        flex-wrap: nowrap;
+        /* ไม่ให้ตกบรรทัด */
+        gap: 0.4rem;
+        align-items: center;
+    }
+
+    .rr-tier-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        /* ป้องกันเนื้อหาในปุ่มหักบรรทัด */
+    }
+
+    .rr-tier-badge img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    /* --- Bottom Bar --- */
+    .rr-bottom-bar {
+        width: 100%;
+        background-color: var(--theme-bg-card, #ffffff);
+        border-top: 1px solid var(--theme-border-color, #f1f5f9);
+        padding: 1rem 1.5rem;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.05);
+        z-index: 100;
+        flex-shrink: 0;
+    }
+
+    .rr-qty-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .rr-qty-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+    }
+
+    .rr-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .rr-qty-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        background-color: #f8fafc;
+        color: var(--theme-text-main, #1f2937);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .rr-qty-btn:active {
+        transform: scale(0.9);
+        background-color: #e2e8f0;
+    }
+
+    .rr-qty-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .rr-qty-val {
+        font-weight: 800;
+        font-size: 1.25rem;
+        min-width: 1.5rem;
+        text-align: center;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .rr-btn-main {
+        flex: 1;
+        background-color: var(--theme-primary, #f97316);
+        color: #ffffff;
+        border: none;
+        padding: 0 0.5rem;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        height: 3.5rem;
+        box-shadow: 0 6px 15px -3px color-mix(in srgb, var(--theme-primary) 40%, transparent);
+        white-space: nowrap;
+    }
+
+    .rr-btn-main:active {
+        transform: scale(0.96);
+    }
+
+    .rr-btn-main:disabled {
+        background-color: #cbd5e1;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+    .rr-btn-total-icon {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        max-width: 20px !important;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    /* ==========================================
+       VIEW 2: CONFIRM VIEW 
+       ========================================== */
+    .rr-confirm-header {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+        margin-bottom: 0.5rem;
+        gap: 0.75rem;
+    }
+
+    .rr-btn-back-header {
+        width: 2.25rem;
+        height: 2.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 50%;
+        font-size: 1rem;
+        color: var(--theme-text-main, #1f2937);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .rr-btn-back-header:active {
+        transform: scale(0.9);
+    }
+
+    .rr-confirm-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+        margin: 0;
+    }
+
+    .rr-confirm-box {
+        padding: 0 1.5rem 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .rr-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .rr-section-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .rr-card-flat {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        position: relative;
+        box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    .rr-btn-change-addr {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        color: #4b5563;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0.35rem 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease;
+    }
+
+    .rr-btn-change-addr:active {
+        transform: scale(0.95);
+        background: #f1f5f9;
+    }
+
+    .rr-addr-content {
+        font-size: 0.85rem;
+        color: var(--theme-text-main, #4b5563);
+        line-height: 1.5;
+    }
+
+    .rr-addr-content strong {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .rr-addr-empty {
+        text-align: center;
+        color: #ef4444;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .rr-digital-note-inner {
+        background-color: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 0.75rem;
+        padding: 0.85rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .rr-digital-note-inner i {
+        color: #10b981;
+        margin-top: 0.125rem;
+    }
+
+    .rr-digital-note-inner p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #065f46;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .rr-reward-summary-flex {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .rr-reward-img-mini {
+        width: 85px;
+        height: 85px;
+        border-radius: 1rem;
+        background-color: #f3f4f6;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid #f1f5f9;
+    }
+
+    .rr-reward-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rr-reward-name-mini {
+        font-size: 1rem;
+        font-weight: 800;
+        margin: 0 0 0.35rem 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .rr-reward-desc-mini {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-top: 0.5rem;
+        margin-bottom: auto;
+    }
+
+    .rr-reward-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .rr-reward-price-left {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+
+    .rr-qty-multiplier {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #111827;
+    }
+
+    .rr-sum-point-icon {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        max-width: 20px !important;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .rr-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .rr-total-label {
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+        font-size: 1rem;
+    }
+
+    .rr-total-value {
+        font-size: 1.5rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .rr-confirm-point-icon {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .rr-btn-confirm-full {
+        width: 100%;
+        background-color: var(--theme-primary, #f97316);
+        color: #ffffff;
+        border: none;
+        padding: 1.1rem;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 6px 15px -3px color-mix(in srgb, var(--theme-primary) 40%, transparent);
+    }
+
+    .rr-btn-confirm-full:active {
+        transform: scale(0.97);
+    }
+</style>
+
+<div class="rr-wrapper">
+
+    <!-- Scrollable Content -->
+    <div class="rr-content">
+
+        <!-- ==========================================
+             VIEW 1: INFORMATION
+             ========================================== -->
+        <div id="rr-view-info" class="rr-fade-in">
+
+            <!-- Hero Image (Full Width) -->
+            <div class="rr-hero-img-wrap">
+                <img id="rr-img" src="" class="rr-hero-img" alt="Reward"
+                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='">
+            </div>
+
+            <div class="rr-info-container">
+                <!-- Title Row & Price & Badges -->
+                <div class="rr-title-row">
+                    <h1 id="rr-name" class="rr-title">Loading...</h1>
+
+                    <!-- ย้ายการใช้ Point มาไว้ใต้ชื่อด้านซ้าย -->
+                    <div class="rr-price-wrap">
+                        <span class="rr-use-text" data-i18n="usePointsLabel">ใช้ :</span>
+                        <img id="rr-point-icon" src="" class="rr-price-icon" alt="pts"
+                            onerror="this.style.display='none'">
+                        <span id="rr-price" class="rr-price-val text-amber-500">0</span>
+                        <span id="rr-price-pts-label" class="text-xs font-bold text-gray-500"
+                            data-i18n="ptsLabel">คะแนน</span>
+                    </div>
+
+                    <!-- Badges (แถวเดียวกัน ไม่ตกบรรทัด) -->
+                    <div id="rr-badges" class="rr-badges-wrap">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Tabs & Content -->
+                <div class="rr-tabs-container">
+                    <div class="rr-tabs">
+                        <button id="rr-tab-desc" class="rr-tab-btn active"
+                            onclick="window.RedeemRewardCtrl.switchTab('desc')">
+                            <span data-i18n="tabDesc">รายละเอียด</span>
+                        </button>
+                        <button id="rr-tab-terms" class="rr-tab-btn"
+                            onclick="window.RedeemRewardCtrl.switchTab('terms')">
+                            <span data-i18n="tabTerms">เงื่อนไข</span>
+                        </button>
+                    </div>
+                    <div class="rr-tab-content-box">
+                        <!-- Inner wrapper for scrollbar management -->
+                        <div class="rr-tab-content-inner">
+                            <div id="rr-content-desc" class="rr-tab-content"></div>
+                            <!-- เปลี่ยนเป็น innerHTML ได้ตามต้องการ (ไม่ครอบโค้ดด้วยการหนีตัวอักษร) -->
+                            <div id="rr-content-terms" class="rr-tab-content rr-hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW LOCATION: Tier Requirement Banner displayed below tabs directly in info container -->
+                <div id="rr-tier-banner" class="rr-hidden"></div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 2: FINAL CONFIRM
+             ========================================== -->
+        <div id="rr-view-confirm" class="rr-fade-in rr-hidden">
+            <!-- Header with Back Button -->
+            <div class="rr-confirm-header">
+                <button class="rr-btn-back-header" onclick="window.RedeemRewardCtrl.goBack()">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <h2 class="rr-confirm-title" data-i18n="confirmTitle">ยืนยันการแลกรางวัล</h2>
+            </div>
+
+            <div class="rr-confirm-box">
+
+                <!-- Address Section (Always visible) -->
+                <div class="rr-section">
+                    <div class="rr-section-header">
+                        <h3 class="rr-section-title">
+                            <i class="fa-solid fa-truck-fast text-slate-500"></i> <span
+                                data-i18n="addrTitle">ที่อยู่จัดส่ง</span>
+                        </h3>
+                        <button id="rr-btn-change-addr" class="rr-btn-change-addr"
+                            onclick="window.RedeemRewardCtrl.openAddressSelect()">
+                            <i class="fa-solid fa-pen text-xs"></i> <span data-i18n="btnChangeAddr">แก้ไขโปรไฟล์</span>
+                        </button>
+                    </div>
+                    <div class="rr-card-flat">
+                        <div id="rr-addr-content" class="rr-addr-content">
+                            <!-- Address or Digital Note injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Summary Section -->
+                <div class="rr-section">
+                    <div class="rr-section-header">
+                        <h3 class="rr-section-title">
+                            <i class="fa-solid fa-gift text-slate-500"></i> <span
+                                data-i18n="rewardTitle">ของรางวัล</span>
+                        </h3>
+                    </div>
+                    <div class="rr-card-flat">
+                        <div class="rr-reward-summary-flex">
+                            <img id="rr-sum-img" src="" class="rr-reward-img-mini" alt="Reward">
+                            <div class="rr-reward-details">
+                                <h4 id="rr-sum-name" class="rr-reward-name-mini">Name</h4>
+                                <div id="rr-sum-badges" class="rr-badges-wrap mt-0.5 mb-1" style="overflow-x:hidden;">
+                                </div>
+                                <p id="rr-sum-desc" class="rr-reward-desc-mini">Desc</p>
+
+                                <div class="rr-reward-price-row">
+                                    <div class="rr-reward-price-left">
+                                        <img id="rr-sum-point-icon" src="" class="rr-sum-point-icon" alt="pts">
+                                        <span id="rr-sum-price" class="font-bold text-gray-700 text-sm">0</span>
+                                        <span id="rr-sum-pts-label" class="font-bold text-gray-500 text-xs"
+                                            data-i18n="ptsLabel">คะแนน</span>
+                                    </div>
+                                    <span class="rr-qty-multiplier">x<span id="rr-sum-qty">1</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Bar (Info View) -->
+    <div id="rr-bottom-info" class="rr-bottom-bar">
+        <div class="rr-qty-section">
+            <span class="rr-qty-label" data-i18n="qtyLabel">ต้องการแลกเป็นจำนวน:</span>
+            <div class="rr-qty-controls">
+                <button class="rr-qty-btn" id="rr-btn-minus" onclick="window.RedeemRewardCtrl.changeQty(-1)"><i
+                        class="fa-solid fa-minus text-sm"></i></button>
+                <span class="rr-qty-val" id="rr-qty-val">1</span>
+                <button class="rr-qty-btn" id="rr-btn-plus" onclick="window.RedeemRewardCtrl.changeQty(1)"><i
+                        class="fa-solid fa-plus text-sm"></i></button>
+            </div>
+        </div>
+        <button id="rr-btn-action-info" class="rr-btn-main" onclick="window.RedeemRewardCtrl.handleMainAction()">
+            <img id="rr-bottom-point-icon" src="" class="rr-btn-total-icon" alt="pts">
+            <span id="rr-bottom-total">0</span>
+            <span id="rr-btn-pts-label" class="text-sm font-normal" data-i18n="ptsLabel">คะแนน</span>
+        </button>
+    </div>
+
+    <!-- Bottom Bar (Confirm View) -->
+    <div id="rr-bottom-confirm" class="rr-bottom-bar rr-hidden"
+        style="flex-direction: column; align-items: stretch; padding-top: 1.25rem;">
+        <div class="rr-confirm-bottom">
+            <div class="rr-total-row">
+                <span class="rr-total-label" data-i18n="totalPointLabel">Total Point :</span>
+                <div class="rr-total-value text-amber-500 flex items-center gap-1.5">
+                    <img id="rr-confirm-point-icon" src="" class="rr-confirm-point-icon" alt="pts">
+                    <span id="rr-confirm-total">0</span>
+                    <span id="rr-confirm-pts-label" class="text-sm font-bold text-gray-500"
+                        data-i18n="ptsLabel">คะแนน</span>
+                </div>
+            </div>
+            <button id="rr-btn-action-confirm" class="rr-btn-confirm-full"
+                onclick="window.RedeemRewardCtrl.handleConfirmAction()" data-i18n="btnConfirm">
+                ยืนยัน
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.RedeemRewardCtrl = (function () {
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const i18n = {
+            Th: {
+                tabDesc: "รายละเอียด",
+                tabTerms: "เงื่อนไข",
+                qtyLabel: "ต้องการแลกเป็นจำนวน:",
+                usePointsLabel: "ใช้ :",
+                confirmTitle: "ยืนยันการแลกรางวัล",
+                rewardTitle: "ของรางวัล",
+                addrTitle: "ที่อยู่จัดส่ง",
+                btnChangeAddr: "แก้ไขที่อยู่",
+                btnConfirm: "ยืนยัน",
+                ptsLabel: "คะแนน",
+                totalPointLabel: "รวมคะแนน :",
+                tierReqTitle: "สงวนสิทธิ์เฉพาะ:", // ปรับคำให้กระชับ
+
+                type_physical: "Physical Reward",
+                type_digital: "Digital Reward",
+                type_game: "Game Reward",
+                type_gacha: "Gacha Reward",
+                badgeOneTime: "แลกได้ครั้งเดียว",
+                badgeTier: "เฉพาะบางระดับ",
+
+                noteDigital: "รางวัลนี้เป็นสินค้าที่ไม่ต้องทำการจัดส่ง ระบบจะนำเข้ากระเป๋าของคุณอัตโนมัติ",
+                addrEmpty: "กรุณาเพิ่มที่อยู่สำหรับจัดส่ง",
+
+                errLoad: "ไม่สามารถโหลดข้อมูลรางวัลได้",
+                errPts: "คะแนนสะสมไม่พอ",
+                errStock: "สินค้าหมด",
+                errRedeem: "เกิดข้อผิดพลาดในการแลกรางวัล กรุณาลองใหม่",
+                errNotEligible: "ไม่มีสิทธิ์แลกรางวัล", // เพิ่มคำใหม่สำหรับกรณีไม่ผ่านเงื่อนไขอื่นๆ
+
+                msgCompletePhysical: "แลกของรางวัลสำเร็จ เตรียมจัดส่งไปยังที่อยู่ของคุณ",
+                msgCompleteDigital: "แลกของรางวัลสำเร็จ คุณต้องการไปที่กระเป๋าเพื่อดูรางวัลหรือไม่?",
+                msgConfirmDigitalTitle: "แลกรางวัลสำเร็จ",
+                btnGoInventory: "ไปกระเป๋าของฉัน",
+                btnLater: "ไว้ทีหลัง"
+            },
+            En: {
+                tabDesc: "Details",
+                tabTerms: "Terms",
+                qtyLabel: "Quantity:",
+                usePointsLabel: "Use :",
+                confirmTitle: "Confirm Redemption",
+                rewardTitle: "Reward",
+                addrTitle: "Shipping Address",
+                btnChangeAddr: "Edit Address",
+                btnConfirm: "Confirm",
+                ptsLabel: "Pts",
+                totalPointLabel: "Total Point :",
+                tierReqTitle: "Exclusive for:",
+
+                type_physical: "Physical Reward",
+                type_digital: "Digital Reward",
+                type_game: "Game Reward",
+                type_gacha: "Gacha Reward",
+                badgeOneTime: "1 Time Only",
+                badgeTier: "Specific Tiers Only",
+
+                noteDigital: "This reward does not require shipping. It will be added to your inventory automatically.",
+                addrEmpty: "Please add a shipping address",
+
+                errLoad: "Failed to load reward data",
+                errPts: "Insufficient points",
+                errStock: "Out of stock",
+                errRedeem: "An error occurred during redemption. Please try again.",
+                errNotEligible: "Not Eligible",
+
+                msgCompletePhysical: "Redemption successful. The item will be shipped to your address.",
+                msgCompleteDigital: "Redemption successful. Do you want to go to your inventory to view the reward?",
+                msgConfirmDigitalTitle: "Redemption Successful",
+                btnGoInventory: "Go to Inventory",
+                btnLater: "Later"
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let REWARD_ID = null;
+        let responseRef = null;
+
+        let state = {
+            reward: null,
+            quantity: 1,
+            maxQty: 1,
+            view: 'info', // 'info' or 'confirm'
+            selectedAddress: null
+        };
+
+        const els = {
+            viewInfo: document.getElementById('rr-view-info'),
+            viewConfirm: document.getElementById('rr-view-confirm'),
+            bottomInfo: document.getElementById('rr-bottom-info'),
+            bottomConfirm: document.getElementById('rr-bottom-confirm'),
+
+            btnActionInfo: document.getElementById('rr-btn-action-info'),
+            btnActionConfirm: document.getElementById('rr-btn-action-confirm'),
+
+            qtyVal: document.getElementById('rr-qty-val'),
+            btnMinus: document.getElementById('rr-btn-minus'),
+            btnPlus: document.getElementById('rr-btn-plus'),
+
+            bottomTotal: document.getElementById('rr-bottom-total'),
+            confirmTotal: document.getElementById('rr-confirm-total')
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        async function fetchData() {
+            if (!REWARD_ID) return;
+            const dict = i18n[currentLang];
+
+            if (window.PageManager) PageManager.showLoading();
+            try {
+                if (window.CrmApi) {
+                    state.reward = await CrmApi.getReward(REWARD_ID);
+                }
+
+                if (!state.reward) throw new Error("No reward data");
+
+                const userPoints = window.Utility && typeof Utility.getPoints === 'function' ? Utility.getPoints() : 0;
+
+                let affordableQty = state.reward.points > 0 ? Math.floor(userPoints / state.reward.points) : 99;
+                if (state.reward.oneTimeRedemption) affordableQty = 1;
+
+                state.maxQty = Math.min(affordableQty, state.reward.quantity > 0 ? state.reward.quantity : 99);
+                if (state.maxQty < 1) state.maxQty = 1;
+
+                if (state.reward.rewardType === 'physical' && window.crmData?.crmUser?.userAddresses) {
+                    const addrs = window.crmData.crmUser.userAddresses;
+                    state.selectedAddress = addrs.find(a => a.isDefault) || addrs[0] || null;
+                }
+
+                renderInfoView();
+                updateBottomBar();
+                checkCanRedeem();
+
+            } catch (e) {
+                console.error(e);
+                if (window.PageManager) PageManager.showFailed("Error", dict.errLoad);
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        function getBadgesHTML(rw, dict) {
+            let html = '';
+            // Type Badge
+            const typeName = dict[`type_${rw.rewardType}`] || rw.rewardType;
+            html += `<span class="rr-badge"><i class="fa-solid fa-cube text-[10px]"></i> ${typeName}</span>`;
+
+            // One Time Badge
+            if (rw.oneTimeRedemption) {
+                html += `<span class="rr-badge onetime"><i class="fa-solid fa-bolt text-[10px]"></i> ${dict.badgeOneTime}</span>`;
+            }
+
+            // Note: ลบ Badge 'เฉพาะบางระดับ' ตรงนี้ออกแล้ว เพราะเราใช้ Banner แสดงรายละเอียดระดับแบบเต็มรูปแบบด้านล่างแทนเพื่อป้องกันความซ้ำซ้อน
+            return html;
+        }
+
+        function renderInfoView() {
+            const rw = state.reward;
+            const dict = i18n[currentLang];
+            const tabContentBox = document.querySelector('.rr-tab-content-box');
+
+            document.getElementById('rr-img').src = rw.image || "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg==";
+            document.getElementById('rr-name').innerText = rw.name || "-";
+            document.getElementById('rr-price').innerText = rw.points > 0 ? rw.points.toLocaleString() : (currentLang === 'En' ? 'Free' : 'ฟรี');
+
+            // Set Point Icons & Labels
+            const isFree = rw.points <= 0;
+            const ptIcon = window.Utility ? Utility.getAssetPath("pointIcon") : null;
+            const toggleVisibility = (id, show) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = show ? '' : 'none';
+            };
+
+            if (ptIcon && !isFree) {
+                ['rr-point-icon', 'rr-bottom-point-icon', 'rr-sum-point-icon', 'rr-confirm-point-icon'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.src = ptIcon; el.style.display = 'block'; }
+                });
+                ['rr-price-pts-label', 'rr-btn-pts-label', 'rr-sum-pts-label', 'rr-confirm-pts-label'].forEach(id => toggleVisibility(id, true));
+            } else {
+                ['rr-point-icon', 'rr-bottom-point-icon', 'rr-sum-point-icon', 'rr-confirm-point-icon'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.style.display = 'none'; }
+                });
+                ['rr-price-pts-label', 'rr-btn-pts-label', 'rr-sum-pts-label', 'rr-confirm-pts-label'].forEach(id => toggleVisibility(id, false));
+            }
+
+            document.getElementById('rr-badges').innerHTML = getBadgesHTML(rw, dict);
+            document.getElementById('rr-content-desc').innerText = rw.description || "-";
+
+            // -----------------------------------------------------
+            // การแสดงผลเงื่อนไข Tier (Modern Banner ใต้ Tabs)
+            // -----------------------------------------------------
+            const tierBannerContainer = document.getElementById('rr-tier-banner');
+            if (rw.tierRestricted && rw.requiredTiers && rw.requiredTiers.length > 0) {
+                let tierListHTML = '';
+                rw.requiredTiers.forEach(reqTier => {
+                    // ดึงข้อมูลเต็มของ Tier
+                    let tierData = window.Utility && typeof Utility.getTier === 'function' ? Utility.getTier(reqTier.id) : null;
+
+                    let name = tierData?.name || reqTier.name;
+                    let color = tierData?.color || '#9ca3af';
+                    let iconHTML = tierData?.icon ? `<img src="${tierData.icon}" alt="${name}">` : '';
+
+                    tierListHTML += `
+                        <div class="rr-tier-badge" style="background-color: ${color};">
+                            ${iconHTML}
+                            <span>${name}</span>
+                        </div>
+                    `;
+                });
+
+                // นำเข้า Modern Card Banner แถวเดียว ไปวางไว้ใต้ส่วน Tabs
+                tierBannerContainer.innerHTML = `
+                    <div class="rr-tier-req-card">
+                        <div class="rr-tier-req-header">
+                            <i class="fa-solid fa-crown"></i> ${dict.tierReqTitle}
+                        </div>
+                        <div class="rr-tier-list-inline">
+                            ${tierListHTML}
+                        </div>
+                    </div>
+                `;
+                tierBannerContainer.classList.remove('rr-hidden');
+                tabContentBox.classList.add('with-tier-banner'); // หดความสูงกล่องเนื้อหา
+            } else {
+                tierBannerContainer.innerHTML = '';
+                tierBannerContainer.classList.add('rr-hidden');
+                tabContentBox.classList.remove('with-tier-banner'); // คืนค่าความสูงกล่องเนื้อหา
+            }
+
+            // -----------------------------------------------------
+            // การจัดเตรียมเนื้อหาสำหรับ Tab Terms (แท็บเงื่อนไขเดิม)
+            // -----------------------------------------------------
+            let rawTermsText = rw.termsConditions || "-";
+            // ป้องกัน XSS แบบง่าย และคงรูปแบบการขึ้นบรรทัดใหม่
+            let escapedTermsText = rawTermsText
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+            escapedTermsText = escapedTermsText.replace(/\n/g, '<br>');
+
+            document.getElementById('rr-content-terms').innerHTML = `<div>${escapedTermsText}</div>`;
+            // -----------------------------------------------------
+
+            // สีกรอบ Tab อิงตาม Theme Primary
+            const primaryColor = document.documentElement.style.getPropertyValue('--theme-primary') || '#f97316';
+            document.querySelector('.rr-tab-content-box').style.borderColor = primaryColor;
+            document.getElementById('rr-tab-desc').style.color = primaryColor;
+        }
+
+        function renderConfirmView() {
+            const rw = state.reward;
+            const dict = i18n[currentLang];
+
+            // Reward Summary Card
+            document.getElementById('rr-sum-img').src = rw.image || "";
+            document.getElementById('rr-sum-name').innerText = rw.name;
+            document.getElementById('rr-sum-desc').innerText = rw.description || "";
+            document.getElementById('rr-sum-price').innerText = rw.points > 0 ? rw.points.toLocaleString() : (currentLang === 'En' ? 'Free' : 'ฟรี');
+            document.getElementById('rr-sum-qty').innerText = state.quantity;
+            document.getElementById('rr-sum-badges').innerHTML = getBadgesHTML(rw, dict);
+
+            // Address / Digital Note
+            const addrContent = document.getElementById('rr-addr-content');
+            const btnChangeAddr = document.getElementById('rr-btn-change-addr');
+
+            if (rw.rewardType === 'physical') {
+                btnChangeAddr.style.display = 'flex';
+                if (state.selectedAddress) {
+                    const a = state.selectedAddress;
+                    const fullAddr = [a.addressLine1, a.addressLine2, a.subdistrict, a.district, a.province, a.postalCode].filter(Boolean).join(' ');
+                    addrContent.innerHTML = `
+                        <div class="text-xs font-semibold text-gray-500 mb-1">ที่อยู่ :</div>
+                        <div class="text-sm text-gray-800 leading-relaxed">${fullAddr}<br>
+                        <strong>${a.contactPerson || '-'} (${a.contactPhone || '-'})</strong></div>
+                    `;
+                    els.btnActionConfirm.disabled = false;
+                } else {
+                    addrContent.innerHTML = `<div class="rr-addr-empty">${dict.addrEmpty}</div>`;
+                    els.btnActionConfirm.disabled = true;
+                }
+            } else {
+                btnChangeAddr.style.display = 'none';
+                addrContent.innerHTML = `
+                    <div class="rr-digital-note-inner">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <p data-i18n="noteDigital">${dict.noteDigital}</p>
+                    </div>
+                `;
+                els.btnActionConfirm.disabled = false;
+            }
+        }
+
+        function updateBottomBar() {
+            const total = state.reward ? (state.reward.points * state.quantity) : 0;
+            // set numbers as default, will be overridden by checkCanRedeem if not eligible
+            els.bottomTotal.innerText = total.toLocaleString();
+            els.confirmTotal.innerText = total.toLocaleString();
+
+            // set default disable state for min/max
+            els.btnMinus.disabled = state.quantity <= 1;
+            els.btnPlus.disabled = state.quantity >= state.maxQty;
+        }
+
+        function checkCanRedeem() {
+            const dict = i18n[currentLang];
+            let canRedeem = true;
+            let errMsg = dict.errNotEligible;
+
+            // ตรวจสอบจาก Utility (ถ้ามี)
+            if (window.Utility && typeof Utility.isCanRedeem === 'function') {
+                canRedeem = Utility.isCanRedeem(state.reward, state.quantity);
+            } else if (state.reward && state.reward.canRedeem === false) {
+                canRedeem = false;
+            }
+
+            // คำนวณ Point ว่าพอมั้ย
+            const userPoints = window.Utility && typeof Utility.getPoints === 'function' ? Utility.getPoints() : 0;
+            const requiredPoints = state.reward ? state.reward.points * state.quantity : 0;
+
+            if (!canRedeem) {
+                // จัดการข้อความ Error ให้ตรงกับสาเหตุที่แลกไม่ได้จริงๆ
+                if (userPoints < requiredPoints) {
+                    errMsg = dict.errPts; // "คะแนนสะสมไม่พอ"
+                } else if (state.reward.quantity <= 0) {
+                    errMsg = dict.errStock; // "สินค้าหมด"
+                }
+
+                els.btnActionInfo.disabled = true;
+                els.bottomTotal.innerText = errMsg;
+                els.bottomTotal.style.fontSize = "1rem"; // ปรับขนาดฟอนต์ให้พอดีไม่ใหญ่เกินไป
+
+                document.getElementById('rr-bottom-point-icon').style.display = 'none';
+                document.getElementById('rr-btn-pts-label').style.display = 'none';
+
+                // ปิดปุ่มเพิ่มลดจำนวน หากไม่สามารถแลกได้
+                els.btnPlus.disabled = true;
+                els.btnMinus.disabled = true;
+            } else {
+                els.btnActionInfo.disabled = false;
+                els.bottomTotal.style.fontSize = ""; // รีเซ็ตการบังคับขนาดฟอนต์กลับเป็นค่าเดิมจาก class
+
+                // คืนค่าการแสดง Point
+                els.bottomTotal.innerText = requiredPoints > 0 ? requiredPoints.toLocaleString() : (currentLang === 'En' ? 'Free' : 'ฟรี');
+
+                if (requiredPoints > 0 && window.Utility && Utility.getAssetPath("pointIcon")) {
+                    document.getElementById('rr-bottom-point-icon').style.display = 'block';
+                    document.getElementById('rr-btn-pts-label').style.display = '';
+                }
+            }
+        }
+
+        // ==========================================
+        // 4. ACTIONS
+        // ==========================================
+        window.switchTab = function (tab) {
+            document.getElementById('rr-tab-desc').classList.remove('active');
+            document.getElementById('rr-tab-terms').classList.remove('active');
+            document.getElementById('rr-content-desc').classList.add('rr-hidden');
+            document.getElementById('rr-content-terms').classList.add('rr-hidden');
+
+            const activeBtn = document.getElementById(`rr-tab-${tab}`);
+            activeBtn.classList.add('active');
+            document.getElementById(`rr-content-${tab}`).classList.remove('rr-hidden');
+
+            // เปลี่ยนสีขอบกรอบ Tab ให้ตรงกับสี Theme
+            const primaryColor = document.documentElement.style.getPropertyValue('--theme-primary') || '#f97316';
+            activeBtn.style.color = primaryColor;
+            activeBtn.style.borderColor = primaryColor;
+            activeBtn.style.borderBottomColor = 'transparent';
+            document.querySelector('.rr-tab-content-box').style.borderColor = primaryColor;
+
+            // รีเซ็ตปุ่มที่ไม่ได้เลือกให้กลับเป็นสีเทา
+            const inactiveBtn = tab === 'desc' ? document.getElementById('rr-tab-terms') : document.getElementById('rr-tab-desc');
+            inactiveBtn.style.color = '#9ca3af';
+            inactiveBtn.style.borderColor = '#d1d5db';
+            inactiveBtn.style.borderBottomColor = primaryColor;
+        };
+
+        window.changeQty = function (diff) {
+            let newQty = state.quantity + diff;
+            if (newQty >= 1 && newQty <= state.maxQty) {
+                state.quantity = newQty;
+                els.qtyVal.innerText = state.quantity;
+
+                // ควรอัปเดต View และตรวจสอบสิทธิ์แบบเรียงลำดับ
+                updateBottomBar();
+                checkCanRedeem();
+            }
+        };
+
+        window.goBack = function () {
+            if (state.view === 'confirm') {
+                state.view = 'info';
+                els.viewConfirm.classList.add('rr-hidden');
+                els.viewInfo.classList.remove('rr-hidden');
+
+                els.bottomConfirm.classList.add('rr-hidden');
+                els.bottomInfo.classList.remove('rr-hidden');
+
+                updateBottomBar();
+                checkCanRedeem();
+            } else {
+                if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                    PageManager.closeModal();
+                }
+            }
+        };
+
+        window.handleMainAction = function () {
+            if (state.view === 'info') {
+                state.view = 'confirm';
+                els.viewInfo.classList.add('rr-hidden');
+                els.viewConfirm.classList.remove('rr-hidden');
+
+                els.bottomInfo.classList.add('rr-hidden');
+                els.bottomConfirm.classList.remove('rr-hidden');
+
+                renderConfirmView();
+            }
+        };
+
+        window.handleConfirmAction = async function () {
+            await confirmRedeem();
+        }
+
+        window.openAddressSelect = function () {
+            if (window.PageManager && typeof PageManager.openModal === 'function') {
+                PageManager.openModal("address", { mode: "select" }, function (res) {
+                    if (res && res.success && res.address) {
+                        state.selectedAddress = res.address;
+                        renderConfirmView(); // Re-render to show updated address
+                    }
+                });
+            }
+        };
+
+        async function confirmRedeem() {
+            const dict = i18n[currentLang];
+            const addressId = state.selectedAddress ? state.selectedAddress.id : null;
+
+            if (window.PageManager) PageManager.showLoading();
+
+            try {
+                if (window.CrmApi) {
+                    const success = await CrmApi.onRedeemReward(state.reward.id, state.quantity, addressId);
+
+                    if (success) {
+                        if (responseRef) responseRef.success = true;
+                        if (window.PageManager) PageManager.closeModal();
+
+                        setTimeout(() => {
+                            if (state.reward.rewardType === 'digital' || state.reward.rewardType === 'game') {
+                                if (window.PageManager && typeof PageManager.showConfirm === 'function') {
+                                    PageManager.showConfirm(
+                                        dict.msgConfirmDigitalTitle,
+                                        dict.msgCompleteDigital,
+                                        "🎟️",
+                                        () => { PageManager.openModal("inventory"); },
+                                        () => { if (window.updateConsoleHeader) updateConsoleHeader(); }
+                                    );
+                                }
+                            } else {
+                                if (window.PageManager && typeof PageManager.showComplete === 'function') {
+                                    PageManager.showComplete(
+                                        dict.confirmTitle,
+                                        dict.msgCompletePhysical,
+                                        "📦",
+                                        () => { if (window.updateConsoleHeader) updateConsoleHeader(); }
+                                    );
+                                }
+                            }
+                        }, 300);
+
+                    } else {
+                        throw new Error("Redeem failed from API");
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+                if (window.PageManager) PageManager.showFailed("Error", dict.errRedeem);
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        // ==========================================
+        // 5. LIFECYCLE (onInit)
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                responseRef = response;
+                REWARD_ID = payload?.rewardId || payload?.id;
+
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+                applyLanguage();
+                fetchData();
+
+                // Set default tab color
+                const primaryColor = document.documentElement.style.getPropertyValue('--theme-primary') || '#f97316';
+                document.getElementById('rr-tab-desc').style.color = primaryColor;
+                document.getElementById('rr-tab-desc').style.borderColor = primaryColor;
+                document.getElementById('rr-tab-desc').style.borderBottomColor = 'transparent';
+                document.querySelector('.rr-tab-content-box').style.borderColor = primaryColor;
+            },
+            switchTab: window.switchTab,
+            changeQty: window.changeQty,
+            goBack: window.goBack,
+            handleMainAction: window.handleMainAction,
+            handleConfirmAction: window.handleConfirmAction,
+            openAddressSelect: window.openAddressSelect
+        };
+
+    })();
+
+    window.onInit = function (payload, response) {
+        window.RedeemRewardCtrl.init(payload, response);
+    };
+
+</script>

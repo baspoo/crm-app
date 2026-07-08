@@ -13,7 +13,7 @@
     /**
      * @typedef {Object} CurrentData
      * @property {string} language
-     * @property {Object|null} LIFF_PAYLOAD
+     * @property {LiffPayload|null} LIFF_PAYLOAD
      * @property {InitializeData|null} initializeData
      * @property {StoreInfo|null} storeInfo
      * @property {string|null} gameId
@@ -32,6 +32,7 @@
      * @property {CouponData[]|null} coupons
      * @property {ShippingOrderData[]|null} orders
      * @property {LeaderboardData|null} leaderboard
+     * @property {GameCampaign|null} gameCampaign
      */
     /** @type {CurrentData} */
     const currentData = {
@@ -54,7 +55,8 @@
         rewards: null,
         coupons: null,
         orders: null,
-        leaderboard: null
+        leaderboard: null,
+        gameCampaign: null
     };
 
 
@@ -268,15 +270,16 @@
 
             // `?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}&district=${encodeURIComponent(district)}`
             // `?province=${encodeURIComponent(province)}&amphoe=${encodeURIComponent(amphoe)}&district=${encodeURIComponent(district)}`
-            const path = "getAddress";
+            let path = "getAddress";
             if (province) path += `?province=${encodeURIComponent(province)}`;
             if (amphoe) path += `&amphoe=${encodeURIComponent(amphoe)}`;
             if (district) path += `&district=${encodeURIComponent(district)}`;
 
             /** @type { ResponseData } */
             const res = await AppApi.callApiOpen(path, {});
-            if (!res.ok) throw new Error("API Error");
-            return await res.json();
+            console.log(res);
+            if (!res) return [];
+            return res;
         },
 
 
@@ -297,7 +300,7 @@
         createAddress: async function (address) {
             address.id = null;
             /** @type { ResponseData } */
-            const res = await AppApi.callApiInternal('crm_createAddresses', { address });
+            const res = await AppApi.callApiInternal('crm_createAddresses', address);
             if (res.result.code == 200) {
                 return true;
             }
@@ -309,7 +312,7 @@
         /** @param {CRMAddressData} address */
         updateAddress: async function (address) {
             /** @type { ResponseData } */
-            const res = await AppApi.callApiInternal('crm_updateAddresses', { address });
+            const res = await AppApi.callApiInternal('crm_updateAddresses', address);
             if (res.result.code == 200) {
                 return true;
             }
@@ -441,7 +444,7 @@
             const res = await AppApi.callApiInternal('crm_getMyCoupons', { limit: limit, offset: offset });
             if (res.result.code == 200) {
                 currentData.coupons = res.result.data.coupons;
-                return currentData.coupons;
+                return res.result.data;
             }
             else {
                 this.onfailed(res);
@@ -549,26 +552,26 @@
                     payload.gameId = gameId;
                     payload.token = token;
                     const res = await AppApi.callApiInternal('crm_openGacha', payload);
-                    if (res.result.code == 200) {
-                        return res.result.data;
+                    if (res && res.result.code == 200 && res.result.data.gachaResult) {
+                        return res.result.data.gachaResult;
                     }
                     else {
-                        this.onfailed(res);
+                        //this.onfailed(res);
                         return null;
                     }
                 }
             }
             else {
-                this.onfailed(res);
+                //this.onfailed(res);
                 return null;
             }
         },
 
         /** @returns {List<GachaData>} */
         onGetGachaRate: async function (gameId) {
-            const res = await AppApi.callApiInternal('crm_getGachaRate', { gameId: gameId });
+            const res = await AppApi.callApiInternal('getGachaRate', { gachaId: gameId });
             if (res.result.code == 200) {
-                return res.result.data;
+                return res.result.data.gachaRate;
             }
             else {
                 this.onfailed(res);

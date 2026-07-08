@@ -1,0 +1,707 @@
+
+
+[FORM]
+-----------------------------------------------------------------------------------------
+
+
+
+
+นี้คือหน้า page เดิมใช้สำหรับเปิดใน iframe ที่ใช้งานไม่ได้แล้ว
+ให้เปลี่ยนเป็นระบบใหม่ทั้งหมด  สำหรับนำไป inner เข้าหน้าหลักเหมือนกับหน้าอื่นๆ ในโปรเจ็คใหม่นี้ 
+วิเคาะห์การทำงานเดิมของหน้านี้และเปลี่ยน โครงสร้างให้สามารภทำงานได้เหมือนเดิม โดยใช้ระบบเรียก api ใหม่
+เปลี่ยนโครงสร้าง css สร้าง pageSetting สำหรับตั้งค่า และอื่นๆที่จำเป็น
+ยกเลิกการใช้ tailwind ใน code ให้เขียนแปลงเป็น css 100%
+
+ใช้ Utility.getAssetPath("xxxxxx"); สำหรับ load image path โดยใช้ key เดิม
+
+
+รับค่าเข้าด้วย window.onInit แบบนี้ และเก็บ response เอาไว้เป็น ref สำหรับส่งค่ากลับ
+window.onInit = function(payload, response) {
+    console.log("ได้รับ Payload:", payload);
+    // เซ็ตข้อมูลกลับได้ผ่าน response
+    response.status = "ok";
+};
+
+
+
+
+[## Basic ##]
+ผลิตหน้า CRM ที่สวยงามสำหรับนำไปใช้งานจริง 
+เป็นหน้าย่อยที่จะถูกระบบ pagemanger โหลดไป innerHTML ภายหลัง
+ห้ามใส่พื้นหลังเข้ามา เพราะมันมี main page ที่ใส่พื้นหลังเอาไว้แล้ว
+
+
+[## Language ##]
+ดึงภาษาที่ user เลือกไว้เพื่อนำมาแสดงผล
+ crmData.language = "En","Th" จุดแสดงภาษา text ทุกจุดในหน้านี้ทำเป็น dict key/value สำหรับ Th : {}  / En : { } แยกเอาไว้ 
+ ให้ฉันไปแก้ได้เองในอนาคตง่ายๆ และแต่ละจุดในหน้เว็ปให้เอา key ไปใส่แทนเป็นระบบ language data
+
+[## Script ##]
+javascript ห้ามใส่ style ที่ปรับเปลี่ยนความงามใดๆลงไปทั้งสิ้น ให้ template ซ่อนไว้แล้วเปิด/ปิด หรือดึง id มาใช้
+เพราะมี style จัดการอยู่แล้ว ฉันไม่ต้องการมานั่งกังวลเรื่อง style ทั้งในไฟล์ css ทั้งฝั่งอยู่ใน js มันควรจัดการที่ css ที่เดียว 
+
+[## CSS Style ##]
+ให้ดู Global Override จาก style.css เป็น master style เพื่อให้ทุกหน้าอยู่ใน Theme เดียวกัน
+และ css สำหรับจัดการหน้านี้ให้ใส่ไว้ในหน้านี้ได้เลยแต่ให้อ้างอิง master มาจากส่วนกลางเพื่อให้ปรับมูดได้
+โดยตอนที่เรายังพัฒนาอยู่ในให้ใส่ style เอาไว้ในหน้า page นี้เลยปรับแต่งให้สวยงามในหน้าเพจนี้
+ฉันจะดึง style ทุกหน้าไปรวมกันภายหลังเพื่อให้ปรับได้เองทั้งหมด แต่ให้ออกแบบสำหรับใช้ Global Override ได้เอาไว้เลย
+**สำคัญ ห้ามใช้ tailwind ต้องเป็น div + css ธรรมดาเท่านั้น**
+
+[## Service Function ##]
+มีฟังชั่นเกี่ยวกับ popup แสดงเตือน หรือ confirm ให้ใช้ของระบบ
+PageManager.showConfirm( header, message, image, onYes, onNo );
+PageManager.showOk( header, message, image, onOk );
+PageManager.showFailed( header, message, image, onOk );
+PageManager.showComplete( header, message, image, onOk );
+PageManager.showToast( header, icon );
+Utility.getAssetPath("pointIcon"); ใช้สำหรับดึง path icon point ของแอฟ
+
+มี loading ของระบบให้ใช้กรณีต้องการรอคอย api ใดๆ
+PageManager.showLoading( text );
+PageManager.hideLoading(   );
+
+[## Help ##]
+ส่วนที่ควรจะตั้งค่าได้เองเช่นรูป / สี / สไตล์ / จำนวน หรืออะไรก็แล้วแต่
+ให้ทำเป็น pageSetting = { }; เอาไว้ด้านบน และเขียน comment อธิบายให้ละเอียด
+
+-----------------------------------------------------------------------------------------
+
+
+
+[## Requirement ##]
+
+
+ปรับปรุง code ทั้งหมดในการดึงค่าออกมา
+และปรับโครงสร้างให้เหมาะสม เข้ากับธีมหน้าอื่นๆ
+
+
+ยกเลิกการดึงค่าแบบเดิม ให้ดึงค่าด้วยวิธีใหม่แทน
+
+ภาษา ใช้ Th/En แทน th/en
+ดึง current ภาษามาจาก window.crmData.language
+
+ดึง tier ของฉันออกมาจาก function นี้
+const mytier = Utility.getUserTier(); // TierData
+
+ดึง tier ทั้งหมดของร้านค้าจาก functions นี้
+const tiers = Utility.getTiers(); // TierData[]
+
+
+โครงสร้าง ของ tier
+TierData {
+    id: number;
+    name: string;
+    level: number;
+    color?: string;
+    icon?: string;
+    benefitCard?: string;
+    description?: string;
+    benefits?: string[];
+    rules?: TierRuleData[];
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+TierRuleData {
+    ruleType: string; // "total_spending" | "total_order"
+    value: string;
+    includeChannels?: string;
+    isUpgradeRule: number;
+}
+
+
+ปิด code ทั้งหมดด้วย LIFF เพื่อป้องกันไม่ให้ code ชนกันในหน้าอื่นๆที่อยู่ global
+Tier {
+    init();
+}();
+window.onInit = function(payload, response) {
+    Tier.init();
+};
+
+
+ยกเลิกการใช้ Tailwind เปลี่ยนไปใช้ CSS ธรรมดา
+
+
+[## Legacy Code ##]
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">ระดับสมาชิกและสิทธิประโยชน์</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom Scrollbar for the entire page */
+        html {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #cbd5e1 transparent; /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px; /* Thin vertical scrollbar */
+            height: 6px; /* Thin horizontal scrollbar */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Invisible track */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* Tailwind slate-300 */
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8; /* Tailwind slate-400 */
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Snap Scrolling UX */
+        .tier-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scroll-behavior: smooth;
+            /* ปรับแต่ง cursor เวลาใช้งานบน PC */
+            cursor: grab;
+        }
+        
+        .tier-slider:active {
+            cursor: grabbing;
+        }
+
+        /* ซ่อน Scrollbar ของตัว Slider */
+        .tier-slider::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .tier-card {
+            flex: 0 0 85%;
+            scroll-snap-align: center;
+            margin-right: 16px;
+            transition: transform 0.3s ease;
+            /* ป้องกันการ select text เวลากดลาก */
+            user-select: none; 
+        }
+
+        .tier-card:last-child {
+            margin-right: 7.5%; /* Padding for last card to align center */
+        }
+        
+        .tier-card:first-child {
+            margin-left: 7.5%; /* Padding for first card to align center */
+        }
+
+        .active-dot {
+            width: 24px !important;
+            border-radius: 12px;
+            background-color: var(--p-color, #2563eb) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-dot {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-dot:hover:not(.active-dot) {
+            background-color: #94a3b8; /* สีเข้มขึ้นตอน hover */
+            transform: scale(1.2);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px); }
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: white;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* Nav Button UX */
+        .nav-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: translateY(-50%) scale(0.95);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header Image Section -->
+    <div class="w-full bg-white shadow-sm overflow-hidden">
+        <img id="headerImage" src="res/header/dummy.png" alt="Campaign Banner" class="w-full h-auto block object-cover max-h-[250px]" onerror="this.src='https://via.placeholder.com/800x400?text=Membership+Tiers'">
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="mt-8 fade-in">
+        
+        <!-- Header Text -->
+        <div class="px-6 mb-6 max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-slate-800" data-i18n="headerTitle">ระดับสมาชิก</h2>
+            <p class="text-slate-400 text-sm mt-1" data-i18n="headerSubtitle">สไลด์เพื่อดูรายละเอียดและสิทธิประโยชน์แต่ละระดับ</p>
+        </div>
+
+        <!-- Tier Slider Container Wrapper (For PC Navigation) -->
+        <div class="relative w-full group max-w-4xl mx-auto">
+            
+            <!-- Left Arrow (PC) -->
+            <button id="btnPrev" disabled class="nav-btn hidden md:flex absolute left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/95 backdrop-blur rounded-full shadow-lg items-center justify-center text-slate-600 hover:text-blue-600 border border-slate-100 cursor-pointer">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+
+            <!-- Slider -->
+            <div id="tierSlider" class="tier-slider mb-8 py-4">
+                <!-- Cards will be injected here -->
+            </div>
+
+            <!-- Right Arrow (PC) -->
+            <button id="btnNext" class="nav-btn hidden md:flex absolute right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/95 backdrop-blur rounded-full shadow-lg items-center justify-center text-slate-600 hover:text-blue-600 border border-slate-100 cursor-pointer">
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Indicator Dots -->
+        <div id="dotsContainer" class="flex justify-center items-center space-x-2.5 mb-10 h-6">
+            <!-- Dots will be injected here -->
+        </div>
+
+        <!-- Bottom Detail Section -->
+        <div id="detailSection" class="px-6 max-w-2xl mx-auto">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="h-1.5 w-8 bg-blue-600 rounded-full transition-colors duration-300" id="accentBar"></div>
+                <h3 class="text-lg font-bold text-slate-800" data-i18n="benefitsTitle">สิทธิพิเศษที่คุณจะได้รับ</h3>
+            </div>
+            
+            <div id="benefitList" class="space-y-3">
+                <!-- Benefits will be injected here -->
+            </div>
+            
+            <!-- Upgrade Requirement Section -->
+            <div id="upgradeRequirement" class="mt-10 pt-8 border-t border-slate-200">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-slate-300"></i>
+                    <span data-i18n="reqTitle">เงื่อนไขระดับนี้</span>
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-shadow hover:shadow-md">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-wide" data-i18n="spendingLabel">ยอดใช้จ่ายสะสม</p>
+                        <p id="reqSpending" class="text-xl font-bold text-slate-700">฿0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-shadow hover:shadow-md">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-wide" data-i18n="orderLabel">จำนวนคำสั่งซื้อ</p>
+                        <p id="reqOrder" class="text-xl font-bold text-slate-700">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Language Data Dictionary ---
+        const translations = {
+            th: {
+                pageTitle: "ระดับสมาชิกและสิทธิประโยชน์",
+                headerTitle: "ระดับสมาชิก",
+                headerSubtitle: "สไลด์หรือลากเพื่อดูรายละเอียดและสิทธิประโยชน์",
+                currentLevel: "ระดับปัจจุบัน",
+                benefitsTitle: "สิทธิพิเศษที่คุณจะได้รับ",
+                reqTitle: "เงื่อนไขระดับนี้",
+                spendingLabel: "ยอดใช้จ่ายสะสม",
+                orderLabel: "จำนวนคำสั่งซื้อ",
+                items: "รายการ",
+                noData: "ยังไม่มีข้อมูลสิทธิประโยชน์สำหรับระดับนี้"
+            },
+            en: {
+                pageTitle: "Membership Tiers & Benefits",
+                headerTitle: "Membership Tiers",
+                headerSubtitle: "Swipe or drag to view details and benefits",
+                currentLevel: "Current Tier",
+                benefitsTitle: "Your Exclusive Benefits",
+                reqTitle: "Tier Requirements",
+                spendingLabel: "Total Spending",
+                orderLabel: "Total Orders",
+                items: "Items",
+                noData: "No benefits information available for this tier."
+            }
+        };
+
+        // --- Global State ---
+        let currentLang = 'th'; 
+        let currentResPath = 'res'; 
+        
+        let rankingData = {};
+        let currentTierId = "2";
+        let tierIds = [];
+        let activeIdx = 0;
+
+        // Variables for Mouse Drag
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        const slider = document.getElementById('tierSlider');
+
+        // --- 2. ฟังก์ชันแปลภาษา ---
+        function applyTranslations() {
+            const t = translations[currentLang];
+            if (!t) return;
+
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.documentElement.lang = currentLang;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.textContent = t[key];
+                }
+            });
+        }
+
+        // --- Mock Data: สลับตำแหน่งคีย์เพื่อทดสอบการ Sort ด้วย Level 1-5 ---
+        const mockData = {
+            "current": "2",
+            "4": { level: 4, name: "Titanium", color: "#14b8a6", icon: "https://cdn-icons-png.flaticon.com/512/610/610333.png", description: "เหนือระดับยิ่งกว่าที่เคย", requireSpending: 50000, requireOrder: 30, benefits: ["สะสมคะแนน 4 เท่า", "ที่จอดรถพิเศษ", "สิทธิร่วมงานสุด Exclusive"], benefitCard: "" },
+            "1": { level: 1, name: "Silver", color: "#94a3b8", icon: "https://cdn-icons-png.flaticon.com/512/610/610333.png", description: "เริ่มต้นการเป็นสมาชิก", requireSpending: 0, requireOrder: 0, benefits: ["สะสมคะแนน 1 เท่า"], benefitCard: "" },
+            "5": { level: 5, name: "Diamond", color: "#8b5cf6", icon: "https://cdn-icons-png.flaticon.com/512/610/610333.png", description: "ที่สุดของความพิเศษระดับ VVIP", requireSpending: 100000, requireOrder: 50, benefits: ["สะสมคะแนน 5 เท่า", "ผู้ช่วยส่วนตัว 24 ชั่วโมง", "บริการห้องรับรองพิเศษ"], benefitCard: "" },
+            "3": { level: 3, name: "Platinum", color: "#0ea5e9", icon: "https://cdn-icons-png.flaticon.com/512/610/610333.png", description: "สิทธิพิเศษระดับพรีเมียม", requireSpending: 20000, requireOrder: 15, benefits: ["สะสมคะแนน 3 เท่า", "ส่วนลดวันเกิด 20%", "จัดส่งฟรีทุกออเดอร์"], benefitCard: "https://via.placeholder.com/512x312/0ea5e9/ffffff?text=Platinum+Custom+Card" },
+            "2": { level: 2, name: "Gold", color: "#eab308", icon: "https://cdn-icons-png.flaticon.com/512/610/610333.png", description: "รับสิทธิพิเศษที่มากขึ้น", requireSpending: 5000, requireOrder: 5, benefits: ["สะสมคะแนน 2 เท่า", "ส่วนลดวันเกิด 10%"], benefitCard: "" }
+        };
+
+        // --- 3. รับข้อมูลจาก Message Event ---
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'initialData') {
+
+
+                const data = event.data.data;
+                const appData = window.parent.appData; 
+                const htmlCacheVersion = window.parent.htmlCacheVersion;
+
+                if (appData.language && translations[appData.language.toLowerCase()]) {
+                    currentLang = appData.language.toLowerCase();
+                }
+                if (appData.resPath) {
+                    currentResPath = appData.resPath;
+                }
+
+                if(appData.customAssets?.rankHeader) document.getElementById('headerImage').src = appData.customAssets.rankHeader;
+                else document.getElementById('headerImage').src = `${currentResPath}/header/rank.png?v=${htmlCacheVersion}`;
+
+                applyTranslations();
+                processData(data);
+
+            }
+        }, false);
+
+        // ทดสอบด้วย Mock Data หากโหลดปกติไม่ได้ผ่าน iframe
+        window.addEventListener('load', () => {
+            if(Object.keys(rankingData).length === 0) {
+                applyTranslations();
+                processData(mockData);
+            }
+        });
+
+        // --- 4. Logic การทำงานหลัก ---
+        function processData(data) {
+            rankingData = data;
+            currentTierId = data.current;
+            
+            // เรียงลำดับตาม 'level' (จากน้อยไปมาก 1, 2, 3, 4, 5)
+            tierIds = Object.keys(data)
+                .filter(key => !isNaN(key) && key.trim() !== '' && data[key]) 
+                .sort((a, b) => {
+                    const levelA = data[a].level !== undefined ? Number(data[a].level) : Number(a);
+                    const levelB = data[b].level !== undefined ? Number(data[b].level) : Number(b);
+                    return levelA - levelB;
+                });
+            
+            renderSlider();
+            
+            const startIdx = tierIds.indexOf(currentTierId);
+            if (startIdx !== -1) {
+                setTimeout(() => scrollToTier(startIdx), 150);
+            } else {
+                updateTierDetails(0);
+                updateNavButtons(0);
+            }
+        }
+
+        function renderSlider() {
+            const dots = document.getElementById('dotsContainer');
+            const t = translations[currentLang]; 
+
+            slider.innerHTML = "";
+            dots.innerHTML = "";
+
+            tierIds.forEach((id, index) => {
+                const tier = rankingData[id];
+                const isCurrent = id === currentTierId;
+
+                // Create Card
+                const card = document.createElement('div');
+                card.className = `tier-card bg-white rounded-[2.5rem] shadow-xl overflow-hidden border-4 ${isCurrent ? 'border-blue-400 shadow-blue-100/50' : 'border-white'}`;
+                
+                const iconSrc = tier.icon ? (tier.icon.startsWith('http') ? tier.icon : `${currentResPath}/${tier.icon}`) : 'https://cdn-icons-png.flaticon.com/512/610/610333.png';
+
+                // ตรวจสอบว่ามีการส่ง benefitCard (เป็นรูปภาพ) มาหรือไม่
+                let cardHeaderHTML = '';
+                
+                if (tier.benefitCard) {
+                    // หากมีรูป custom ให้แสดงรูปแทนพื้นหลังและไอคอนทั้งหมด
+                    cardHeaderHTML = `
+                        <div class="w-full relative overflow-hidden pointer-events-none bg-slate-100">
+                            <!-- ป้ายบอกระดับปัจจุบันจะยังคงลอยอยู่ด้านบนสุด -->
+                            ${isCurrent ? `<span class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-bold text-blue-600 shadow-sm border border-blue-50 z-20">${t.currentLevel}</span>` : ''}
+                            
+                            <!-- รูปภาพ Custom Card แบบเต็มพื้นที่ ปรับความสูงตามสัดส่วนภาพจริง (h-auto) -->
+                            <img src="${tier.benefitCard}" ondragstart="return false;" class="w-full h-auto block relative z-10" alt="${tier.name} Card">
+                        </div>
+                    `;
+                } else {
+                    // หากไม่มีรูปให้ใช้รูปแบบ Default
+                    cardHeaderHTML = `
+                        <div class="h-44 flex flex-col items-center justify-center relative overflow-hidden pointer-events-none" style="background-color: ${tier.color}15">
+                            <div class="absolute -right-6 -top-6 opacity-10">
+                                <i class="fa-solid fa-award text-[10rem]" style="color: ${tier.color}"></i>
+                            </div>
+                            ${isCurrent ? `<span class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-bold text-blue-600 shadow-sm border border-blue-50 z-20">${t.currentLevel}</span>` : ''}
+                            
+                            <!-- ป้องกันภาพเด้งตอนลากเมาส์ ด้วย ondragstart -->
+                            <img src="${iconSrc}" ondragstart="return false;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/610/610333.png'" class="w-24 h-24 object-contain mb-3 drop-shadow-md relative z-10 transition-transform duration-300">
+                            <h4 class="text-xl font-black uppercase tracking-wider relative z-10" style="color: ${tier.color}">${tier.name}</h4>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${cardHeaderHTML}
+                    <div class="p-6 text-center bg-white pointer-events-none">
+                        <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed">${tier.description || '-'}</p>
+                        <div class="mt-4 inline-flex items-center space-x-2 px-3 py-1 bg-slate-50 rounded-lg text-xs font-bold text-slate-400 border border-slate-100">
+                            <span>LEVEL ${tier.level}</span>
+                        </div>
+                    </div>
+                `;
+                slider.appendChild(card);
+
+                // Create Clickable Dot
+                const dot = document.createElement('div');
+                dot.id = `dot-${index}`;
+                dot.className = `nav-dot h-2 w-2 rounded-full bg-slate-300 cursor-pointer`;
+                // Add click event for dot
+                dot.addEventListener('click', () => {
+                    scrollToTier(index);
+                });
+                dots.appendChild(dot);
+            });
+
+            // Add scroll listener for indicator
+            let isScrolling;
+            slider.addEventListener('scroll', () => {
+                window.clearTimeout(isScrolling);
+                isScrolling = setTimeout(() => {
+                    const width = slider.offsetWidth;
+                    const scrollX = slider.scrollLeft;
+                    // คำนวณหา index ปัจจุบัน (พิจารณาจาก 85% width ของ card + margin)
+                    const cardTotalWidth = slider.querySelector('.tier-card').offsetWidth + 16;
+                    const newIdx = Math.round(scrollX / cardTotalWidth);
+                    
+                    if (newIdx !== activeIdx && newIdx >= 0 && newIdx < tierIds.length) {
+                        activeIdx = newIdx;
+                        updateTierDetails(newIdx);
+                        updateNavButtons(newIdx);
+                    }
+                }, 50); // Debounce
+            });
+
+            // Setup Mouse Drag Events
+            setupMouseDrag();
+        }
+
+        // --- UX: Mouse Dragging Logic ---
+        function setupMouseDrag() {
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                // ปิด smooth behavior ชั่วคราวเพื่อให้เมาส์ลากติดมือทันที
+                slider.style.scrollBehavior = 'auto'; 
+                // ปิด snap ชั่วคราวเพื่อไม่ให้มันกระตุกตอนลาก
+                slider.style.scrollSnapType = 'none';
+                
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                if(!isDown) return;
+                isDown = false;
+                resetDragState();
+            });
+
+            slider.addEventListener('mouseup', () => {
+                if(!isDown) return;
+                isDown = false;
+                resetDragState();
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.5; // ความเร็วในการลาก (ปรับเพิ่มได้)
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        function resetDragState() {
+            // เปิด smooth กลับมา
+            slider.style.scrollBehavior = 'smooth';
+            // เปิด snap กลับมา เพื่อให้มันจัดกึ่งกลางเอง
+            slider.style.scrollSnapType = 'x mandatory';
+            
+            // บังคับคำนวณตำแหน่งและวิ่งเข้า Snap (Fallback)
+            const cardWidth = slider.querySelector('.tier-card').offsetWidth + 16;
+            const nearestIdx = Math.round(slider.scrollLeft / cardWidth);
+            scrollToTier(nearestIdx);
+        }
+
+        function updateNavButtons(index) {
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            
+            if (index <= 0) {
+                btnPrev.disabled = true;
+            } else {
+                btnPrev.disabled = false;
+            }
+
+            if (index >= tierIds.length - 1) {
+                btnNext.disabled = true;
+            } else {
+                btnNext.disabled = false;
+            }
+        }
+
+        function updateTierDetails(index) {
+            if (!tierIds[index]) return;
+            
+            const id = tierIds[index];
+            const tier = rankingData[id];
+            const t = translations[currentLang];
+            
+            // Update Accent Bar Color
+            document.getElementById('accentBar').style.backgroundColor = tier.color;
+
+            // Update Requirements (เพิ่มแอนิเมชันให้ตัวเลข)
+            const reqSpendEl = document.getElementById('reqSpending');
+            const reqOrderEl = document.getElementById('reqOrder');
+            
+            reqSpendEl.textContent = `฿${tier.requireSpending.toLocaleString()}`;
+            reqSpendEl.style.color = tier.color; // เปลี่ยนสีตัวเลขตาม tier
+            
+            reqOrderEl.textContent = `${tier.requireOrder} ${t.items}`;
+            reqOrderEl.style.color = tier.color;
+
+            // Update Benefits
+            const benefitList = document.getElementById('benefitList');
+            benefitList.innerHTML = "";
+            
+            if (tier.benefits && tier.benefits.length > 0) {
+                tier.benefits.forEach((text, i) => {
+                    const item = document.createElement('div');
+                    item.className = "benefit-item shadow-sm border border-slate-50";
+                    item.style.animation = `fadeIn 0.3s ease-out ${i * 0.1}s forwards`;
+                    item.style.opacity = "0";
+                    item.innerHTML = `
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5" style="background-color: ${tier.color}20">
+                            <i class="fa-solid fa-check text-[10px]" style="color: ${tier.color}"></i>
+                        </div>
+                        <span class="text-sm text-slate-700 leading-relaxed">${text}</span>
+                    `;
+                    benefitList.appendChild(item);
+                });
+            } else {
+                benefitList.innerHTML = `<p class="text-center py-8 text-slate-400 italic text-sm bg-slate-50 rounded-2xl">${t.noData}</p>`;
+            }
+
+            // Update Dots UI
+            tierIds.forEach((_, i) => {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === index) {
+                    dot.classList.add('active-dot');
+                    dot.classList.remove('bg-slate-300', 'w-2');
+                    dot.style.setProperty('--p-color', tier.color);
+                } else {
+                    dot.classList.remove('active-dot');
+                    dot.classList.add('bg-slate-300', 'w-2');
+                    dot.style.removeProperty('--p-color'); // ล้างสีเก่าออก
+                }
+            });
+        }
+
+        function scrollToTier(index) {
+            if(index < 0 || index >= tierIds.length) return;
+            
+            const cardElement = slider.querySelector('.tier-card');
+            if(!cardElement) return;
+
+            const cardWidth = cardElement.offsetWidth + 16; // 16px is margin-right
+            slider.scrollTo({
+                left: index * cardWidth,
+                behavior: 'smooth'
+            });
+            
+            activeIdx = index;
+            updateTierDetails(index);
+            updateNavButtons(index);
+        }
+
+        // --- 5. Event สำหรับปุ่มลูกศร (PC Version) ---
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            if (activeIdx > 0) {
+                scrollToTier(activeIdx - 1);
+            }
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            if (activeIdx < tierIds.length - 1) {
+                scrollToTier(activeIdx + 1);
+            }
+        });
+    </script>
+</body>
+</html>

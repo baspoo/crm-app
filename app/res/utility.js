@@ -267,69 +267,30 @@
             crmData.language = language;
             return language;
         },
+        getAddress: function (id) {
+            if (!id) return null;
+            return this.getAddresses().find(a => a.id === id);
+        },
+        getAddresses: function () {
+            const addresses = crmData.crmUser?.userAddresses || [];
+            return addresses;
+        },
+        getDefaultAddress: function () {
+            const addresses = this.getAddresses();
+            if (addresses.length > 0) {
+                let addr = addresses.find(a => a.isDefault);
+                if (!addr) addr = addresses[0];
+                return addr;
+            }
+            return null;
+        },
 
         getPoints: function () {
             var points = crmData?.crmUser?.user?.points || 0;
             return points;
         },
 
-        isTierReady: function () {
-            var tiers = crmData.marketData?.tiers || [];
-            return tiers != null && tiers.length > 0;
-        },
-        getUserTier: function () {
-            if (!this.isTierReady()) return null;
-            var tier = crmData?.crmUser?.user?.tier || null;
-            if (tier) {
-                return this.getTier(tier.id);
-            }
-            else {
-                var tiers = crmData.marketData?.tiers || [];
-                return tiers.length > 0 ? tiers[0] : null;
-            }
-        },
-        getUserNextTier: function () {
-            if (!this.isTierReady()) return null;
-            var tier = this.getUserTier();
-            if (tier) {
-                var tiers = crmData.marketData?.tiers || [];
-                return tier == undefined ? tiers[0] : tiers.find(x => x.level > tier.level);
-            }
-            return null;
-        },
-        getRequireTier: function (tier) {
-            if (!this.isTierReady() || !tier || !tier.rules || tier.rules.length == 0) return 0;
-            const rule = tier.rules[0];
-            const stats = crmData.crmUser?.statisticsData || crmData.crmUser?.statistics || {};
-            const spend = stats.spending?.total || 0;
-            const orders = stats.orders?.total || 0;
-            if (rule.ruleType === "total_spending") {
-                return {
-                    type: rule.ruleType,
-                    current: spend,
-                    require: rule.value
-                };
-            }
-            else if (rule.ruleType === "order_count") {
-                return {
-                    type: rule.ruleType,
-                    current: orders,
-                    require: rule.value
-                };
-            }
-            else {
-                return {
-                    type: "none",
-                    current: 0,
-                    require: 0
-                };
-            }
-        },
-        isMaxTier: function (tier) {
-            if (!this.isTierReady()) return false;
-            var tiers = crmData.marketData?.tiers || [];
-            return tiers.find(x => x.level > tier.level) == null;
-        },
+
 
 
         getAssetPath: function (id) {
@@ -366,15 +327,18 @@
          * @param {MarketReward} reward 
          * @returns {boolean} */
         isEnough: function (reward, amount = 1) {
-            return crmData.user.user.points >= (reward.points * amount);
+            return this.getPoints() >= (reward.points * amount);
         },
 
         /** 
          * @param {MarketReward} reward 
          * @returns {boolean} */
-        isCanRedeem: function (reward) {
+        isCanRedeem: function (reward, amount = 1) {
             var ok = reward.status == "active";
             if (!ok) return false;
+
+            if (!this.isEnough(reward, amount)) return false;
+
             if (reward.canRedeem) {
                 ok = reward.canRedeem;
                 if (!ok) return false;
@@ -433,16 +397,89 @@
             }
         },
 
+        getTransactionName: function (deduect) {
+            if (deduect.metadata != null && deduect.metadata.reward_name.notnull())
+                return deduect.metadata.reward_name;
+            else if (deduect.reason.notnull())
+                return deduect.reason;
+            return deduect.reference_id;
+        },
+
 
         /** @returns {TierData} */
         getTier: function (id) {
-            var tiers = crmData.marketData?.tiers || [];
+            if (id == null) return null;
+            if (!this.isTierReady()) return null;
+            var tiers = this.getTiers();
             const tier = tiers.find(t => t.id == id);
             if (tier) {
                 return tier;
             }
             return null;
         },
+        getTiers: function () {
+            return crmData.marketData?.tiers || [];
+        },
+        isTierReady: function () {
+            var tiers = this.getTiers();
+            return tiers != null && tiers.length > 0;
+        },
+        getUserTier: function () {
+            if (!this.isTierReady()) return null;
+            var tier = crmData?.crmUser?.user?.tier || null;
+            if (tier) {
+                return this.getTier(tier.id);
+            }
+            else {
+                var tiers = crmData.marketData?.tiers || [];
+                return tiers.length > 0 ? tiers[0] : null;
+            }
+        },
+        getUserNextTier: function () {
+            if (!this.isTierReady()) return null;
+            var tier = this.getUserTier();
+            if (tier) {
+                var tiers = this.getTiers();
+                return tier == undefined ? tiers[0] : tiers.find(x => x.level > tier.level);
+            }
+            return null;
+        },
+        getRequireTier: function (tier) {
+            if (!this.isTierReady() || !tier || !tier.rules || tier.rules.length == 0) return 0;
+            const rule = tier.rules[0];
+            const stats = crmData.crmUser?.statisticsData || crmData.crmUser?.statistics || {};
+            const spend = stats.spending?.total || 0;
+            const orders = stats.orders?.total || 0;
+            if (rule.ruleType === "total_spending") {
+                return {
+                    type: rule.ruleType,
+                    current: spend,
+                    require: rule.value
+                };
+            }
+            else if (rule.ruleType === "order_count") {
+                return {
+                    type: rule.ruleType,
+                    current: orders,
+                    require: rule.value
+                };
+            }
+            else {
+                return {
+                    type: "none",
+                    current: 0,
+                    require: 0
+                };
+            }
+        },
+        isMaxTier: function (tier) {
+            if (!this.isTierReady()) return false;
+            var tiers = this.getTiers();
+            return tiers.find(x => x.level > tier.level) == null;
+        },
+
+
+
         /** @returns {MarketBanner} */
         getBanner: function (id) {
             var marketBanners = crmData.marketData?.banners?.marketBanners || [];
@@ -459,6 +496,7 @@
             if (!banner.action) {
                 if (banner.bannerUrl) {
                     //** open URL */
+                    PageManager.showDirectLink(banner.bannerUrl);
                 }
                 return;
             }
@@ -466,6 +504,7 @@
                 // none, url, iframe, detail, game, reward, page, leaderboard, ocr
                 var action = banner.action;
 
+                //## iframe
                 if (action.type === TYPES.bannerActions.iframe) {
                     const url = action.url;
                     const x = action.x || 90;
@@ -473,17 +512,20 @@
                     PageManager.openIframe(url, x, y);
                 }
 
+                //## Game
                 if (action.type === TYPES.bannerActions.game) {
 
                     const gameId = action.gameId;
-                    const game = this.getGameCampaign(gameId);
-                    if (game) {
+                    const gameCampaign = this.getGameCampaign(gameId);
+                    if (gameCampaign) {
                         PageManager.openModal("contentDetail", {
-                            game: game
+                            banner: banner,
+                            gameCampaign: gameCampaign
                         });
                     }
                 }
 
+                //## Detail
                 if (action.type === TYPES.bannerActions.detail) {
 
                     //const more = action.moreURL || banner.bannerUrl;
@@ -492,12 +534,14 @@
                     });
                 }
 
+                //## Reward
                 if (action.type === TYPES.bannerActions.reward) {
                     const rewardId = action.rewardId;
                     const reward = this.getReward(rewardId);
                     if (reward) this.openRedeem(reward);
                 }
 
+                //## Page
                 if (action.type === TYPES.bannerActions.page) {
                     const pageName = action.pageName;
                     const pageType = action.pageType;
@@ -508,11 +552,13 @@
                     PageManager.openModal(pageName, payload);
                 }
 
+                //## Leaderboard
                 if (action.type === TYPES.bannerActions.leaderboard) {
                     const gameId = action.gameId;
                     // goto leaderboard
                 }
 
+                //## OCR
                 if (action.type === TYPES.bannerActions.ocr) {
                     const tag = action.tag;
                     const labelName = action.labelName;
@@ -524,6 +570,8 @@
                     });
 
                 }
+
+                //## Qr-Hunt
                 if (action.type === TYPES.bannerActions.qrHunt) {
                     const url = action.url || appConfig.iframe.qrHunt.path;
                     PageManager.openIframe(url, 0, 0);
@@ -566,6 +614,69 @@
             }
             return false;
         },
+
+        //** Open Iframe-Modal Gache Page */
+        onOpenGachePage: function (gameCampaign) {
+            crmData.gameCampaign = gameCampaign;
+            PageManager.openIframe(gameCampaign.url, 0, 0, {}, function (res) {
+                if (res.success) {
+                    PageManager.updatePoints(true);
+                }
+            });
+        },
+        //** Get Gacha Price */
+        getGachaRewardPricing: function (gameCampaign) {
+            if (!gameCampaign) return null;
+            const reward = this.getReward(gameCampaign.redeemRewardId);
+            if (!reward) return null;
+            return reward;
+        },
+        //** Call API Open Gacha */
+        onOpenGache: async function () {
+            let result = {};
+            if (!crmData.gameCampaign) return result;
+            const res = await CrmApi.onOpenGacha(crmData.gameCampaign.gameId);
+            if (res) {
+                if (res.type === "shopdigital") {
+                    // use name/image by reward crm
+                    var reward = this.getReward(Number(res.reward));
+                    if (reward) {
+                        result = {
+                            ok: true,
+                            name: reward.name,
+                            image: reward.image
+                        };
+                    }
+                }
+                else {
+                    // use name/image by gachaData
+                    result = {
+                        ok: true,
+                        name: res.name,
+                        image: res.image
+                    };
+                }
+            }
+            return result;
+        },
+
+        //** Start Game */
+        onStartGame: async function (gameCampaign) {
+            if (!gameCampaign) return null;
+            PageManager.showLoading();
+            const res = await CrmApi.onGotoGame(gameCampaign.gameId);
+            if (res && res.gameURL) {
+                window.location.href = res.gameURL;
+            }
+            else {
+                PageManager.hideLoading();
+            }
+        },
+
+
+
+
+
 
 
 
@@ -615,7 +726,7 @@
             sessionStorage.removeItem('CRM_APPID');
             sessionStorage.removeItem('CRM_SUBDOMAIN');
 
-        },
+        }
 
 
 

@@ -48,7 +48,10 @@ window.PageManager = (function () {
             if (window.updateConsoleHeader && typeof window.updateConsoleHeader === 'function')
                 window.updateConsoleHeader();
         },
-
+        navDirectConsole: function (pageKey, payload = null) {
+            if (window.navigateConsole && typeof window.navigateConsole === 'function')
+                window.navigateConsole(pageKey, payload);
+        },
         visible: function (show) {
             this.activeTop(show);
             this.activeBot(show);
@@ -128,6 +131,15 @@ window.PageManager = (function () {
             console.log(`contentContainer = ${element}`);
         },
 
+        updatePoints: async function (forceUpdate = false) {
+            if (forceUpdate) await CrmApi.getProfile();
+            ConsoleManager.updateConsole();
+            if (window.updatePoints && typeof window.updatePoints === 'function') {
+                // เอาไปใส่ในหน้า home / profile 
+                window.updatePoints();
+            }
+        },
+
         // --- ระบบ Loading กลางของ Project ---
         showLoading: function (text = "Loading...") {
             const overlay = document.getElementById('global-loading-overlay');
@@ -151,7 +163,7 @@ window.PageManager = (function () {
         },
 
         // โหลดหน้าย่อย
-        loadPage: async function (pageKey) {
+        loadPage: async function (pageKey, payload = null) {
             if (!contentContainer) return console.error("Content container not set!");
 
             const route = configRoutes[pageKey];
@@ -161,6 +173,14 @@ window.PageManager = (function () {
             this.console.setTitle(route.title ? route.title : defaultTitle);
 
             this.console.activeTop(route.top, route.showPoint != undefined ? route.showPoint : true);
+
+            window.onMainPageInit = null;
+            setTimeout(() => {
+                if (typeof window.onMainPageInit === 'function') {
+                    window.onMainPageInit(payload);
+                }
+            }, 50);
+
 
             if (htmlCache[pageKey] && appConfig.setting.cachePage) {
                 setInnerHTMLAndExecuteScripts(contentContainer, htmlCache[pageKey]);
@@ -184,7 +204,6 @@ window.PageManager = (function () {
         },
 
 
-        // --- ระบบ Modal (ลูกผสมระหว่าง loadPage และ openIframe) ---
         // --- ระบบ Modal (แบบ Stack ซ้อนทับกัน A ล่าง B บน) ---
         openModal: async function (pageKey, payload = null, onclose = null, showCloseBtn = true) {
             const route = configRoutes[pageKey];
@@ -364,8 +383,6 @@ window.PageManager = (function () {
             }
         },
 
-
-
         // โหลด Iframe
         openIframe: function (url, x = 0, y = 0, payload = null, onclose = null, showCloseBtn = true) {
             const container = document.getElementById('iframe-container');
@@ -398,8 +415,29 @@ window.PageManager = (function () {
                     closeBtnEl.style.display = showCloseBtn ? 'flex' : 'none';
                 }
 
-                // 2. ผูก Event ตอนโหลด Iframe เสร็จเพื่อเรียก oninit
+                // 2. ผูก Event ตอนโหลด Iframe เสร็จเพื่อเรียก oninit และจัดการ Scrollbar
                 iframe.onload = () => {
+                    try {
+                        // --- Inject Global Scrollbar Style ---
+                        // เมื่อเป็นโดเมนเดียวกัน จะสามารถทะลุเข้าไปสั่ง CSS ลับได้
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc) {
+                            const style = doc.createElement('style');
+                            style.innerHTML = `
+                                html { overflow: hidden; height: 100%; }
+                                body { overflow-y: auto; height: 100%; }
+                                ::-webkit-scrollbar { width: 8px !important; height: 8px !important; }
+                                ::-webkit-scrollbar-track { background: transparent !important; margin: 16px 0 !important; }
+                                ::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0) !important; border-radius: 10px !important; border: 2px solid transparent !important; background-clip: padding-box !important; transition: background-color 0.3s; }
+                                body:hover::-webkit-scrollbar-thumb, *:hover::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0.4) !important; }
+                                *:hover::-webkit-scrollbar-thumb:hover { background-color: rgba(148, 163, 184, 0.7) !important; }
+                            `;
+                            doc.head.appendChild(style);
+                        }
+                    } catch (e) {
+                        console.warn("Iframe style injection blocked due to Cross-Origin restrictions.", e);
+                    }
+
                     try {
                         if (iframe.contentWindow && typeof iframe.contentWindow.onInit === "function") {
                             iframe.contentWindow.onInit(payload, currentIframeResponse);

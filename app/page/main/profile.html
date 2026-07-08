@@ -1499,13 +1499,11 @@
 
         // --- Address ---
         function bindAddressWidget(data) {
-            const addresses = data.crmUser?.userAddresses || [];
             const content = document.getElementById('pf-addr-content');
             const btnTxt = document.getElementById('pf-ui-btn-addr-txt');
 
-            if (addresses.length > 0) {
-                let addr = addresses.find(a => a.isDefault);
-                if (!addr) addr = addresses[0];
+            let addr = Utility.getDefaultAddress();
+            if (addr) {
 
                 let html = `
                     <div class="pf-addr-container">

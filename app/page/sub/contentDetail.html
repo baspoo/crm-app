@@ -1,0 +1,886 @@
+<style>
+    /* ==========================================
+       Content Detail Page (Pure CSS)
+       ห้ามใช้ Tailwind ตาม Requirement
+       ========================================== */
+
+    /* Reset Iframe Body */
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: transparent;
+        overflow: hidden;
+        /* ป้องกัน Scrollbar ซ้อนทับ */
+    }
+
+    /* Variables & Wrapper */
+    .cd-wrapper {
+        width: 100%;
+        height: 100%;
+        /* บังคับความสูงเต็มพื้นที่ Iframe */
+        box-sizing: border-box;
+        background-color: var(--theme-bg-app, #f8fafc);
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        color: var(--theme-text-main, #1f2937);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cd-wrapper * {
+        box-sizing: border-box;
+    }
+
+    /* Views (App-like Structure) */
+    .cd-view {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        animation: cdFadeIn 0.3s ease-out forwards;
+    }
+
+    .cd-view.hidden {
+        display: none !important;
+        /* บังคับซ่อนหน้าเว็บเมื่อสลับ View */
+    }
+
+    @keyframes cdFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ================= HEADER ================= */
+    .cd-header {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        /* จัดให้ Icon และข้อมูลอยู่กึ่งกลางแนวตั้ง */
+        padding: 0.6rem 1rem;
+        background-color: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.05);
+        z-index: 50;
+    }
+
+    .cd-header-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 0.75rem;
+        background-color: #f1f5f9;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .cd-header-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.15rem;
+        /* ระยะห่างระหว่าง 2 บรรทัด */
+    }
+
+    .cd-header-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--theme-text-main, #111827);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    .cd-header-dates {
+        font-size: 0.7rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        /* บังคับให้อยู่บรรทัดเดียวกันเสมอ */
+        overflow: hidden;
+        gap: 0.35rem;
+    }
+
+    .cd-date-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cd-time-left {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        font-size: 0.6rem;
+        /* ปรับขนาดให้เป็นแบดจ์เล็กๆ */
+        font-weight: 700;
+        color: #e11d48;
+        background-color: #fff1f2;
+        padding: 0.15rem 0.4rem;
+        border-radius: 1rem;
+        margin: 0;
+        width: fit-content;
+        flex-shrink: 0;
+        /* ป้องกันไม่ให้แบดจ์ถูกบีบจนเสียทรง */
+    }
+
+    /* ================= SCROLL AREA (Content) ================= */
+    .cd-scroll-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        position: relative;
+        background-color: #f8fafc;
+    }
+
+    .cd-scroll-area::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hero Image / Mask */
+    .cd-hero-wrap {
+        width: 100%;
+        background-color: #f1f5f9;
+        position: relative;
+        /* ไม่บังคับ height แล้ว แต่ใช้ max-height ตัดภาพที่ยาวเกินแทน */
+        max-height: var(--mask-height, 50vh);
+        /* ตั้ง min-height เพื่อป้องกันภาพแบนหรือแคบจนเกินไป */
+        min-height: 200px;
+        overflow: hidden;
+        /* ทำหน้าที่ Mask ตัดรูปส่วนที่เกินออก */
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .cd-hero-img {
+        width: 100%;
+        height: auto;
+        /* ยึดความกว้าง 100% เป็นหลักเสมอ ความสูงจะปรับตามเรโชภาพอัตโนมัติ */
+        min-height: 100%;
+        /* บังคับภาพให้เติมเต็มพื้นที่ min-height ของ wrapper กรณีภาพแบนมากๆ */
+        flex-shrink: 0;
+        /* ป้องกันภาพโดนบีบความสูง (ให้มันทะลุและโดน wrapper ตัดไปเลย) */
+        object-fit: cover;
+        /* จะทำงานกินซ้ายขวา เฉพาะเคสที่ภาพแบนกว่า 200px เท่านั้น */
+        object-position: top center;
+        /* ยึดเนื้อหาด้านบนสุดของภาพไว้ ไม่ให้หัวขาด */
+        display: block;
+    }
+
+    /* Body Content */
+    .cd-body {
+        padding: 1.25rem;
+        background-color: #ffffff;
+        border-radius: 1rem 1rem 0 0;
+        /* ควบคุมการยกตัวขึ้นไปทับรูปภาพจาก pageSetting */
+        margin-top: var(--body-overlap, -0.5rem);
+        position: relative;
+        z-index: 2;
+        min-height: 100%;
+    }
+
+    .cd-content-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #111827);
+        margin: 0 0 0.5rem 0;
+        line-height: 1.3;
+    }
+
+    .cd-content-desc {
+        font-size: 0.825rem;
+        line-height: 1.6;
+        color: var(--theme-text-muted, #4b5563);
+        margin: 0 0 1.5rem 0;
+        white-space: pre-wrap;
+    }
+
+    /* ================= FOOTER ACTIONS ================= */
+    .cd-footer-actions {
+        flex-shrink: 0;
+        padding: 0.85rem 1rem;
+        background-color: #ffffff;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+        display: flex;
+        gap: 0.75rem;
+        z-index: 100;
+        /* ใช้ CSS Variable รับค่าจาก pageSetting ถ้ามีการกำหนดไว้ */
+        height: var(--footer-height, auto);
+        padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+    }
+
+    .cd-btn {
+        flex: 1;
+        padding: 0 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        height: 48px;
+    }
+
+    .cd-btn:active {
+        transform: scale(0.96);
+    }
+
+    .cd-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .cd-btn-primary {
+        background: linear-gradient(135deg, var(--theme-primary, #3b82f6) 0%, color-mix(in srgb, var(--theme-primary, #3b82f6) 80%, #000) 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--theme-primary, #3b82f6) 50%, transparent);
+    }
+
+    .cd-btn-secondary {
+        background-color: #f1f5f9;
+        color: #334155;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .cd-btn-secondary:hover {
+        background-color: #e2e8f0;
+    }
+
+    /* จัดระเบียบปุ่ม Gacha */
+    .btn-content-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .btn-left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-right-price {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        background-color: rgba(255, 255, 255, 0.25);
+        padding: 0.2rem 0.6rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .cd-price-icon {
+        width: 1.1rem;
+        height: 1.1rem;
+        object-fit: contain;
+    }
+
+    /* ================= GACHA RATE VIEW ================= */
+    .cd-rate-view {
+        background-color: #f8fafc;
+    }
+
+    /* Rate Header */
+    .cd-rate-header {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.03);
+        gap: 0.75rem;
+        z-index: 50;
+    }
+
+    .cd-btn-back {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background-color: #ffffff;
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--theme-text-main, #374151);
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .cd-btn-back:active {
+        transform: scale(0.9);
+        background-color: #f1f5f9;
+    }
+
+    .cd-rate-title {
+        font-size: 1rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    /* Rate List */
+    .cd-rate-list {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .cd-rate-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        background-color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        gap: 0.85rem;
+        transition: transform 0.2s ease;
+    }
+
+    .cd-rate-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .cd-rate-img {
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 0.5rem;
+        object-fit: cover;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .cd-rate-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .cd-rate-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--theme-text-main, #1f2937);
+        line-height: 1.3;
+    }
+
+    .cd-rate-sub {
+        font-size: 0.7rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+    }
+
+    .cd-rate-percent {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: var(--theme-primary, #3b82f6);
+        background-color: var(--theme-primary-light, #eff6ff);
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+    }
+
+    .cd-empty-msg {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--theme-text-muted, #9ca3af);
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="cd-wrapper" id="cd-wrapper">
+
+    <div id="cd-main-view" class="cd-view">
+
+        <div id="cd-header" class="cd-header" style="display: none;">
+            <img id="cd-game-icon" src="" class="cd-header-icon"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='" />
+
+            <div class="cd-header-info">
+                <h3 id="cd-game-name" class="cd-header-title">Game Name</h3>
+
+                <div class="cd-header-dates">
+                    <span id="cd-game-dates-wrapper" class="cd-date-wrap" style="display: none;">
+                        <i class="fa-regular fa-calendar"></i> <span id="cd-game-dates-text">-</span>
+                    </span>
+                    <div id="cd-game-timeleft" class="cd-time-left" style="display: none;">
+                        <i class="fa-regular fa-clock"></i> <span id="cd-timeleft-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cd-scroll-area">
+            <div class="cd-hero-wrap">
+                <img id="cd-hero-img" src="" class="cd-hero-img"
+                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=='" />
+            </div>
+
+            <div class="cd-body">
+                <h2 id="cd-content-title" class="cd-content-title" style="display: none;">Title</h2>
+                <div id="cd-content-desc" class="cd-content-desc">Description goes here...</div>
+            </div>
+        </div>
+
+        <div id="cd-actions" class="cd-footer-actions" style="display: none;">
+        </div>
+    </div>
+
+
+    <div id="cd-rate-view" class="cd-view cd-rate-view hidden">
+        <div class="cd-rate-header">
+            <button class="cd-btn-back" onclick="window.ContentDetailCtrl.closeRateView()">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <h3 class="cd-rate-title" data-i18n="rateTitle">อัตราการได้รับรางวัล (Drop Rate)</h3>
+        </div>
+        <div class="cd-scroll-area">
+            <div id="cd-rate-list" class="cd-rate-list">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.ContentDetailCtrl = (function () {
+        'use strict';
+
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            defaultImg: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg==",
+            fallbackPrimaryColor: "#3b82f6",
+            maskHeight: "55vh", // จำกัดความสูงภาพไม่ให้เกินนี้ (ถ้าภาพยาวกว่านี้ จะถูกตัดด้านล่าง)
+            bodyOverlap: "-1rem", // ตั้งค่าระยะการยกกรอบเนื้อหาขึ้นไปทับรูปภาพ
+            footerHeight: "auto"
+        };
+
+        const dict = {
+            Th: {
+                btnLeaderboard: "ตารางคะแนน",
+                btnStartGame: "เริ่มเล่นเกม",
+                btnViewRate: "ดูเรทรางวัล",
+                btnOpenGacha: "เปิด",
+                btnMore: "ดูเพิ่มเติม",
+                rateTitle: "อัตราการได้รับรางวัล (Drop Rate)",
+                timeLeft: "เหลือเวลา {time}",
+                ended: "หมดเวลาแล้ว",
+                day: "วัน",
+                hr: "ชม.",
+                min: "นาที",
+                free: "ฟรี",
+                emptyRate: "ไม่พบข้อมูลรางวัล",
+                limit: "จำกัด {x} สิทธิ์",
+                outOfStock: "สิทธิ์เต็มแล้ว",
+                errLoadRate: "ไม่สามารถโหลดเรทรางวัลได้",
+                errPoint: "คะแนนไม่เพียงพอ"
+            },
+            En: {
+                btnLeaderboard: "Leaderboard",
+                btnStartGame: "Play Game",
+                btnViewRate: "Drop Rate",
+                btnOpenGacha: "Open Gacha",
+                btnMore: "Learn More",
+                rateTitle: "Reward Drop Rate",
+                timeLeft: "{time} left",
+                ended: "Ended",
+                day: "d",
+                hr: "h",
+                min: "m",
+                free: "Free",
+                emptyRate: "No reward data found.",
+                limit: "Limit {x}",
+                outOfStock: "Out of Stock",
+                errLoadRate: "Failed to load drop rate",
+                errPoint: "Insufficient points"
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let payloadData = null;
+        let isGameMode = false;
+        let pointIconPath = "";
+
+        // DOM Elements
+        const els = {
+            wrapper: document.getElementById('cd-wrapper'),
+            mainView: document.getElementById('cd-main-view'),
+            rateView: document.getElementById('cd-rate-view'),
+
+            header: document.getElementById('cd-header'),
+            gameIcon: document.getElementById('cd-game-icon'),
+            gameName: document.getElementById('cd-game-name'),
+            gameDatesWrapper: document.getElementById('cd-game-dates-wrapper'),
+            gameDatesText: document.getElementById('cd-game-dates-text'),
+            gameTimeLeft: document.getElementById('cd-game-timeleft'),
+            timeLeftText: document.getElementById('cd-timeleft-text'),
+
+            heroImg: document.getElementById('cd-hero-img'),
+            contentTitle: document.getElementById('cd-content-title'),
+            contentDesc: document.getElementById('cd-content-desc'),
+            actions: document.getElementById('cd-actions'),
+
+            rateList: document.getElementById('cd-rate-list')
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+
+        function t(key, params = {}) {
+            let text = dict[currentLang][key] || key;
+            for (const [k, v] of Object.entries(params)) {
+                text = text.replace(`{${k}}`, v);
+            }
+            return text;
+        }
+
+        function applyLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[currentLang][key]) el.innerHTML = dict[currentLang][key];
+            });
+        }
+
+        function formatDate(unixTime) {
+            if (!unixTime) return "";
+            const ms = unixTime > 20000000000 ? unixTime : unixTime * 1000;
+            const d = new Date(ms);
+            return d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH');
+        }
+
+        function calculateTimeLeft(endAtUnix) {
+            if (!endAtUnix) return null;
+            const ms = endAtUnix > 20000000000 ? endAtUnix : endAtUnix * 1000;
+            const diff = ms - Date.now();
+
+            if (diff <= 0) return t('ended');
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            let timeStr = "";
+            // แสดงเฉพาะหน่วยที่ใหญ่ที่สุดหน่วยเดียว เพื่อความกะทัดรัด
+            if (d > 0) {
+                timeStr = `${d} ${t('day')}`;
+            } else if (h > 0) {
+                timeStr = `${h} ${t('hr')}`;
+            } else {
+                timeStr = `${m} ${t('min')}`;
+            }
+
+            return t('timeLeft', { time: timeStr });
+        }
+
+        // ==========================================
+        // 4. RENDERING VIEWS
+        // ==========================================
+
+        function renderGameDetail(gameData) {
+            // Header
+            els.header.style.display = 'flex';
+            els.gameIcon.style.display = 'block';
+            els.gameIcon.src = gameData.icon || pageSetting.defaultImg;
+            els.gameName.innerText = gameData.name || "Game Campaign";
+
+            const startStr = formatDate(gameData.startAt);
+            const endStr = formatDate(gameData.endAt);
+            if (startStr && endStr) {
+                els.gameDatesText.innerText = `${startStr} - ${endStr}`;
+                els.gameDatesWrapper.style.display = 'inline-flex';
+            } else {
+                els.gameDatesWrapper.style.display = 'none';
+            }
+
+            const timeLeftStr = calculateTimeLeft(gameData.endAt);
+            if (timeLeftStr) {
+                els.gameTimeLeft.style.display = 'inline-flex';
+                els.timeLeftText.innerText = timeLeftStr;
+            }
+
+            // Image & Desc
+            els.heroImg.style.display = 'block';
+            els.heroImg.src = gameData.image || payloadData.banner?.imageUrl || pageSetting.defaultImg;
+            els.contentDesc.innerText = gameData.description || payloadData.banner?.description || "";
+
+            // Actions (Sticky Footer)
+            els.actions.style.display = 'flex';
+            els.actions.innerHTML = '';
+
+            if (gameData.type === "game") {
+                // [Game Challenge] Buttons
+                if (gameData.leaderboard) {
+                    const btnLb = document.createElement('button');
+                    btnLb.className = 'cd-btn cd-btn-secondary';
+                    btnLb.innerHTML = `<i class="fa-solid fa-trophy"></i> <span>${t('btnLeaderboard')}</span>`;
+                    btnLb.onclick = () => handleLeaderboardClick(gameData.gameId);
+                    els.actions.appendChild(btnLb);
+                }
+
+                const btnStart = document.createElement('button');
+                btnStart.className = 'cd-btn cd-btn-primary';
+                btnStart.innerHTML = `<i class="fa-solid fa-gamepad"></i> <span>${t('btnStartGame')}</span>`;
+                btnStart.onclick = () => handleStartGame(gameData);
+                els.actions.appendChild(btnStart);
+
+            } else if (gameData.type === "gacha") {
+                // [Gacha] Buttons
+                const btnRate = document.createElement('button');
+                btnRate.className = 'cd-btn cd-btn-secondary';
+                btnRate.innerHTML = `<i class="fa-solid fa-list"></i> <span>${t('btnViewRate')}</span>`;
+                btnRate.onclick = () => handleViewGachaRate(gameData.gameId);
+                els.actions.appendChild(btnRate);
+
+                // Open Gacha Button
+                const btnOpen = document.createElement('button');
+                btnOpen.className = 'cd-btn cd-btn-primary';
+
+                let priceHtml = `<span>${t('free')}</span>`;
+                let isEnable = true;
+
+                if (window.Utility && typeof Utility.getGachaRewardPricing === 'function') {
+                    const rewardConfig = Utility.getGachaRewardPricing(gameData);
+                    if (rewardConfig) {
+                        if (rewardConfig.points > 0) {
+                            priceHtml = `<span>${rewardConfig.points.toLocaleString()}</span>`;
+                            if (pointIconPath) {
+                                priceHtml = `<img src="${pointIconPath}" class="cd-price-icon" /> ` + priceHtml;
+                            }
+                        }
+                        if (typeof Utility.isCanRedeem === 'function') {
+                            isEnable = Utility.isCanRedeem(rewardConfig);
+                        }
+                    }
+                }
+
+                // การจัดโครงสร้าง Flex ภายในปุ่ม ให้ราคาอยู่บรรทัดเดียวกันทางขวาเสมอ
+                btnOpen.innerHTML = `
+                    <div class="btn-content-flex">
+                        <div class="btn-left">
+                            <i class="fa-solid fa-box-open"></i>
+                            <span>${t('btnOpenGacha')}</span>
+                        </div>
+                        <div class="btn-right-price">
+                            ${priceHtml}
+                        </div>
+                    </div>
+                `;
+
+                if (!isEnable) btnOpen.disabled = true;
+                btnOpen.onclick = () => handleOpenGacha(gameData);
+                els.actions.appendChild(btnOpen);
+            }
+        }
+
+        function renderBannerDetail(bannerData) {
+            els.header.style.display = 'none';
+
+            els.heroImg.style.display = 'block';
+            els.heroImg.src = bannerData.imageUrl || pageSetting.defaultImg;
+
+            if (bannerData.name) {
+                els.contentTitle.style.display = 'block';
+                els.contentTitle.innerText = bannerData.name;
+            }
+
+            els.contentDesc.innerText = bannerData.description || "";
+
+            if (bannerData.bannerUrl) {
+                els.actions.style.display = 'flex';
+                els.actions.innerHTML = '';
+
+                const btnMore = document.createElement('button');
+                btnMore.className = 'cd-btn cd-btn-primary';
+                btnMore.innerHTML = `<span>${t('btnMore')}</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>`;
+                btnMore.onclick = () => handleBannerMore(bannerData.bannerUrl);
+                els.actions.appendChild(btnMore);
+            } else {
+                els.actions.style.display = 'none';
+            }
+        }
+
+        async function renderGachaRateList(gameId) {
+            els.rateList.innerHTML = '';
+            if (window.PageManager) PageManager.showLoading();
+
+            try {
+                let gachaDatas = [];
+                if (window.CrmApi && typeof CrmApi.onGetGachaRate === 'function') {
+                    gachaDatas = await CrmApi.onGetGachaRate(gameId);
+                }
+
+                if (!gachaDatas || gachaDatas.length === 0) {
+                    els.rateList.innerHTML = `<div class="cd-empty-msg">${t('emptyRate')}</div>`;
+                    return;
+                }
+
+                gachaDatas.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'cd-rate-item';
+
+                    let subHtml = "";
+                    if (item.limit > 0) {
+                        if (item.use >= item.limit) {
+                            subHtml = `<span style="color:#e11d48; font-weight:600;">${t('outOfStock')}</span>`;
+                        } else {
+                            subHtml = t('limit', { x: item.limit });
+                        }
+                    }
+
+                    let image = pageSetting.defaultImg;
+                    if (item.type === "shop-digital") {
+                        const reward = window.Utility ? Utility.getReward(Number(item.reward)) : null;
+                        if (reward) image = reward.image;
+                    } else if (item.image) {
+                        image = item.image;
+                    }
+
+                    div.innerHTML = `
+                    <img src="${image}" class="cd-rate-img" onerror="this.src='${pageSetting.defaultImg}'" />
+                    <div class="cd-rate-info">
+                        <h4 class="cd-rate-name">${item.name || 'Reward'}</h4>
+                        ${subHtml ? `<p class="cd-rate-sub">${subHtml}</p>` : ''}
+                    </div>
+                    <div class="cd-rate-percent">${item.weight || 0}%</div>
+                `;
+                    els.rateList.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error(error);
+                if (window.PageManager) PageManager.showToast(t('errLoadRate'), "❌");
+                els.rateList.innerHTML = `<div class="cd-empty-msg">${t('errLoadRate')}</div>`;
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        // ==========================================
+        // 5. ACTION HANDLERS
+        // ==========================================
+
+        function handleLeaderboardClick(gameId) {
+            if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                PageManager.closeModal();
+            }
+            if (window.ConsoleManager && typeof ConsoleManager.navDirectConsole === 'function') {
+                ConsoleManager.navDirectConsole("leaderboard", { gameId: gameId });
+            } else if (window.PageManager && window.PageManager.console && typeof window.PageManager.console.navDirectConsole === 'function') {
+                window.PageManager.console.navDirectConsole("leaderboard", { gameId: gameId });
+            } else if (window.navigateConsole) {
+                window.navigateConsole("leaderboard", { gameId: gameId });
+            }
+        }
+
+        function handleStartGame(gameData) {
+            if (window.Utility && typeof Utility.onStartGame === 'function') {
+                Utility.onStartGame(gameData);
+            }
+        }
+
+        async function handleViewGachaRate(gameId) {
+            // ซ่อนหน้าหลักและแสดงหน้าเรท
+            els.mainView.classList.add('hidden');
+            els.rateView.classList.remove('hidden');
+            await renderGachaRateList(gameId);
+        }
+
+        function closeRateView() {
+            // สลับกลับมาหน้าหลัก
+            els.rateView.classList.add('hidden');
+            els.mainView.classList.remove('hidden');
+        }
+
+        function handleOpenGacha(gameData) {
+            if (window.Utility && typeof Utility.onOpenGachePage === 'function') {
+                Utility.onOpenGachePage(gameData);
+            }
+        }
+
+        function handleBannerMore(url) {
+            if (window.PageManager && typeof PageManager.showDirectLink === 'function') {
+                PageManager.showDirectLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        // ==========================================
+        // PUBLIC EXPORT & INIT
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                if (!payload) return;
+                payloadData = payload;
+
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+                applyLanguage();
+
+                // ใช้ค่าจาก pageSetting มาตั้งค่า CSS Variables
+                els.wrapper.style.setProperty('--mask-height', pageSetting.maskHeight);
+                els.wrapper.style.setProperty('--body-overlap', pageSetting.bodyOverlap);
+                els.wrapper.style.setProperty('--footer-height', pageSetting.footerHeight);
+
+                if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                    pointIconPath = Utility.getAssetPath("pointIcon") || "";
+                }
+
+                isGameMode = !!payload.gameCampaign;
+
+                if (isGameMode) {
+                    renderGameDetail(payload.gameCampaign);
+                } else if (payload.banner) {
+                    renderBannerDetail(payload.banner);
+                }
+            },
+            closeRateView: closeRateView
+        };
+
+    })();
+
+    // Entry Point from PageManager / Iframe
+    window.onInit = function (payload, response) {
+        window.ContentDetailCtrl.init(payload, response);
+    };
+</script>

@@ -1,0 +1,483 @@
+<!-- ========================================================= -->
+<!-- QR Code Display Component (For innerHTML injection)       -->
+<!-- ========================================================= -->
+
+<!-- [## CSS Style ##] -->
+<style>
+    /* ครอบทุกอย่างด้วย .crm-qr-module เพื่อไม่ให้ style รั่วไหล */
+    .crm-qr-module {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+        font-family: inherit;
+        /* ใช้ Font จาก Master Style */
+    }
+
+    .crm-qr-wrapper {
+        width: 100%;
+        max-width: 320px;
+        text-align: center;
+        animation: qrFadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    /* Header */
+    .crm-qr-header {
+        margin-bottom: 30px;
+    }
+
+    .crm-qr-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .crm-qr-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        margin: 0;
+        font-weight: 300;
+    }
+
+    /* เส้นตกแต่งใต้ Header */
+    .crm-qr-header-divider {
+        width: 48px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        border-radius: 2px;
+        margin: 16px auto 0;
+    }
+
+    /* QR Box Container */
+    .crm-qr-display-area {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 36px;
+        position: relative;
+    }
+
+    .crm-qr-box-wrapper {
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* Glow Effect */
+    .crm-qr-glow {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        bottom: -4px;
+        left: -4px;
+        background: linear-gradient(to right, #93c5fd, #a5b4fc);
+        border-radius: 24px;
+        filter: blur(12px);
+        opacity: 0.3;
+        transition: opacity 0.5s ease;
+        z-index: 0;
+    }
+
+    .crm-qr-box-wrapper:hover .crm-qr-glow {
+        opacity: 0.6;
+    }
+
+    /* White Box */
+    .crm-qr-box {
+        position: relative;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+        border: 1px solid #ffffff;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .crm-qr-box-wrapper:hover .crm-qr-box {
+        transform: scale(1.02);
+    }
+
+    #qrcode-render-area img {
+        margin: auto;
+        display: block;
+        border-radius: 8px;
+    }
+
+    /* Profile / Logo Badge on QR */
+    .crm-qr-badge {
+        position: absolute;
+        bottom: -16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 36px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 3px solid #ffffff;
+        overflow: hidden;
+    }
+
+    .crm-qr-badge img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Code & Copy Section */
+    .crm-qr-code-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .crm-qr-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0;
+    }
+
+    .crm-qr-copy-container {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 8px 8px 8px 16px;
+        margin: 0 auto;
+        max-width: 280px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .crm-qr-copy-container:hover {
+        border-color: #60a5fa;
+        box-shadow: 0 4px 6px -1px rgba(96, 165, 250, 0.15);
+    }
+
+    .crm-qr-code-text {
+        flex-grow: 1;
+        font-size: 24px;
+        font-weight: 700;
+        color: #334155;
+        font-family: monospace;
+        letter-spacing: 2px;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        user-select: all;
+    }
+
+    .crm-qr-divider {
+        width: 1px;
+        height: 32px;
+        background-color: #f1f5f9;
+        margin: 0 12px;
+    }
+
+    .crm-qr-btn-copy {
+        background: transparent;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .crm-qr-btn-copy:hover {
+        background-color: #eff6ff;
+    }
+
+    .crm-qr-btn-copy:active {
+        transform: scale(0.95);
+    }
+
+    .crm-qr-btn-copy img {
+        width: 20px;
+        height: 20px;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .crm-qr-btn-copy:hover img {
+        opacity: 1;
+    }
+
+    /* Animation */
+    @keyframes qrFadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<!-- [## HTML Structure ##] -->
+<div class="crm-qr-module">
+    <div class="crm-qr-wrapper">
+
+        <!-- 1. Header -->
+        <div class="crm-qr-header">
+            <h1 class="crm-qr-title" id="txt-qr-title">My QR Code</h1>
+            <p class="crm-qr-subtitle" id="txt-qr-subtitle">สแกนเพื่อดำเนินการต่อ</p>
+            <!-- เพิ่มเส้นขีดประดับส่วนหัว -->
+            <div class="crm-qr-header-divider"></div>
+        </div>
+
+        <!-- 2. QR Display Area -->
+        <div class="crm-qr-display-area">
+            <div class="crm-qr-box-wrapper" onclick="QRCodeDisplayCtr.copyCode()">
+                <div class="crm-qr-glow"></div>
+                <div class="crm-qr-box">
+                    <div id="qrcode-render-area"></div>
+
+                    <!-- โลโก้หรือรูปโปรไฟล์ตรงกลาง QR -->
+                    <div class="crm-qr-badge" id="qr-badge-container" style="display: none;">
+                        <img id="img-qr-badge" src="" alt="badge">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Code & Copy Section -->
+        <div class="crm-qr-code-section">
+            <p class="crm-qr-label" id="txt-qr-label">( รหัสสมาชิก )</p>
+            <div class="crm-qr-copy-container">
+                <p class="crm-qr-code-text" id="display-stat-id">------</p>
+                <div class="crm-qr-divider"></div>
+                <button class="crm-qr-btn-copy" onclick="QRCodeDisplayCtr.copyCode()" title="Copy">
+                    <img id="img-copy-icon" src="" alt="Copy">
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- [## Script ##] -->
+<script>
+    /**
+     * ========================================================================
+     * Page Setting
+     * สำหรับตั้งค่าการแสดงผลเบื้องต้นของหน้า QR Code (ปรับแก้ได้ง่าย)
+     * หมายเหตุ: เปลี่ยนการใช้ const เป็น var เพื่อป้องกันปัญหาตัวแปรซ้ำ
+     * เมื่อมีการโหลดหน้านี้ซ้ำผ่าน innerHTML
+     * ========================================================================
+     */
+    var pageSetting = {
+        qrSize: 220,                  // ขนาดของ QR Code (กว้าง x ยาว)
+        qrColorDark: "#1e293b",       // สีของตัว QR Code
+        qrColorLight: "#ffffff",      // สีพื้นหลังของตัว QR Code
+        fallbackCode: "UNKNOWN",      // ข้อความกรณีไม่พบ statId
+        copyIconKey: "copyIcon",      // Key สำหรับดึงรูป icon copy จาก Utility.getAssetPath
+        defaultBadgeKey: "pointIcon"  // Key รูป default ตรงกลาง QR กรณีไม่มีรูประบบ
+    };
+
+    /**
+     * ========================================================================
+     * Language Data Dictionary
+     * สำหรับรองรับ i18n โดยใช้ Key ตาม id ของ HTML Element
+     * ========================================================================
+     */
+    var qrLangData = {
+        Th: {
+            "txt-qr-title": "คิวอาร์โค้ด",
+            "txt-qr-subtitle": "สแกนเพื่อดำเนินการต่อ",
+            "txt-qr-label": "( รหัสอ้างอิง )",
+            "msg-copy-success": "คัดลอกรหัสเรียบร้อยแล้ว",
+            "msg-loading": "กำลังสร้าง QR Code..."
+        },
+        En: {
+            "txt-qr-title": "My QR Code",
+            "txt-qr-subtitle": "Scan to proceed",
+            "txt-qr-label": "( REFERENCE CODE )",
+            "msg-copy-success": "Code copied to clipboard",
+            "msg-loading": "Generating QR Code..."
+        }
+    };
+
+    /**
+     * ========================================================================
+     * Main Controller
+     * ครอบการทำงานด้วย IIFE ป้องกัน Global Scope Pollution
+     * ========================================================================
+     */
+    var QRCodeDisplayCtr = (function () {
+
+        let currentCode = "";
+        let currentLang = "Th";
+
+        // 1. ฟังก์ชันโหลดข้อความตามภาษา
+        const applyLanguage = () => {
+            // เช็คว่ามีค่าใน crmData หรือไม่
+            if (window.crmData && window.crmData.language) {
+                currentLang = window.crmData.language === "En" ? "En" : "Th";
+            }
+
+            const dict = qrLangData[currentLang];
+
+            // Loop set text ให้กับ element ตาม ID
+            for (const [id, text] of Object.entries(dict)) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            }
+        };
+
+        // 2. โหลด Assets / รูปภาพ
+        const setupAssets = () => {
+            try {
+                // ดึง icon copy
+                const copyIconEl = document.getElementById('img-copy-icon');
+                if (copyIconEl && typeof Utility !== 'undefined') {
+                    copyIconEl.src = Utility.getAssetPath(pageSetting.copyIconKey) || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+                }
+
+                // จัดการรูป Badge ตรงกลาง QR Code จาก LIFF_PAYLOAD
+                const badgeEl = document.getElementById('img-qr-badge');
+                const badgeContainer = document.getElementById('qr-badge-container');
+
+                let imageUrl = null;
+                if (window.crmData && window.crmData.LIFF_PAYLOAD) {
+                    const payload = window.crmData.LIFF_PAYLOAD;
+                    // เลือกว่าจะใช้รูป Store Logo หรือ Profile User
+                    if (payload.storeInfo && payload.storeInfo.logoURL) {
+                        imageUrl = payload.storeInfo.logoURL;
+                    } else if (payload.pictureUrl) {
+                        imageUrl = payload.pictureUrl;
+                    }
+                }
+
+                // หากไม่มีจาก LIFF ให้ลองใช้ default จาก Utility
+                if (!imageUrl && typeof Utility !== 'undefined') {
+                    imageUrl = Utility.getAssetPath(pageSetting.defaultBadgeKey);
+                }
+
+                // ถ้ารูปพร้อม ให้แสดง Badge
+                if (imageUrl) {
+                    badgeEl.src = imageUrl;
+                    badgeContainer.style.display = 'flex';
+                }
+
+            } catch (error) {
+                console.error("Asset setup error:", error);
+            }
+        };
+
+        // 3. ฟังก์ชันสร้าง QR Code จริง
+        const generateQRCode = () => {
+            const qrContainer = document.getElementById('qrcode-render-area');
+            qrContainer.innerHTML = ""; // Clear ก่อนสร้างใหม่
+
+            try {
+                new QRCode(qrContainer, {
+                    text: currentCode,
+                    width: pageSetting.qrSize,
+                    height: pageSetting.qrSize,
+                    colorDark: pageSetting.qrColorDark,
+                    colorLight: pageSetting.qrColorLight,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (error) {
+                console.error("QR Generate error:", error);
+            }
+        };
+
+        // 4. โหลด Library แบบ Dynamic ถ้าหน้าหลักยังไม่มี
+        const loadQRLibraryAndGenerate = () => {
+            const qrContainer = document.getElementById('qrcode-render-area');
+            const textDisplay = document.getElementById('display-stat-id');
+
+            // ดึง statId มาแสดงที่ Text ด้านล่างก่อนเลย
+            currentCode = (window.crmData && window.crmData.statId) ? window.crmData.statId : pageSetting.fallbackCode;
+            textDisplay.innerText = currentCode;
+
+            if (typeof QRCode !== 'undefined') {
+                // ถ้ามี Library อยู่แล้ว สร้างได้เลย
+                generateQRCode();
+            } else {
+                // ถ้าไม่มี ให้ดึงจาก CDN สดๆ
+                qrContainer.innerHTML = "<p style='color:#94a3b8; font-size:12px;'>Loading QR Library...</p>";
+
+                const script = document.createElement('script');
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+
+                script.onload = () => {
+                    generateQRCode(); // โหลดเสร็จสั่งวาด
+                };
+
+                script.onerror = () => {
+                    qrContainer.innerHTML = "<p style='color:#ef4444; font-size:14px;'>QR Library failed to load.</p>";
+                };
+
+                document.head.appendChild(script);
+            }
+        };
+
+        // Public Methods
+        return {
+            init: function (payload, response) {
+                // สามารถใช้ PageManager.showLoading() ตอนเริ่มโหลดข้อมูลได้ หากมีการเรียก API เพิ่มเติม
+                // PageManager.showLoading(qrLangData[currentLang]["msg-loading"]);
+
+                applyLanguage();
+                setupAssets();
+
+                // เริ่มโหลด Library & สร้าง QR
+                loadQRLibraryAndGenerate();
+
+                // PageManager.hideLoading();
+
+                if (response) {
+                    response.status = "ok";
+                    response.message = "QR Page Initialized";
+                }
+            },
+
+            copyCode: function () {
+                if (!currentCode || currentCode === pageSetting.fallbackCode) return;
+
+                // ใช้ Clipboard API
+                const tempInput = document.createElement("input");
+                tempInput.value = currentCode;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+
+                // ใช้ Service ของระบบแสดง Toast แจ้งเตือน
+                if (typeof PageManager !== 'undefined') {
+                    const msg = qrLangData[currentLang]["msg-copy-success"];
+                    // สมมติว่า param คือ (message, iconKey)
+                    PageManager.showToast(msg, "success");
+                }
+            }
+        };
+    })();
+
+    /**
+     * ========================================================================
+     * Lifecycle Hook : รับค่าเข้าด้วย window.onInit
+     * ระบบ PageManager จะเรียกใช้ function นี้เมื่อทำการ innerHTML เข้ามาเสร็จ
+     * ========================================================================
+     */
+    window.onInit = function (payload, response) {
+        console.log("QR Page Loaded, Payload:", payload);
+        QRCodeDisplayCtr.init(payload, response);
+    };
+</script>

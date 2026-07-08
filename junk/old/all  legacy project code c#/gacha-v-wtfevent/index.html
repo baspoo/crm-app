@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Draw System - Template</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .layer-transition {
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .glow-button {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6), 0 0 40px rgba(236, 72, 153, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glow-button:hover {
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.8), 0 0 60px rgba(236, 72, 153, 0.6);
+            transform: scale(1.05);
+        }
+
+        .img-button {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .img-button:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        .img-button:active {
+            transform: scale(0.95);
+        }
+
+        /* เพิ่ม Keyframes ที่ขาดหายไปสำหรับ Animation */
+        @keyframes custom-shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-10px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes custom-zoomin {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes custom-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes custom-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .anim-shake {
+            animation: custom-shake infinite ease-in-out;
+        }
+
+        .anim-zoomin {
+            animation: custom-zoomin infinite ease-in-out;
+        }
+
+        .anim-bounce {
+            animation: custom-bounce infinite ease-in-out;
+        }
+
+        .anim-pulse {
+            animation: custom-pulse infinite ease-in-out;
+        }
+    </style>
+
+    <!-- ========================================================================================= -->
+    <!-- 🎨 ส่วนตั้งค่าสำหรับทีมกราฟิก (GRAPHIC CONFIGURATION) 🎨                                -->
+    <!-- ========================================================================================= -->
+    <script>
+        const graphicConfig = {
+
+            // Version ของ Resource (ใช้สำหรับล้าง Cache ของไฟล์สื่อทั้งหมดเมื่อมีการอัปเดต โดยจะถูกต่อท้ายเป็น Query String เช่น ?v=1.0)
+            "resVersion": "1.0",
+
+            // ตั้งค่าการรอ VDO Idle ให้จบก่อนหรือไม่
+            "waitIdleVdoOpening": false, // true = รอให้ vdo idle เล่นจบก่อนค่อยเปิดกล่อง, false = ข้ามไปเปิดกล่องทันทีเมื่อได้ผลรางวัล
+
+            // 1. โลโก้งาน
+            "logo": {
+                "url": "res/logo.png",    // เปลี่ยนรูปโลโก้ (ปล่อยว่าง "" หากต้องการใช้ข้อความแทน)
+                "offsetY": -180,           // ขยับขึ้น-ลง (ค่าบวกขยับลง ค่าลบขยับขึ้น)
+                "scale": 65,             // ขนาดของรูป (100 คือ 100%)
+                "anim": "bounce",        // เอฟเฟกต์: "bounce", "pulse", "zoomin", "shake" (ใส่ "" ถ้าไม่เอา)
+                "duration": 1500          // ความเร็วของเอฟเฟกต์ (1000 = 1 วินาที)
+            },
+
+            // 2. กราฟิกตกแต่งฉาก
+            "topImage": { "url": "res/topImage.png", "showOn": ["idle", "end"] },
+            "botImage": { "url": "res/botImage.png", "showOn": ["idle", "end"] },
+
+            // 3. ไฟล์สื่อ (วิดีโอ/ภาพ/เสียง) ของระบบ
+            "idle": { "type": "vdo", "url": "res/idle.mp4" },  // พื้นหลังตอนรอ
+            "open": { "type": "vdo", "url": "res/open.mp4" },  // วิดีโอตอนเปิดกล่อง/สุ่ม
+            "end": { "type": "vdo", "url": "res/end.mp4" },  // ภาพพื้นหลังหน้าโชว์รางวัล
+            "donesfx": { "type": "audio", "url": "res/donesfx.mp3" }, // เอฟเฟกต์เสียงตอนรางวัลออก
+
+            // 4. ป๊อปอัปแสดงผลรางวัล
+            "popupbg": {
+                "header": " ",
+                "url": "res/popupBg.png",                // ภาพพื้นหลังของกรอบป๊อปอัป
+                "failed": "res/failed.png",              // ภาพที่แสดงเมื่อเกิดข้อผิดพลาด
+                "failMessage": "ไม่สามารถเปิดได้",        // ข้อความที่แสดงเมื่อเกิดข้อผิดพลาด
+                "scale": 140,                             // ขนาดของ "ตัวกรอบป๊อปอัป" ทั้งหมด
+                // เพิ่ม Content Size & Offset
+                "contentSize": 65,                      // ย่อ/ขยาย เฉพาะเนื้อหาด้านใน (ข้อความ, รูปรางวัล, ปุ่ม)
+                "contentOffsetY": 70                      // ขยับเนื้อหาด้านใน ขึ้น-ลง (ค่าลบ = ขึ้น, ค่าบวก = ลง)
+            },
+
+            // 5. ปุ่มกด
+            "btnStart": {
+                "url": "res/btnStartGame.png",
+                "offsetY": 50,
+                "scale": 100
+            },
+            "btnContinue": {
+                "url": "res/btnContinue.png",
+                "offsetY": 0,
+                "scale": 160
+            },
+
+            // 6. ปรับแต่งฟอนต์ 
+            "fontStyle": {
+                "waitingStart": { "color": "#FFFFFF", "size": "26" },
+                "header": { "color": "", "size": "32" },
+                "reward": { "color": "#1863FC", "size": "26" }
+            }
+        };
+    </script>
+    <!-- ========================================================================================= -->
+    <!-- จบส่วนตั้งค่าของกราฟิก                                                                    -->
+    <!-- ========================================================================================= -->
+
+</head>
+
+<body class="w-screen h-screen relative flex items-center justify-center text-white">
+
+    <!-- BACKGROUND LAYERS -->
+    <div id="layer-idle" class="absolute inset-0 z-0 layer-transition opacity-100 bg-black"></div>
+    <div id="layer-open" class="absolute inset-0 z-10 layer-transition opacity-0 bg-black pointer-events-none"></div>
+    <div id="layer-end" class="absolute inset-0 z-20 layer-transition opacity-0 bg-black pointer-events-none"></div>
+
+    <!-- GRAPHIC OVERLAY LAYERS -->
+    <div id="layer-decorations" class="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+        <img id="graphic-top" src=""
+            class="absolute top-0 left-0 w-full h-auto hidden transition-opacity duration-500 opacity-0"
+            alt="Top Decoration">
+        <img id="graphic-bot" src=""
+            class="absolute bottom-0 left-0 w-full h-auto hidden transition-opacity duration-500 opacity-0"
+            alt="Bottom Decoration">
+    </div>
+
+    <!-- UI: Idle State (แก้ opacity เป็น 0 เริ่มต้น เพื่อทำ Preload ขาดหาย) -->
+    <div id="ui-idle"
+        class="relative z-40 flex flex-col items-center justify-center transition-opacity duration-1000 opacity-0 w-full">
+
+        <!-- Logo Container -->
+        <div id="logo-container" class="mb-12 text-center flex justify-center items-center w-full max-w-2xl px-4">
+            <!-- แก้ไข: เพิ่ม div wrapper เพื่อจัดการขนาด (scale) แยกออกจากตัวรูปที่ทำอนิเมชัน -->
+            <div id="logo-wrapper" class="hidden w-full flex justify-center items-center">
+                <img id="logo-image" src="" alt="Event Logo" class="max-w-full h-auto object-contain">
+            </div>
+            <h1 id="title-text"
+                class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 drop-shadow-lg anim-bounce"
+                style="animation-duration: 1.5s;">
+                SUPER<br>LUCKY DRAW
+            </h1>
+        </div>
+
+        <!-- Start Button Container -->
+        <div id="start-btn-container" class="relative transition-opacity duration-300">
+            <button id="btn-start-default"
+                class="glow-button bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-3xl py-4 px-12 rounded-full border-2 border-white/50 backdrop-blur-sm cursor-pointer">
+                START
+            </button>
+            <img id="btn-start-img" src="" class="img-button hidden w-64 object-contain" alt="Start Button">
+        </div>
+
+        <p id="status-text"
+            class="mt-8 text-lg font-bold text-yellow-300 tracking-widest uppercase opacity-0 transition-opacity duration-300 drop-shadow-md">
+            กำลังรอผลรางวัล...
+        </p>
+    </div>
+
+    <!-- UI: Result / End State (Popup) -->
+    <div id="ui-end"
+        class="absolute inset-0 z-50 flex items-center justify-center transition-opacity duration-500 opacity-0 pointer-events-none hidden px-4">
+
+        <!-- Modal Box (ส่วนพื้นหลังและการ Scale รวม) -->
+        <div id="result-modal"
+            class="relative bg-white/10 border border-white/20 rounded-3xl p-8 md:p-12 max-w-lg w-full text-center shadow-2xl transition-transform duration-500 backdrop-blur-md bg-center bg-no-repeat bg-contain flex flex-col items-center"
+            style="transform: scale(0.95);">
+
+            <!-- Group Content เพื่อแยกการควบคุม ContentSize และ OffsetY ออกจาก PopupBg -->
+            <div id="popup-content-group"
+                class="flex flex-col items-center justify-center w-full relative z-10 transition-transform duration-300">
+
+                <h2 id="congrats-text"
+                    class="text-3xl md:text-4xl font-bold text-yellow-400 mb-6 drop-shadow-md w-full">
+                    ยินดีด้วย! คุณได้รับ
+                </h2>
+
+                <!-- รูปรางวัล -->
+                <div id="prize-image-container"
+                    class="relative w-48 h-48 md:w-56 md:h-56 mx-auto bg-white/20 rounded-2xl p-4 mb-6 shadow-inner flex items-center justify-center">
+                    <img id="prize-image" src="" alt="Prize"
+                        class="max-w-full max-h-full object-contain drop-shadow-xl anim-zoomin"
+                        style="animation-duration: 2s;">
+                </div>
+
+                <h3 id="prize-name"
+                    class="text-4xl md:text-5xl font-extrabold text-white mb-10 drop-shadow-lg w-full break-words">---
+                </h3>
+
+                <!-- Continue Button Container -->
+                <div id="continue-btn-container" class="relative w-full flex justify-center">
+                    <button id="btn-continue-default"
+                        class="w-full bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-400 hover:to-teal-300 text-white font-bold text-2xl py-4 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95">
+                        ตกลง
+                    </button>
+                    <img id="btn-continue-img" src="" class="img-button hidden w-48 object-contain"
+                        alt="Continue Button">
+                </div>
+
+            </div> <!-- End popup-content-group -->
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC (ระบบหลัก) ================= -->
+    <script>
+        const i18n = {
+            th: { title: "SUPER<br>LUCKY DRAW", startBtn: "START", loading: "กำลังรอผลรางวัล...", congrats: " ยินดีด้วย! คุณได้รับ ", errorTitle: "⚠️ เกิดข้อผิดพลาด", closeBtn: "ตกลง", defaultErrorMsg: "ไม่สามารถเปิดกล่องได้" },
+            en: { title: "SUPER<br>LUCKY DRAW", startBtn: "START", loading: "WAITING FOR RESULT...", congrats: " Congratulations! You won ", errorTitle: "⚠️ Error Occurred", closeBtn: "OK", defaultErrorMsg: "Failed to open the box" }
+        };
+
+        let currentLang = 'th';
+        let currentAppState = 'idle';
+
+        const defaultConfig = {
+            waitIdleVdoOpening: true,
+            logo: { url: "", offsetY: 0, scale: 100, anim: "bounce", duration: 1500 },
+            topImage: { url: "", showOn: ["idle", "open", "end"] },
+            botImage: { url: "", showOn: ["idle", "open", "end"] },
+            idle: { type: "vdo", url: "res/idle.mp4" }, open: { type: "vdo", url: "res/open.mp4" }, end: { type: "image", url: "res/end.jpg" }, donesfx: { type: "audio", url: "res/done.mp3" },
+            popupbg: { header: "", url: "", failed: "", failMessage: "", scale: 100, contentSize: 100, contentOffsetY: 0 },
+            btnStart: { url: "", offsetY: 0, scale: 100 }, btnContinue: { url: "", offsetY: 0, scale: 100 },
+            fontStyle: { waitingStart: { color: "", size: "" }, header: { color: "", size: "" }, reward: { color: "", size: "" } }
+        };
+
+        // ผสานค่า
+        let config = { ...defaultConfig, ...graphicConfig };
+        if (graphicConfig.logo) config.logo = { ...defaultConfig.logo, ...graphicConfig.logo };
+        if (graphicConfig.topImage) config.topImage = { ...defaultConfig.topImage, ...graphicConfig.topImage };
+        if (graphicConfig.botImage) config.botImage = { ...defaultConfig.botImage, ...graphicConfig.botImage };
+        if (graphicConfig.popupbg) config.popupbg = { ...defaultConfig.popupbg, ...graphicConfig.popupbg };
+        if (graphicConfig.btnStart) config.btnStart = { ...defaultConfig.btnStart, ...graphicConfig.btnStart };
+        if (graphicConfig.btnContinue) config.btnContinue = { ...defaultConfig.btnContinue, ...graphicConfig.btnContinue };
+        if (graphicConfig.fontStyle) {
+            config.fontStyle = { ...defaultConfig.fontStyle, ...graphicConfig.fontStyle };
+            if (graphicConfig.fontStyle.waitingStart) config.fontStyle.waitingStart = { ...defaultConfig.fontStyle.waitingStart, ...graphicConfig.fontStyle.waitingStart };
+            if (graphicConfig.fontStyle.header) config.fontStyle.header = { ...defaultConfig.fontStyle.header, ...graphicConfig.fontStyle.header };
+            if (graphicConfig.fontStyle.reward) config.fontStyle.reward = { ...defaultConfig.fontStyle.reward, ...graphicConfig.fontStyle.reward };
+        }
+
+        // --- ส่วนที่เพิ่มเข้ามาใหม่: เพิ่ม resVersion เพื่อล้าง Cache ---
+        function appendResVersion(obj, version) {
+            if (!version) return;
+            for (let key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    appendResVersion(obj[key], version);
+                } else if ((key === 'url' || key === 'failed') && typeof obj[key] === 'string' && obj[key].trim() !== '') {
+                    const separator = obj[key].includes('?') ? '&' : '?';
+                    obj[key] = obj[key] + separator + 'v=' + version;
+                }
+            }
+        }
+        // นำไปประมวลผลก่อนเข้าสู่ระบบโหลดต่างๆ
+        appendResVersion(config, config.resVersion);
+        // --------------------------------------------------------
+
+        // ฟังก์ชัน Preload รูปภาพ
+        function preloadAssets(callback) {
+            const imagesToPreload = [];
+
+            if (config.logo.url) imagesToPreload.push(config.logo.url);
+            if (config.topImage.url) imagesToPreload.push(config.topImage.url);
+            if (config.botImage.url) imagesToPreload.push(config.botImage.url);
+            if (config.btnStart.url) imagesToPreload.push(config.btnStart.url);
+            if (config.btnContinue.url) imagesToPreload.push(config.btnContinue.url);
+            if (config.popupbg.url) imagesToPreload.push(config.popupbg.url);
+            if (config.popupbg.failed) imagesToPreload.push(config.popupbg.failed); // โหลดรูป Failed
+            if (config.idle.type === 'image' && config.idle.url) imagesToPreload.push(config.idle.url);
+            if (config.end.type === 'image' && config.end.url) imagesToPreload.push(config.end.url);
+
+            // กรองเอาตัวที่ซ้ำและตัวว่างออก
+            const uniqueImages = [...new Set(imagesToPreload.filter(url => url.trim() !== ""))];
+
+            if (uniqueImages.length === 0) {
+                callback();
+                return;
+            }
+
+            let loadedCount = 0;
+            const onImageLoad = () => {
+                loadedCount++;
+                if (loadedCount === uniqueImages.length) callback();
+            };
+
+            uniqueImages.forEach(url => {
+                const img = new Image();
+                img.onload = onImageLoad;
+                img.onerror = onImageLoad; // ถ้าโหลดพลาดก็ให้ข้ามไป เพื่อไม่ให้ค้าง
+                img.src = url;
+            });
+        }
+
+        function updateDecorations() {
+            const decors = { 'graphic-top': config.topImage, 'graphic-bot': config.botImage };
+            for (const [id, conf] of Object.entries(decors)) {
+                const imgEl = document.getElementById(id);
+                if (conf && conf.url) {
+                    imgEl.src = conf.url;
+                    let showOnArr = Array.isArray(conf.showOn) ? conf.showOn : ["idle", "open", "end"];
+                    showOnArr = showOnArr.join(',').split(',').map(s => s.trim().toLowerCase());
+
+                    if (showOnArr.includes(currentAppState)) {
+                        imgEl.classList.remove('hidden');
+                        setTimeout(() => imgEl.classList.replace('opacity-0', 'opacity-100'), 20);
+                    } else {
+                        imgEl.classList.replace('opacity-100', 'opacity-0');
+                        setTimeout(() => { if (!showOnArr.includes(currentAppState)) imgEl.classList.add('hidden'); }, 500);
+                    }
+                } else { imgEl.classList.add('hidden'); }
+            }
+        }
+
+        function applyLanguageAndConfig() {
+            const langData = i18n[currentLang];
+
+            document.getElementById('title-text').innerHTML = langData.title;
+            document.getElementById('btn-start-default').innerText = langData.startBtn;
+            document.getElementById('status-text').innerText = langData.loading;
+            document.getElementById('congrats-text').innerText = langData.congrats;
+            document.getElementById('btn-continue-default').innerText = langData.closeBtn;
+
+            updateDecorations();
+
+            const logoWrapper = document.getElementById('logo-wrapper');
+            const logoImg = document.getElementById('logo-image');
+            const logoText = document.getElementById('title-text');
+
+            if (config.logo && config.logo.url) {
+                logoImg.src = config.logo.url;
+                logoWrapper.classList.remove('hidden');
+                logoText.classList.add('hidden');
+
+                const scale = (config.logo.scale || 100) / 100;
+                const offsetY = config.logo.offsetY || 0;
+
+                // แก้ไข: ใช้ Wrapper จัดการขนาด Scale และ OffsetY
+                logoWrapper.style.transform = `scale(${scale}) translateY(${offsetY}px)`;
+                logoImg.className = `max-w-full h-auto object-contain`;
+
+                // และให้ตัวรูป (img) จัดการอนิเมชัน เพื่อไม่ให้ Transform ตีกัน
+                if (config.logo.anim) {
+                    let animClass = config.logo.anim === 'pingpong' ? 'pulse' : config.logo.anim;
+                    logoImg.classList.add(`anim-${animClass}`);
+                    logoImg.style.animationDuration = `${config.logo.duration || 1000}ms`;
+                }
+            } else {
+                logoWrapper.classList.add('hidden');
+                logoText.classList.remove('hidden');
+                logoText.style.transform = `translateY(${config.logo ? (config.logo.offsetY || 0) : 0}px)`;
+            }
+
+            const btnStartDefault = document.getElementById('btn-start-default');
+            const btnStartImg = document.getElementById('btn-start-img');
+            const startContainer = document.getElementById('start-btn-container');
+
+            if (config.btnStart && config.btnStart.url) {
+                btnStartDefault.classList.add('hidden');
+                btnStartImg.src = config.btnStart.url;
+                btnStartImg.classList.remove('hidden');
+                startContainer.style.transform = `scale(${(config.btnStart.scale || 100) / 100}) translateY(${config.btnStart.offsetY || 0}px)`;
+            }
+
+            const modalBox = document.getElementById('result-modal');
+            const congratsText = document.getElementById('congrats-text');
+            const contentGroup = document.getElementById('popup-content-group');
+
+            if (config.popupbg) {
+                if (config.popupbg.header) congratsText.innerText = config.popupbg.header;
+                if (config.popupbg.url) {
+                    modalBox.style.backgroundImage = `url('${config.popupbg.url}')`;
+                    modalBox.style.backgroundSize = 'contain';
+                    modalBox.classList.remove('bg-white/10', 'border', 'border-white/20');
+                    modalBox.style.backgroundColor = 'transparent';
+                    modalBox.style.boxShadow = 'none';
+                    modalBox.style.backdropFilter = 'none';
+                }
+
+                const popupScale = (config.popupbg.scale || 100) / 100;
+                modalBox.dataset.scale = popupScale;
+                modalBox.style.transform = `scale(${popupScale * 0.95})`;
+
+                const contentScale = (config.popupbg.contentSize !== undefined ? config.popupbg.contentSize : 100) / 100;
+                const contentOffsetY = config.popupbg.contentOffsetY || 0;
+                contentGroup.style.transform = `scale(${contentScale}) translateY(${contentOffsetY}px)`;
+            }
+
+            const btnContinueDefault = document.getElementById('btn-continue-default');
+            const btnContinueImg = document.getElementById('btn-continue-img');
+            const continueContainer = document.getElementById('continue-btn-container');
+
+            if (config.btnContinue && config.btnContinue.url) {
+                btnContinueDefault.classList.add('hidden');
+                btnContinueImg.src = config.btnContinue.url;
+                btnContinueImg.classList.remove('hidden');
+                continueContainer.style.transform = `scale(${(config.btnContinue.scale || 100) / 100}) translateY(${config.btnContinue.offsetY || 0}px)`;
+            }
+
+            if (config.fontStyle) {
+                const applyFontStyle = (elementId, fontConf) => {
+                    const el = document.getElementById(elementId);
+                    if (el && fontConf) {
+                        if (fontConf.color) el.style.color = fontConf.color;
+                        if (fontConf.size) {
+                            let size = fontConf.size;
+                            if (!isNaN(size)) size = size + 'px';
+                            el.style.fontSize = size;
+                            el.style.lineHeight = 'normal';
+                        }
+                    }
+                };
+                applyFontStyle('status-text', config.fontStyle.waitingStart);
+                applyFontStyle('congrats-text', config.fontStyle.header);
+                applyFontStyle('prize-name', config.fontStyle.reward);
+            }
+        }
+
+        let doneAudio = null, idleMediaElement = null, openMediaElement = null, endMediaElement = null;
+        let isWaitingForTrigger = false, isIdleVideoEnded = false, isApiReady = false, apiResultData = null;
+        const isInIframe = window !== window.parent;
+
+        const layerIdle = document.getElementById('layer-idle'), layerOpen = document.getElementById('layer-open'), layerEnd = document.getElementById('layer-end');
+        const uiIdle = document.getElementById('ui-idle'), uiEnd = document.getElementById('ui-end'), statusText = document.getElementById('status-text');
+
+        window.addEventListener('message', function (event) {
+            console.log(`callback : ${event.data.type}`);
+            if (!event.data) return;
+            if (event.data.type === 'initialData') {
+                onInit({
+                    language: event.data.data.language
+                });
+            }
+            if (event.data.type === 'updateData') {
+                onResult(event.data.data);
+            }
+        }, false);
+
+        async function onInit(payload, response) {
+            //** ของเดิม addEventListener [initialData]-->  onInit **
+            //** ของใหม่ main page เรียกตรงมา -->  onInit **
+
+            if (window.parent.Utility && typeof window.parent.Utility.getLanguage === 'function') {
+                // new version
+                const language = window.parent.Utility.getLanguage()?.toLowerCase() || "th";
+                if (language && i18n[language]) currentLang = language;
+            }
+            else {
+                // legacy version
+                if (payload.language && i18n[payload.language])
+                    currentLang = payload.language;
+            }
+
+            applyLanguageAndConfig();
+        }
+        function onResult(result) {
+
+            //** ของเดิม addEventListener [updateData]-->  onResult **
+            //** ของใหม่ รอ awit จากหน้านี้ได้เลย -->  onResult **
+            if (result) {
+                apiResultData = result;
+                isApiReady = true;
+                if (!config.waitIdleVdoOpening) {
+                    isIdleVideoEnded = true;
+                }
+                checkAndPlaySequence();
+            }
+            else {
+                onClosePage();
+            }
+        }
+        async function onOpen() {
+            if (window.parent.Utility && typeof window.parent.Utility.onOpenGache === 'function') {
+                const res = await window.parent.Utility.onOpenGache();
+                onResult(res);
+            }
+            else
+                window.parent.postMessage({ type: "formData", data: { action: "open" }, closeIframe: false }, "*");
+        }
+        function onClosePage() {
+            if (window.parent.PageManager && typeof window.parent.PageManager.closeIframe === 'function')
+                window.parent.PageManager.closeIframe();
+            else
+                window.parent.postMessage({ type: "formData", data: {}, closeIframe: true }, "*");
+        }
+
+
+        function initMedia() {
+            doneAudio = new Audio(config.donesfx.url);
+            doneAudio.preload = 'auto';
+
+            if (config.idle.type === 'vdo') {
+                idleMediaElement = document.createElement('video');
+                idleMediaElement.src = config.idle.url;
+                idleMediaElement.muted = true; idleMediaElement.autoplay = true; idleMediaElement.playsInline = true;
+                idleMediaElement.setAttribute('playsinline', ''); idleMediaElement.setAttribute('autoplay', '');
+                idleMediaElement.className = "w-full h-full object-cover";
+
+                idleMediaElement.addEventListener('ended', () => {
+                    if (isWaitingForTrigger) {
+                        isIdleVideoEnded = true;
+                        if (config.waitIdleVdoOpening) {
+                            checkAndPlaySequence();
+                        }
+                    }
+                    else {
+                        idleMediaElement.currentTime = 0; idleMediaElement.play().catch(e => console.error(e));
+                    }
+                });
+                idleMediaElement.addEventListener('error', () => isIdleVideoEnded = true);
+                layerIdle.appendChild(idleMediaElement);
+                idleMediaElement.play().catch(e => console.warn(e));
+            } else {
+                idleMediaElement = document.createElement('img');
+                idleMediaElement.src = config.idle.url;
+                idleMediaElement.className = "w-full h-full object-cover";
+                layerIdle.appendChild(idleMediaElement);
+            }
+
+            if (config.open.type === 'vdo') {
+                openMediaElement = document.createElement('video');
+                openMediaElement.src = config.open.url;
+                openMediaElement.muted = false; openMediaElement.playsInline = true; openMediaElement.setAttribute('playsinline', '');
+                openMediaElement.preload = "auto"; openMediaElement.className = "w-full h-full object-cover";
+                openMediaElement.addEventListener('ended', showResultState);
+                openMediaElement.addEventListener('error', () => setTimeout(showResultState, 1500));
+                layerOpen.appendChild(openMediaElement);
+            }
+
+            if (config.end.type === 'vdo') {
+                endMediaElement = document.createElement('video');
+                endMediaElement.src = config.end.url;
+                endMediaElement.muted = false; endMediaElement.loop = true; endMediaElement.playsInline = true;
+                endMediaElement.className = "w-full h-full object-cover";
+            } else {
+                endMediaElement = document.createElement('img');
+                endMediaElement.src = config.end.url;
+                endMediaElement.className = "w-full h-full object-cover";
+            }
+            layerEnd.appendChild(endMediaElement);
+
+            currentAppState = 'idle';
+        }
+
+        function handleStartClick() {
+            console.log(`isInIframe : ${isInIframe}`);
+
+            const startBtnContainer = document.getElementById('start-btn-container');
+            startBtnContainer.classList.add('opacity-0', 'pointer-events-none');
+
+            statusText.classList.replace('opacity-0', 'opacity-100');
+            isWaitingForTrigger = true; isApiReady = false; apiResultData = null;
+            isIdleVideoEnded = (config.idle.type !== 'vdo');
+
+            const modalBox = document.getElementById('result-modal');
+            const targetScale = modalBox.dataset.scale ? parseFloat(modalBox.dataset.scale) : 1;
+            modalBox.style.transform = `scale(${targetScale * 0.95})`;
+
+            if (isInIframe) {
+                console.log(`call open to unity`);
+                onOpen();
+            } else {
+                console.log("🛠️ โหมดทดสอบออฟไลน์: จำลองข้อมูล...");
+                setTimeout(() => {
+                    // ปรับการจำลองให้สุ่มโอกาสสำเร็จ/ล้มเหลวที่ 50%
+                    const isSuccess = Math.random() >= 0.5;
+                    console.log(`🛠️ ผลลัพธ์ที่สุ่มได้ (ออฟไลน์): ${isSuccess ? "สำเร็จ (True)" : "ล้มเหลว (False)"}`);
+
+                    apiResultData = {
+                        ok: isSuccess,
+                        image: "https://cdn-icons-png.flaticon.com/512/3113/3113054.png",
+                        displayName: isSuccess ? "รางวัลแจ็คพอต" : null
+                    };
+                    isApiReady = true;
+
+                    if (!config.waitIdleVdoOpening) {
+                        isIdleVideoEnded = true;
+                    }
+
+                    checkAndPlaySequence();
+                }, 2000);
+            }
+        }
+        document.getElementById('btn-start-default').addEventListener('click', handleStartClick);
+        document.getElementById('btn-start-img').addEventListener('click', handleStartClick);
+
+        function checkAndPlaySequence() {
+            if (isWaitingForTrigger && isIdleVideoEnded && isApiReady) {
+                isWaitingForTrigger = false;
+                if (apiResultData.ok) playOpenSequence();
+                else showErrorPopup();
+            }
+        }
+
+        function playOpenSequence() {
+            currentAppState = 'open';
+            updateDecorations();
+
+            uiIdle.classList.add('hidden');
+            layerIdle.classList.replace('opacity-100', 'opacity-0');
+            layerOpen.classList.replace('opacity-0', 'opacity-100');
+
+            if (config.open.type === 'vdo') {
+                openMediaElement.currentTime = 0;
+                let playPromise = openMediaElement.play();
+                if (playPromise !== undefined) playPromise.catch(e => setTimeout(showResultState, 1500));
+            } else {
+                setTimeout(showResultState, 3000);
+            }
+        }
+
+        function showResultState() {
+            currentAppState = 'end';
+            updateDecorations();
+
+            if (doneAudio) { doneAudio.currentTime = 0; doneAudio.play().catch(e => console.log(e)); }
+            layerOpen.classList.replace('opacity-100', 'opacity-0'); layerEnd.classList.replace('opacity-0', 'opacity-100');
+            if (config.end.type === 'vdo' && endMediaElement) { endMediaElement.currentTime = 0; endMediaElement.play().catch(e => console.error(e)); }
+
+            setTimeout(() => {
+                document.getElementById('prize-image').src = apiResultData.image || "";
+
+                // รีเซ็ตค่าสีของชื่อรางวัล และเอาข้อความกลับมาใช้ในตอนสำเร็จ
+                const prizeName = document.getElementById('prize-name');
+                prizeName.innerText = apiResultData.displayName || "Unknown";
+                if (config.fontStyle?.reward?.color) {
+                    prizeName.style.color = config.fontStyle.reward.color;
+                } else {
+                    prizeName.style.color = ''; // รีเซ็ตเพื่อใช้สีขาวเป็น default
+                }
+
+                const congratsText = document.getElementById('congrats-text');
+                congratsText.classList.remove('hidden'); // แสดงข้อความที่ถูกซ่อนกลับมา
+                congratsText.innerText = (config.popupbg && config.popupbg.header) ? config.popupbg.header : i18n[currentLang].congrats;
+                congratsText.classList.replace('text-red-400', 'text-yellow-400');
+                if (config.fontStyle?.header?.color) {
+                    congratsText.style.color = config.fontStyle.header.color;
+                } else {
+                    congratsText.style.color = '';
+                }
+
+                document.getElementById('prize-image-container').classList.remove('hidden');
+                showEndUI();
+            }, 500);
+        }
+
+        function showErrorPopup() {
+            currentAppState = 'end';
+            updateDecorations();
+
+            uiIdle.classList.add('hidden');
+
+            // ซ่อนข้อความส่วนหัวไปเลย เพื่อไม่ให้ขนาด popup ยืด
+            const congratsText = document.getElementById('congrats-text');
+            congratsText.classList.add('hidden');
+
+            // ป้องกันขนาดของ Popup ผิดเพี้ยนโดยการเอารูปมาใส่แทนที่จะซ่อนไปเลย
+            const prizeImageContainer = document.getElementById('prize-image-container');
+            const prizeImage = document.getElementById('prize-image');
+
+            if (config.popupbg && config.popupbg.failed) {
+                prizeImage.src = config.popupbg.failed;
+                prizeImageContainer.classList.remove('hidden');
+            } else {
+                prizeImageContainer.classList.add('hidden'); // กรณีไม่มีรูปภาพที่ตั้งไว้
+            }
+
+            // แสดงข้อความและเปลี่ยนเป็นสีแดง โดยเช็คว่ามี failMessage ตั้งไว้ใน config ไหม ถ้าไม่มีก็ดึงจาก API หรือค่า Default
+            const prizeName = document.getElementById('prize-name');
+            prizeName.innerText = (config.popupbg && config.popupbg.failMessage) ? config.popupbg.failMessage : (apiResultData.displayName || i18n[currentLang].defaultErrorMsg);
+            prizeName.style.color = '#ef4444'; // บังคับให้เป็นสีแดง (เทียบเท่า text-red-500) เพื่อ override config ถ้ามี
+
+            layerIdle.classList.replace('opacity-100', 'opacity-0'); layerEnd.classList.replace('opacity-0', 'opacity-100');
+            showEndUI();
+        }
+
+        function showEndUI() {
+            uiEnd.classList.remove('hidden');
+            setTimeout(() => {
+                uiEnd.classList.replace('opacity-0', 'opacity-100');
+                uiEnd.classList.remove('pointer-events-none');
+
+                const modalBox = document.getElementById('result-modal');
+                const targetScale = modalBox.dataset.scale ? parseFloat(modalBox.dataset.scale) : 1;
+                modalBox.style.transform = `scale(${targetScale})`;
+            }, 50);
+        }
+
+        function handleContinueClick() {
+            if (isInIframe) onClosePage();
+            else { alert("🛠️ รีเฟรชหน้าจอ (โหมดออฟไลน์)"); window.location.reload(); }
+        }
+        document.getElementById('btn-continue-default').addEventListener('click', handleContinueClick);
+        document.getElementById('btn-continue-img').addEventListener('click', handleContinueClick);
+
+        // เมื่อโหลดหน้าเว็บ ให้ทำ Preload ก่อนค่อยโชว์หน้า
+        window.onload = () => {
+            preloadAssets(() => {
+                applyLanguageAndConfig();
+                initMedia();
+
+                const uiIdleEl = document.getElementById('ui-idle');
+                uiIdleEl.classList.replace('opacity-0', 'opacity-100');
+            });
+        };
+    </script>
+</body>
+
+</html>

@@ -681,6 +681,9 @@
         }
 
         function handleActionClick(itemObj) {
+            Utility.onBannerAction(itemObj);
+            return;
+
             if (itemObj.bannerUrl) {
                 // ถ้ามีคำสั่ง action ให้ใช้งานผ่าน PageManager หรือ iframe ระบบหลัก
                 if (itemObj.bannerUrl.startsWith('action:')) {

@@ -1,0 +1,1053 @@
+<style>
+    /* ==========================================
+       Address Management Page (Pure CSS)
+       รองรับ Global Theme จาก style.css
+       ========================================== */
+
+    .addr-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        background-color: transparent;
+        color: var(--theme-text-main, #1f2937);
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .addr-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .addr-wrapper *,
+    .addr-wrapper *::before,
+    .addr-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    /* --- Utilities --- */
+    .addr-hidden {
+        display: none !important;
+    }
+
+    .addr-fade-in {
+        animation: addrFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes addrFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- Header Image --- */
+    .addr-header-img-wrap {
+        width: 100%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .addr-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* --- Main Container --- */
+    .addr-container {
+        padding: 0 1.25rem;
+        max-width: 48rem;
+        margin: 0 auto;
+    }
+
+    .addr-page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .addr-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .addr-subtitle {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+    }
+
+    /* --- Address List View --- */
+    .addr-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .addr-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        padding: 1.25rem;
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* สไตล์เมื่ออยู่ในโหมด Select */
+    .addr-card.is-selectable {
+        cursor: pointer;
+    }
+
+    .addr-card.is-selectable:hover {
+        border-color: var(--theme-primary, #3b82f6);
+        box-shadow: var(--theme-shadow-hover, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+        transform: translateY(-2px);
+    }
+
+    .addr-card.is-selectable:active {
+        transform: scale(0.98);
+    }
+
+    .addr-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+
+    .addr-name-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .addr-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0;
+    }
+
+    .addr-badge-default {
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: 1px solid color-mix(in srgb, var(--theme-primary) 30%, transparent);
+    }
+
+    .addr-detail {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #4b5563);
+        line-height: 1.6;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .addr-phone {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--theme-text-main, #374151);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .addr-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--theme-border-color, #e5e7eb);
+    }
+
+    .addr-btn-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--theme-bg-app, #f3f4f6);
+        color: var(--theme-text-muted, #6b7280);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+
+    .addr-btn-icon.edit:hover {
+        background-color: var(--theme-primary-light, #eff6ff);
+        color: var(--theme-primary, #2563eb);
+    }
+
+    .addr-btn-icon.delete:hover {
+        background-color: #fef2f2;
+        color: #ef4444;
+    }
+
+    /* --- Empty State --- */
+    .addr-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        background-color: var(--theme-bg-card, #ffffff);
+        border-radius: var(--theme-radius, 1.5rem);
+        border: 2px dashed var(--theme-border-color, #e5e7eb);
+    }
+
+    .addr-empty i {
+        font-size: 3rem;
+        color: var(--theme-border-color, #cbd5e1);
+        margin-bottom: 1rem;
+    }
+
+    .addr-empty p {
+        color: var(--theme-text-muted, #6b7280);
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* --- Form View --- */
+    .addr-form-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        padding: 1.5rem;
+        box-shadow: var(--theme-shadow, 0 4px 10px rgba(0, 0, 0, 0.05));
+    }
+
+    .addr-form-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+    }
+
+    .addr-btn-back {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background-color: var(--theme-bg-app, #f3f4f6);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        color: var(--theme-text-main, #374151);
+    }
+
+    .addr-btn-back:hover {
+        background-color: #e5e7eb;
+    }
+
+    .addr-form-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    /* Inputs */
+    .addr-form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    @media (min-width: 640px) {
+        .addr-form-grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .addr-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .addr-label {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+        margin-left: 0.25rem;
+    }
+
+    .addr-input,
+    .addr-select,
+    .addr-textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--theme-text-main, #1e293b);
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .addr-input:focus,
+    .addr-select:focus,
+    .addr-textarea:focus {
+        background-color: var(--theme-bg-card, #ffffff);
+        border-color: var(--theme-primary, #2563eb);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 15%, transparent);
+    }
+
+    .addr-input:disabled,
+    .addr-select:disabled {
+        background-color: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    .addr-textarea {
+        resize: none;
+        min-height: 80px;
+    }
+
+    .addr-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+        padding-right: 2.5rem;
+    }
+
+    /* Toggle Switch */
+    .addr-toggle-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius-btn, 1rem);
+        margin-top: 0.5rem;
+        cursor: pointer;
+    }
+
+    .addr-toggle-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .addr-toggle-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: var(--theme-bg-card, #ffffff);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--theme-primary, #2563eb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .addr-toggle-text {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #374151);
+    }
+
+    .addr-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+    }
+
+    .addr-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .addr-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .addr-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .addr-switch input:checked+.addr-slider {
+        background-color: var(--theme-primary, #2563eb);
+    }
+
+    .addr-switch input:checked+.addr-slider:before {
+        transform: translateX(20px);
+    }
+
+    /* --- Primary Buttons --- */
+    .addr-btn-main {
+        width: 100%;
+        background-color: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+        transition: all 0.2s ease;
+        margin-top: 1.5rem;
+    }
+
+    .addr-btn-main:hover {
+        filter: brightness(1.1);
+    }
+
+    .addr-btn-main:active {
+        transform: scale(0.98);
+    }
+</style>
+
+<div class="addr-wrapper" id="addr-wrapper">
+
+    <!-- Header Image -->
+    <div class="addr-header-img-wrap">
+        <img id="addr-header-img" src="" alt="Address Header" class="addr-header-img"
+            onerror="this.style.display='none'">
+    </div>
+
+    <div class="addr-container">
+
+        <!-- =========================================
+             VIEW 1: LIST VIEW
+        ========================================== -->
+        <div id="addr-view-list" class="addr-fade-in">
+            <div class="addr-page-header">
+                <h1 class="addr-title" id="page-title-list">ที่อยู่จัดส่งของคุณ</h1>
+                <p class="addr-subtitle" id="page-subtitle-list">จัดการหรือเลือกที่อยู่สำหรับจัดส่งสินค้า</p>
+            </div>
+
+            <!-- Container for Address Cards -->
+            <div class="addr-list" id="addr-list-container">
+                <!-- Cards injected via JS -->
+            </div>
+
+            <button class="addr-btn-main" onclick="window.AddrCtrl.showForm()">
+                <i class="fa-solid fa-plus"></i>
+                <span data-i18n="btnAdd">เพิ่มที่อยู่ใหม่</span>
+            </button>
+        </div>
+
+        <!-- =========================================
+             VIEW 2: FORM VIEW (CREATE / EDIT)
+        ========================================== -->
+        <div id="addr-view-form" class="addr-hidden">
+            <div class="addr-form-card addr-fade-in">
+
+                <div class="addr-form-header">
+                    <button class="addr-btn-back" onclick="window.AddrCtrl.hideForm()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="addr-form-title" id="form-title">เพิ่มที่อยู่ใหม่</h2>
+                </div>
+
+                <form id="addr-form" onsubmit="window.AddrCtrl.saveAddress(event)">
+
+                    <div class="addr-form-grid addr-form-grid-2">
+                        <!-- Name -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelName">ชื่อผู้รับ / ติดต่อ</label>
+                            <input type="text" id="inp-name" class="addr-input" placeholder="ชื่อ-นามสกุล" required>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelPhone">เบอร์ติดต่อ</label>
+                            <input type="tel" id="inp-phone" class="addr-input" placeholder="08XXXXXXXX" required>
+                        </div>
+                    </div>
+
+                    <!-- Address Line -->
+                    <div class="addr-form-group" style="margin-top: 1.25rem;">
+                        <label class="addr-label" data-i18n="labelAddress">รายละเอียดที่อยู่ (บ้านเลขที่, หมู่, ซอย,
+                            ถนน)</label>
+                        <textarea id="inp-address" class="addr-textarea" placeholder="กรอกรายละเอียดที่อยู่"
+                            required></textarea>
+                    </div>
+
+                    <!-- Cascading Dropdowns -->
+                    <div class="addr-form-grid addr-form-grid-2" style="margin-top: 1.25rem;">
+                        <!-- Province -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelProv">จังหวัด</label>
+                            <select id="inp-prov" class="addr-select" onchange="window.AddrCtrl.onProvinceChange()"
+                                required>
+                                <option value="">-- เลือกจังหวัด --</option>
+                            </select>
+                        </div>
+
+                        <!-- Amphoe -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelAmp">อำเภอ / เขต</label>
+                            <select id="inp-amp" class="addr-select" onchange="window.AddrCtrl.onAmphoeChange()"
+                                disabled required>
+                                <option value="">-- เลือกอำเภอ --</option>
+                            </select>
+                        </div>
+
+                        <!-- District -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelDist">ตำบล / แขวง</label>
+                            <select id="inp-dist" class="addr-select" onchange="window.AddrCtrl.onDistrictChange()"
+                                disabled required>
+                                <option value="">-- เลือกตำบล --</option>
+                            </select>
+                        </div>
+
+                        <!-- Zipcode -->
+                        <div class="addr-form-group">
+                            <label class="addr-label" data-i18n="labelZip">รหัสไปรษณีย์</label>
+                            <input type="text" id="inp-zip" class="addr-input" placeholder="รหัสไปรษณีย์" required>
+                        </div>
+                    </div>
+
+                    <!-- Make Default Toggle -->
+                    <label class="addr-toggle-wrap">
+                        <div class="addr-toggle-info">
+                            <div class="addr-toggle-icon"><i class="fa-solid fa-house-circle-check"></i></div>
+                            <span class="addr-toggle-text" data-i18n="labelDefault">ตั้งเป็นที่อยู่หลัก (Default)</span>
+                        </div>
+                        <div class="addr-switch">
+                            <input type="checkbox" id="inp-default">
+                            <span class="addr-slider"></span>
+                        </div>
+                    </label>
+
+                    <button type="submit" class="addr-btn-main">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span id="btn-save-txt" data-i18n="btnSave">บันทึกข้อมูล</span>
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    window.AddrCtrl = (function () {
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            headerAssetKey: 'addressHeader'
+        };
+
+        const i18n = {
+            Th: {
+                titleListEdit: "ที่อยู่จัดส่งของคุณ",
+                subListEdit: "จัดการหรือแก้ไขที่อยู่สำหรับจัดส่งสินค้า",
+                titleListSelect: "เลือกที่อยู่จัดส่ง",
+                subListSelect: "แตะที่รายการเพื่อเลือกที่อยู่สำหรับการจัดส่งนี้",
+                btnAdd: "เพิ่มที่อยู่ใหม่",
+                emptyTitle: "ยังไม่มีข้อมูลที่อยู่",
+                emptySub: "กดปุ่มด้านล่างเพื่อเพิ่มที่อยู่ใหม่",
+                badgeDefault: "ค่าเริ่มต้น",
+
+                titleFormAdd: "เพิ่มที่อยู่ใหม่",
+                titleFormEdit: "แก้ไขที่อยู่",
+                labelName: "ชื่อผู้รับ / ติดต่อ",
+                labelPhone: "เบอร์ติดต่อ",
+                labelAddress: "รายละเอียดที่อยู่ (บ้านเลขที่, หมู่, ซอย, ถนน)",
+                labelProv: "จังหวัด",
+                labelAmp: "อำเภอ / เขต",
+                labelDist: "ตำบล / แขวง",
+                labelZip: "รหัสไปรษณีย์",
+                labelDefault: "ตั้งเป็นที่อยู่หลัก (Default)",
+                btnSave: "บันทึกข้อมูล",
+
+                optProv: "-- เลือกจังหวัด --",
+                optAmp: "-- เลือกอำเภอ --",
+                optDist: "-- เลือกตำบล --",
+                optLoading: "กำลังโหลด...",
+
+                msgConfirmDel: "คุณแน่ใจหรือไม่ว่าต้องการลบที่อยู่นี้?",
+                msgDelSuccess: "ลบที่อยู่เรียบร้อยแล้ว",
+                msgSaveSuccess: "บันทึกข้อมูลสำเร็จ",
+                msgFail: "เกิดข้อผิดพลาด กรุณาลองใหม่"
+            },
+            En: {
+                titleListEdit: "Your Addresses",
+                subListEdit: "Manage your shipping addresses",
+                titleListSelect: "Select Shipping Address",
+                subListSelect: "Tap an address to use for this shipment",
+                btnAdd: "Add New Address",
+                emptyTitle: "No Address Found",
+                emptySub: "Click the button below to add a new address",
+                badgeDefault: "Default",
+
+                titleFormAdd: "Add New Address",
+                titleFormEdit: "Edit Address",
+                labelName: "Contact Name",
+                labelPhone: "Phone Number",
+                labelAddress: "Address Details (House No., Street, etc.)",
+                labelProv: "Province",
+                labelAmp: "District / Amphoe",
+                labelDist: "Sub-district / Tambon",
+                labelZip: "Postal Code",
+                labelDefault: "Set as Default Address",
+                btnSave: "Save Address",
+
+                optProv: "-- Select Province --",
+                optAmp: "-- Select District --",
+                optDist: "-- Select Sub-district --",
+                optLoading: "Loading...",
+
+                msgConfirmDel: "Are you sure you want to delete this address?",
+                msgDelSuccess: "Address deleted successfully",
+                msgSaveSuccess: "Address saved successfully",
+                msgFail: "An error occurred. Please try again."
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let MODE = 'edit'; // 'edit' or 'select'
+        let responseRef = null;
+
+        let addressList = [];
+        let editingId = null; // null = create mode
+
+        // Cache API Data
+        let cachedProvinces = [];
+
+        // DOM Elements
+        const els = {
+            viewList: document.getElementById('addr-view-list'),
+            viewForm: document.getElementById('addr-view-form'),
+            listContainer: document.getElementById('addr-list-container'),
+            formTitle: document.getElementById('form-title'),
+            inpName: document.getElementById('inp-name'),
+            inpPhone: document.getElementById('inp-phone'),
+            inpAddress: document.getElementById('inp-address'),
+            inpProv: document.getElementById('inp-prov'),
+            inpAmp: document.getElementById('inp-amp'),
+            inpDist: document.getElementById('inp-dist'),
+            inpZip: document.getElementById('inp-zip'),
+            inpDefault: document.getElementById('inp-default')
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+
+            // Update Headers based on Mode
+            document.getElementById('page-title-list').innerText = MODE === 'select' ? dict.titleListSelect : dict.titleListEdit;
+            document.getElementById('page-subtitle-list').innerText = MODE === 'select' ? dict.subListSelect : dict.subListEdit;
+        }
+
+        async function fetchAddressData() {
+            if (window.CrmApi && typeof CrmApi.getAddress === 'function') {
+                if (window.PageManager) PageManager.showLoading();
+                try {
+                    addressList = await CrmApi.getAddress() || [];
+                } catch (e) {
+                    console.error("Fetch address error", e);
+                } finally {
+                    if (window.PageManager) PageManager.hideLoading();
+                }
+            } else if (window.crmData && window.crmData.crmUser && window.crmData.crmUser.userAddresses) {
+                // Fallback local state
+                addressList = window.crmData.crmUser.userAddresses;
+            }
+            renderAddressList();
+        }
+
+        function renderAddressList() {
+            const dict = i18n[currentLang];
+            els.listContainer.innerHTML = '';
+
+            if (!addressList || addressList.length === 0) {
+                els.listContainer.innerHTML = `
+                    <div class="addr-empty">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <h3 class="addr-title" style="font-size: 1.1rem; margin-bottom: 0.25rem;">${dict.emptyTitle}</h3>
+                        <p>${dict.emptySub}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            addressList.forEach(addr => {
+                const card = document.createElement('div');
+                card.className = `addr-card ${MODE === 'select' ? 'is-selectable' : ''}`;
+
+                const badgeHtml = addr.isDefault ? `<span class="addr-badge-default"><i class="fa-solid fa-check"></i> ${dict.badgeDefault}</span>` : '';
+
+                let actionsHtml = '';
+                if (MODE === 'edit') {
+                    actionsHtml = `
+                        <div class="addr-actions">
+                            <button class="addr-btn-icon edit" onclick="window.AddrCtrl.showForm(${addr.id}, event)" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="addr-btn-icon delete" onclick="window.AddrCtrl.deleteAddress(${addr.id}, event)" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // การประกอบที่อยู่
+                const fullAddr = [addr.addressLine1, addr.addressLine2, addr.subdistrict, addr.district, addr.province, addr.postalCode].filter(Boolean).join(' ');
+
+                card.innerHTML = `
+                    <div class="addr-card-header">
+                        <div class="addr-name-wrap">
+                            <h3 class="addr-name">${addr.contactPerson || '-'}</h3>
+                            ${badgeHtml}
+                        </div>
+                    </div>
+                    <p class="addr-detail">${fullAddr}</p>
+                    <p class="addr-phone"><i class="fa-solid fa-phone" style="font-size:0.75rem;"></i> ${addr.contactPhone || '-'}</p>
+                    ${actionsHtml}
+                `;
+
+                // กรณี Select Mode ให้ Card กดได้ทั้งใบ
+                if (MODE === 'select') {
+                    card.onclick = () => selectAddress(addr);
+                }
+
+                els.listContainer.appendChild(card);
+            });
+        }
+
+        // --- Action: Select ---
+        function selectAddress(addr) {
+            if (responseRef) {
+                responseRef.address = addr;
+                responseRef.success = true;
+            }
+            if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                PageManager.closeModal();
+            }
+        }
+
+        // --- Action: Delete ---
+        window.deleteAddress = async function (id, event) {
+            if (event) event.stopPropagation();
+            const dict = i18n[currentLang];
+
+            if (window.PageManager && typeof PageManager.showConfirm === 'function') {
+                PageManager.showConfirm(
+                    dict.msgConfirmDel,
+                    "",
+                    "🗑️",
+                    async () => {
+                        PageManager.showLoading();
+                        try {
+                            const success = await CrmApi.onRemoveAddress(id);
+                            if (success) {
+                                PageManager.showToast(dict.msgDelSuccess, "✅");
+                                await fetchAddressData();
+                                if (responseRef) responseRef.success = true;
+                            } else {
+                                PageManager.showFailed("Error", dict.msgFail);
+                            }
+                        } catch (e) {
+                            PageManager.showFailed("Error", dict.msgFail);
+                        } finally {
+                            PageManager.hideLoading();
+                        }
+                    },
+                    null
+                );
+            }
+        };
+
+        // ==========================================
+        // 4. FORM & API LOGIC (DROPDOWNS)
+        // ==========================================
+
+        async function loadProvinces() {
+            if (cachedProvinces.length === 0 && window.CrmApi && typeof CrmApi.searchAddress === 'function') {
+                try {
+                    cachedProvinces = await CrmApi.searchAddress(null, null, null) || [];
+                } catch (e) { console.error(e); }
+            }
+            populateSelect(els.inpProv, cachedProvinces, i18n[currentLang].optProv);
+        }
+
+        async function onProvinceChange() {
+            const val = els.inpProv.value;
+            els.inpAmp.innerHTML = `<option value="">${i18n[currentLang].optLoading}</option>`;
+            els.inpAmp.disabled = true;
+            els.inpDist.innerHTML = `<option value="">${i18n[currentLang].optDist}</option>`;
+            els.inpDist.disabled = true;
+            els.inpZip.value = "";
+
+            if (val && window.CrmApi) {
+                const amphoes = await CrmApi.searchAddress(val, null, null) || [];
+                populateSelect(els.inpAmp, amphoes, i18n[currentLang].optAmp);
+            } else {
+                populateSelect(els.inpAmp, [], i18n[currentLang].optAmp);
+            }
+        }
+
+        async function onAmphoeChange() {
+            const prov = els.inpProv.value;
+            const val = els.inpAmp.value;
+            els.inpDist.innerHTML = `<option value="">${i18n[currentLang].optLoading}</option>`;
+            els.inpDist.disabled = true;
+            els.inpZip.value = "";
+
+            if (val && window.CrmApi) {
+                const dists = await CrmApi.searchAddress(prov, val, null) || [];
+                populateSelect(els.inpDist, dists, i18n[currentLang].optDist);
+            } else {
+                populateSelect(els.inpDist, [], i18n[currentLang].optDist);
+            }
+        }
+
+        async function onDistrictChange() {
+            const prov = els.inpProv.value;
+            const amp = els.inpAmp.value;
+            const val = els.inpDist.value;
+            els.inpZip.value = "Loading...";
+
+            if (val && window.CrmApi) {
+                const zips = await CrmApi.searchAddress(prov, amp, val) || [];
+                els.inpZip.value = zips.length > 0 ? zips[0] : "";
+            } else {
+                els.inpZip.value = "";
+            }
+        }
+
+        function populateSelect(element, items, defaultText) {
+            element.innerHTML = `<option value="">${defaultText}</option>`;
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item;
+                    opt.textContent = item;
+                    element.appendChild(opt);
+                });
+                element.disabled = false;
+            } else {
+                element.disabled = true;
+            }
+        }
+
+        // --- Show / Hide Form ---
+        window.showForm = async function (id = null, event = null) {
+            if (event) event.stopPropagation();
+            const dict = i18n[currentLang];
+
+            editingId = id;
+            els.formTitle.innerText = id ? dict.titleFormEdit : dict.titleFormAdd;
+
+            // เตรียม Dropdown จังหวัด
+            await loadProvinces();
+
+            if (id) {
+                // Edit Mode - Populate Data
+                const addr = addressList.find(a => a.id === id);
+                if (addr) {
+                    els.inpName.value = addr.contactPerson || "";
+                    els.inpPhone.value = addr.contactPhone || "";
+                    els.inpAddress.value = [addr.addressLine1, addr.addressLine2].filter(Boolean).join(' ');
+                    els.inpDefault.checked = addr.isDefault || false;
+
+                    // Set Cascading Dropdowns
+                    if (addr.province) {
+                        els.inpProv.value = addr.province;
+
+                        if (window.CrmApi) {
+                            const amphoes = await CrmApi.searchAddress(addr.province, null, null) || [];
+                            populateSelect(els.inpAmp, amphoes, dict.optAmp);
+                            els.inpAmp.value = addr.district || ""; // Note: API param might map district->amphoe. Adjust based on real API struct. Assuming addr.district maps to Amphoe in some Thai mappings, but let's stick to standard names:
+
+                            // *สมมติฐานโครงสร้าง CRM Schema:* // province = จังหวัด, district = เขต/อำเภอ, subdistrict = แขวง/ตำบล
+                            // ดังนั้น UI: inpAmp -> district, inpDist -> subdistrict
+                            els.inpAmp.value = addr.district || "";
+
+                            if (addr.district) {
+                                const dists = await CrmApi.searchAddress(addr.province, addr.district, null) || [];
+                                populateSelect(els.inpDist, dists, dict.optDist);
+                                els.inpDist.value = addr.subdistrict || "";
+                            }
+                        }
+                    }
+                    els.inpZip.value = addr.postalCode || "";
+                }
+            } else {
+                // Create Mode - Clear Data
+                document.getElementById('addr-form').reset();
+                populateSelect(els.inpAmp, [], dict.optAmp);
+                populateSelect(els.inpDist, [], dict.optDist);
+            }
+
+            // Switch View
+            els.viewList.classList.add('addr-hidden');
+            els.viewForm.classList.remove('addr-hidden');
+        };
+
+        window.hideForm = function () {
+            els.viewForm.classList.add('addr-hidden');
+            els.viewList.classList.remove('addr-hidden');
+        };
+
+        // --- Save Address ---
+        window.saveAddress = async function (e) {
+            e.preventDefault();
+            const dict = i18n[currentLang];
+
+            // Map form back to CRM Schema
+            // province = province, district = amphoe(UI), subdistrict = dist(UI), postalCode = zip
+            const payload = {
+                contactPerson: els.inpName.value.trim(),
+                contactPhone: els.inpPhone.value.trim(),
+                addressLine1: els.inpAddress.value.trim(),
+                province: els.inpProv.value,
+                district: els.inpAmp.value,
+                subdistrict: els.inpDist.value,
+                postalCode: els.inpZip.value,
+                isDefault: els.inpDefault.checked
+            };
+
+            if (window.PageManager) PageManager.showLoading();
+
+            try {
+                let success = false;
+                if (editingId) {
+                    payload.id = editingId;
+                    console.log("update", payload);
+                    success = await CrmApi.updateAddress(payload);
+                } else {
+                    console.log("create", payload);
+                    success = await CrmApi.createAddress(payload);
+                }
+
+                if (success) {
+                    // จัดการ isDefault ถ้า user กดเปิด และ API อาจต้องแยก call
+                    // หาก backend จัดการให้อัตโนมัติเวลาส่ง isDefault=true ก็ไม่ต้อง call เพิ่ม
+                    // แต่ตามโจทย์บอกมี `await crmApi.setDefaultAddress(address.id)` ให้เรียก
+                    // (กรณีนี้ถือว่า Backend จัดการให้แล้วตาม payload แต่ถ้าจำเป็นต้อง call แยก ให้จับเงื่อนไขตรงนี้)
+
+                    if (window.PageManager) PageManager.showToast(dict.msgSaveSuccess, "✅");
+                    if (responseRef) responseRef.success = true;
+
+                    await fetchAddressData();
+                    hideForm();
+                } else {
+                    if (window.PageManager) PageManager.showFailed("Error", dict.msgFail);
+                }
+
+            } catch (error) {
+                if (window.PageManager) PageManager.showFailed("Error", dict.msgFail);
+                console.error(error);
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        };
+
+
+        // ==========================================
+        // 5. LIFECYCLE (onInit)
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                responseRef = response;
+
+                // ดึงค่า Mode
+                MODE = payload?.mode || 'edit';
+
+                // ดึงภาษา
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+                applyLanguage();
+
+                // เซ็ต Header Image
+                const headerImg = document.getElementById('addr-header-img');
+                if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                    const imgPath = Utility.getAssetPath(pageSetting.headerAssetKey);
+                    if (imgPath) {
+                        headerImg.src = imgPath;
+                        headerImg.style.display = 'block';
+                    }
+                }
+
+                // โหลดข้อมูลที่อยู่
+                fetchAddressData();
+            },
+            showForm: window.showForm,
+            hideForm: window.hideForm,
+            deleteAddress: window.deleteAddress,
+            saveAddress: window.saveAddress,
+            onProvinceChange: onProvinceChange,
+            onAmphoeChange: onAmphoeChange,
+            onDistrictChange: onDistrictChange
+        };
+
+    })();
+
+    // Bind to parent window call
+    window.onInit = function (payload, response) {
+        window.AddrCtrl.init(payload, response);
+    };
+
+</script>

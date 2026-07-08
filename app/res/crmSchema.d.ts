@@ -3,6 +3,23 @@
  * Mapped from C# CRMData classes for IDE Auto-complete (IntelliSense).
  */
 
+
+interface LiffPayload {
+    ok?: boolean;
+    inClient?: boolean;
+    os?: string;
+    appid?: string;
+    language?: string;
+    userId?: string;
+    liffid?: string;
+    displayName?: string;
+    pictureUrl?: string;
+    idToken?: string;
+    error?: string;
+    storeInfo?: StoreInfo;
+    initializeData?: InitializeData;
+}
+
 interface InitializeData {
     defaultLanguage?: string;
     loadingBgColor?: string;
@@ -141,6 +158,36 @@ interface UserAddressesData {
     updatedAt?: string;
 }
 
+interface EarnedPointsTransactionData {
+    id: number;
+    orderId: string;
+    channel: string; // shopee, lazada, tiktok, own_channel, other
+    amount: number;
+    points: number;
+    status: string; // pending , approved
+    orderStatus: string;
+    orderDate: string;
+    customerName: string;
+    customerPhone: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface DeductionHistoryTransactionData {
+    id: number;
+    transaction_id: string;
+    reference_id: string;
+    points_deducted: number;
+    points_before: number;
+    points_after: number;
+    reason: string;
+    metadata: MetaData;
+    status: string;
+    created_at: string;
+}
+
+
+
 interface CRMUserData {
     user: InfomationData;
     statistics?: StatisticsData;
@@ -208,6 +255,44 @@ interface MarketBanner {
     action?: Record<string, any>;
 }
 
+
+interface ShippingOrderData {
+    id: number;
+    status: string; //processing,shipped,delivered 
+    trackingNumber: string;
+    createdAt: string;
+    updatedAt: string;
+    shippingAddress: UserAddressesData;
+    items: RedemptionItem[];
+}
+interface RedemptionItem {
+    rewardId: number;
+    name: string;
+    description: string;
+    image: string;
+    points: number;
+    quantity: number;
+}
+
+
+
+interface CouponData {
+    id: number;
+    rewardId: number;
+    rewardName: string;
+    rewardDescription: string;
+    rewardImage: string;
+    rewardType: string;
+    rewardPoints: number;
+    couponCode: string;
+    status: string;
+    codeStatus: string;
+    notes: string;
+    usedAt: string;
+    redeemedAt: string;
+}
+
+
 interface BannerData {
     marketBanners?: MarketBanner[];
     gameBanners?: any[];
@@ -271,6 +356,18 @@ interface GotoGameData {
     token?: string;
     newUser: boolean;
 }
+
+interface GachaData {
+    reward: string;
+    name: string; //** opt
+    image: string; //** opt
+    type: string; //** opt (game,shop-digital)
+    use: number;
+    limit: number;
+    weight: number;
+}
+
+
 
 interface MarketData {
     initializeData?: InitializeData;
