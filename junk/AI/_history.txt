@@ -66,7 +66,25 @@ PageNameCtr {
 [## Requirement ##]
 -----------------------------------------------------------------------------------------
 
- 
+สร้างหน้า สำหรับดูประวัติการได้รับ/ใช้จ่าย คะแนน ของ user crm
+
+ด้านบนแสดง header cover image 
+    <!-- Header Image Section -->
+    <div style="width: 100%; overflow: hidden;">
+        <img id="headerImage" src="" alt="Campaign Banner" class="crm-tier-header-img"
+            onerror="this.src='https://via.placeholder.com/800x250?text=Membership+Tiers'">
+    </div>
+
+const headerImgEl = document.getElementById('headerImage');
+const bgPath = Utility.getAssetPath("historyHeader");
+headerImgEl.src = bgPath;
+
+และ Tab 2 Mode
+คะแนนที่ได้รับ / คะนนที่ใช้
+
+
+
+[## Earn ##]
 const offset = 0;
 const limit = 20;
 const res = await CrmApi.getEarnedPoints(limit, offset);
@@ -84,9 +102,16 @@ EarnedPointsTransactionData {
     createdAt: string;
     updatedAt: string;
 }
+แต่ละ item แสดง ข้อมูลและออกแบบหน้า UX ให้เหมาะสมง่ายต่อการทำความเข้าใจ
+orderId
+channel
+points
+status // pending , approved
+createdAt
 
 
 
+[## Deduct ##]
 const offset = 0;
 const limit = 20;
 const res = await CrmApi.getDeductPoints(limit, offset);
@@ -103,9 +128,12 @@ DeductionHistoryTransactionData {
     created_at: string;
 }
 
+แต่ละ item แสดง ข้อมูลและออกแบบหน้า UX ให้เหมาะสมง่ายต่อการทำความเข้าใจ
 const deductName = Utility.getTransactionName(DeductionHistoryTransactionData);
-
-
+transaction_id
+deductName
+points_deducted
+createdAt
 
 
 

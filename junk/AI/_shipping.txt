@@ -65,10 +65,28 @@ PageNameCtr {
 
 [## Requirement ##]
 -----------------------------------------------------------------------------------------
-
+สร้างหน้าสำหรับดูรายการสถานะจัดส่งสินค้าของ user 
+เริ่มต้นจากการดึงข้อมูลรายการทั้งหมดออกมา ด้านล่างทำรปุ่ม โหลดเพิ่มเติมหากยังมีหน้าต่อไป 
 const offset = 0;
 const limit = 20;
 const res = await CrmApi.getMyShippingRewards(limit, offset);
+{
+    "orders": ShippingOrderData[],
+    "summary": {
+        "activeCount": 17,
+        "usedCount": 6,
+        "totalCount": 23
+    },
+    "pagination": {
+        "total": 23,
+        "limit": 20,
+        "offset": 0,
+        "hasMore": true
+    }
+}
+
+
+โครงสร้างข้อมูลของ  
 ShippingOrderData {
     id: number;
     status: string; //processing,shipped,delivered 
@@ -100,6 +118,17 @@ UserAddressesData {
     createdAt?: string;
     updatedAt?: string;
 }
+
+
+แสดงข้อมูลดังนี้
+status : ด้านบนมุมขวา แสดงสถานะจัดส่ง processing,shipped,delivered ทั้ง 3 สถานะให้เปลี่ยนสีแบชตามสถานนั้น ทำตัว setting color ไว้ใน pageSetting ด้วยให้มาแก้ได้เอง
+id : แสดงตัวเล็กๆไว้ด้านบนซ้าย
+createdAt :  แสดงไว้ด้านบนซ้าย
+items : รายการสินค้าที่กำลังจัดส่ง
+
+หากสถานะยังเป็น processing : กำลังดำเนิดการ จะยังไม่แสดงที่อยู่จัดส่ง  หากเป็นสถานอื่นแล้วให้แสดงที่อยู่ได้เลย
+shippingAddress : ที่อยู่จัดส่ง
+trackingNumber : แสดง รหัสติดตามสินค้า / กรณีไม่มีค่าให้แสดงเป็น อยู่ระหว่างการเตรียมขนส่ง   หากมีรหัสให้ทำปุ่ม copy ไว้ด้วยให้นำรหัสไปใช้เช็คเองได้
 
 
 

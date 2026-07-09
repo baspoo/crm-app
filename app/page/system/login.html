@@ -659,8 +659,14 @@
         window.openCondition = function (e) {
             e.preventDefault();
             e.stopPropagation();
-            const conditionURL = crmData?.LIFF_PAYLOAD?.storeInfo?.conditionURL || appConfig?.systemPage?.condition?.path || 'page/system/condition.html';
-            if (PageManager) PageManager.loadIframe(conditionURL);
+            
+            const conditionURL = 
+            crmData?.LIFF_PAYLOAD?.storeInfo?.conditionURL || 
+            appConfig?.systemPage?.condition?.path || 
+            'page/system/condition.html';
+
+            if (PageManager) 
+                PageManager.openIframe(conditionURL);
         };
 
         async function handleAuth(isResend = false) {

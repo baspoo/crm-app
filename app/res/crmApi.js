@@ -418,7 +418,40 @@
             /** @type { ResponseData } */
             const res = await AppApi.callApiInternal('crm_getShippingRewards', { limit: limit, offset: offset });
             if (res.result.code == 200) {
-                return res.result.data.orders;
+                return res.result.data;
+                /*
+                    "orders": [
+                            {
+                                id: number;
+                                status: string; // processing,shipped,delivered 
+                                trackingNumber: string;
+                                createdAt: string;
+                                updatedAt: string;
+                                shippingAddress: UserAddressesData;
+                                items: [
+                                    {
+                                        rewardId: number;
+                                        name: string;
+                                        description: string;
+                                        image: string;
+                                        points: number;
+                                        quantity: number;
+                                    }
+                                ];
+                            }
+                        ],
+                        "summary": {
+                            "activeCount": 17,
+                            "usedCount": 6,
+                            "totalCount": 23
+                        },
+                        "pagination": {
+                            "total": 23,
+                            "limit": 20,
+                            "offset": 0,
+                            "hasMore": true
+                        }
+                */
             }
             else {
                 this.onfailed(res);
@@ -445,6 +478,35 @@
             if (res.result.code == 200) {
                 currentData.coupons = res.result.data.coupons;
                 return res.result.data;
+                /*
+                    "coupons": [
+                            {
+                                "id": 51,
+                                "rewardId": 78,
+                                "rewardName": "Lucky 20% Discount",
+                                "rewardDescription": "Available today-31/12/2026",
+                                "rewardImage": "https://assets.mookept.com/rewards/1774350969252-357c2d1e59af4e309f4ddb6119319d5a.png",
+                                "rewardType": "digital",
+                                "couponCode": "LUCKY-009",
+                                "status": "active",
+                                "codeStatus": "issued",
+                                "notes": null,
+                                "redeemedAt": "2026-05-14T17:50:58.000Z",
+                                "usedAt": null
+                            }
+                        ],
+                        "summary": {
+                            "activeCount": 17,
+                            "usedCount": 6,
+                            "totalCount": 23
+                        },
+                        "pagination": {
+                            "total": 23,
+                            "limit": 20,
+                            "offset": 0,
+                            "hasMore": true
+                        }
+                */
             }
             else {
                 this.onfailed(res);
