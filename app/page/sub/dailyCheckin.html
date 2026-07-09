@@ -1,0 +1,1339 @@
+<style>
+    /* ==========================================
+       Daily Check-In Styles (Pure CSS) - Compact Version
+       ========================================== */
+    .dc-wrapper {
+        font-family: var(--theme-font, 'Prompt', -apple-system, sans-serif);
+        color: var(--theme-text-main, #1f2937);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: relative;
+        background-color: transparent;
+    }
+
+    .dc-wrapper *,
+    .dc-wrapper *::before,
+    .dc-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    .dc-hidden {
+        display: none !important;
+    }
+
+    /* --- Header Image --- */
+    .dc-header-wrap {
+        width: 100%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: 0 4px 15px -10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 20;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .dc-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 140px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* --- Main Content Area --- */
+    .dc-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0.75rem 0.75rem 5rem 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        position: relative;
+        z-index: 10;
+    }
+
+    .dc-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* --- Stamina Card --- */
+    .dc-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        box-shadow: var(--theme-shadow, 0 4px 20px rgba(0, 0, 0, 0.04));
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .dc-card-deco-1 {
+        position: absolute;
+        top: -1rem;
+        right: -1rem;
+        width: 4rem;
+        height: 4rem;
+        background-color: var(--theme-primary, #3b82f6);
+        opacity: 0.05;
+        border-radius: 50%;
+        filter: blur(15px);
+        pointer-events: none;
+    }
+
+    .dc-card-deco-2 {
+        position: absolute;
+        bottom: -1rem;
+        left: -1rem;
+        width: 4rem;
+        height: 4rem;
+        background-color: var(--theme-secondary, #f59e0b);
+        opacity: 0.05;
+        border-radius: 50%;
+        filter: blur(15px);
+        pointer-events: none;
+    }
+
+    .dc-stamina-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 5;
+    }
+
+    .dc-stamina-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1e293b);
+        margin: 0 0 0.1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        letter-spacing: 0.01em;
+    }
+
+    .dc-stamina-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .dc-stamina-desc {
+        font-size: 0.65rem;
+        font-weight: 500;
+        color: var(--theme-text-muted, #64748b);
+        margin: 0;
+    }
+
+    .dc-target-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: linear-gradient(to right, #fef3c7, #fffbeb);
+        border: 1px solid #fcd34d;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(245, 158, 11, 0.15);
+        position: relative;
+    }
+
+    .dc-target-box img {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+    }
+
+    .dc-target-text {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #d97706;
+        margin: 0;
+    }
+
+    /* Stamina Progress Bar */
+    .dc-progress-wrapper {
+        position: relative;
+        width: 100%;
+        height: 1.25rem;
+        background-color: var(--theme-bg-app, #f1f5f9);
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        z-index: 5;
+    }
+
+    .dc-progress-fill {
+        height: 100%;
+        background-color: var(--theme-primary, #3b82f6);
+        border-radius: 999px;
+        transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+        background-size: 0.75rem 0.75rem;
+    }
+
+    .dc-progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+        border-radius: 999px 999px 0 0;
+    }
+
+    .dc-progress-text {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 0.05em;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+    }
+
+    /* --- Daily Grid Section --- */
+    .dc-grid-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .dc-grid-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1e293b);
+        margin: 0;
+    }
+
+    .dc-grid-divider {
+        flex-grow: 1;
+        height: 1px;
+        background-color: var(--theme-border-color, #e2e8f0);
+        margin-left: 0.75rem;
+        border-radius: 999px;
+    }
+
+    .dc-grid-container-wrap {
+        background-color: rgba(241, 245, 249, 0.4);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        border-radius: 1rem;
+        padding: 0.35rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    /* Layout Types */
+    .dc-layout-row {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.8rem 0.25rem 0.25rem 0.25rem;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        align-items: center;
+    }
+
+    .dc-layout-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .dc-layout-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.35rem;
+        padding: 0.8rem 0.15rem 0.15rem 0.15rem;
+        overflow-y: auto;
+    }
+
+    .dc-layout-grid-5 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.25rem;
+        padding: 0.8rem 0.15rem 0.15rem 0.15rem;
+        overflow-y: auto;
+    }
+
+    /* --- Day Card --- */
+    .dc-day-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        border-radius: 0.75rem;
+        transition: all 0.2s ease;
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        box-shadow: 0 2px 0 0 var(--theme-border-color, #e2e8f0);
+    }
+
+    /* Sizes based on layout */
+    .dc-layout-row .dc-day-card {
+        flex-shrink: 0;
+        width: 70px;
+        height: 105px;
+        scroll-snap-align: center;
+        padding: 0.4rem;
+    }
+
+    .dc-layout-grid-4 .dc-day-card,
+    .dc-layout-grid-5 .dc-day-card {
+        width: 100%;
+        aspect-ratio: 3/3.8;
+        padding: 0.25rem;
+    }
+
+    .dc-day-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #64748b);
+        background: rgba(241, 245, 249, 0.8);
+        border-radius: 999px;
+        padding: 0.1rem 0.3rem;
+        line-height: 1;
+        margin-top: 0.2rem;
+        margin-bottom: auto;
+    }
+
+    .dc-day-icon {
+        width: 1.65rem;
+        height: 1.65rem;
+        object-fit: contain;
+        margin: 0.2rem 0;
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .dc-layout-row .dc-day-icon {
+        width: 1.9rem;
+        height: 1.9rem;
+    }
+
+    .dc-day-reward {
+        width: 100%;
+        border-radius: 0.35rem;
+        padding: 0.1rem 0;
+        font-weight: 800;
+        font-size: 0.65rem;
+        margin-top: auto;
+        transition: all 0.2s ease;
+    }
+
+    /* --- States --- */
+    /* 1. Checked (Past) */
+    .dc-day-card.state-checked {
+        background-color: #f8fafc;
+        border-color: #e2e8f0;
+        box-shadow: none;
+        opacity: 0.7;
+    }
+
+    .dc-day-card.state-checked .dc-day-icon {
+        filter: grayscale(100%) opacity(0.4);
+    }
+
+    .dc-day-card.state-checked .dc-day-reward {
+        background-color: transparent;
+        color: #94a3b8;
+    }
+
+    .dc-check-mark {
+        position: absolute;
+        top: -0.3rem;
+        right: -0.3rem;
+        width: 1rem;
+        height: 1rem;
+        background-color: #10b981;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5rem;
+        border: 1px solid #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    /* 2. Current (Target Today) */
+    .dc-day-card.state-current {
+        background: linear-gradient(to bottom, color-mix(in srgb, var(--theme-primary) 5%, transparent), color-mix(in srgb, var(--theme-primary) 15%, transparent));
+        border-color: var(--theme-primary, #3b82f6);
+        transform: scale(1.03);
+        z-index: 5;
+    }
+
+    .dc-day-card.state-current .dc-day-icon {
+        transform: scale(1.15);
+    }
+
+    .dc-day-card.state-current .dc-day-reward {
+        background-color: var(--theme-primary, #3b82f6);
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .dc-today-badge {
+        position: absolute;
+        top: -0.6rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ef4444;
+        color: white;
+        font-size: 0.5rem;
+        font-weight: 800;
+        padding: 0.1rem 0.3rem;
+        border-radius: 999px;
+        border: 1px solid white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    /* 3. Just Claimed */
+    .dc-day-card.state-claimed {
+        background-color: #ecfdf5;
+        border-color: #34d399;
+        transform: scale(1.05);
+        z-index: 10;
+    }
+
+    .dc-day-card.state-claimed .dc-day-icon {
+        transform: scale(1.1);
+    }
+
+    .dc-day-card.state-claimed .dc-day-reward {
+        background-color: #10b981;
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+    }
+
+    .dc-success-badge {
+        position: absolute;
+        top: -0.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f59e0b;
+        color: white;
+        font-size: 0.5rem;
+        font-weight: 800;
+        padding: 0.1rem 0.3rem;
+        border-radius: 999px;
+        border: 1px solid white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+    }
+
+    /* --- Bottom Action Bar --- */
+    .dc-bottom-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.75rem 0.75rem 1rem 0.75rem;
+        background: linear-gradient(to top, var(--theme-bg-app, #f8fafc) 70%, transparent);
+        z-index: 30;
+        pointer-events: none;
+        /* กล่องโดนแช่แข็งการคลิก */
+    }
+
+    .dc-bottom-bar .dc-btn-primary {
+        pointer-events: auto;
+        /* ยกเว้นปุ่มข้างในให้กดได้ */
+    }
+
+    .dc-btn-primary {
+        width: 100%;
+        background-color: var(--theme-primary, #3b82f6);
+        color: #ffffff;
+        border: none;
+        padding: 0.85rem;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 0 color-mix(in srgb, var(--theme-primary) 60%, black);
+    }
+
+    .dc-btn-primary:active:not(:disabled) {
+        transform: translateY(4px);
+        box-shadow: none;
+    }
+
+    .dc-btn-primary:disabled {
+        background-color: #cbd5e1;
+        color: #64748b;
+        box-shadow: 0 4px 0 0 #94a3b8;
+        cursor: not-allowed;
+    }
+
+    .dc-btn-spinner {
+        animation: dcSpin 1s linear infinite;
+    }
+
+    @keyframes dcSpin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* --- Fullscreen Success Modal (Compact) --- */
+    .dc-fullscreen-modal {
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        background-color: rgba(255, 255, 255, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        visibility: hidden;
+        /* <--- ตัวช่วยชีวิต: ซ่อนและห้ามคลิกเด็ดขาดเมื่อยังไม่ถึงเวลา */
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        overflow: hidden;
+        backdrop-filter: blur(5px);
+    }
+
+    .dc-fullscreen-modal.show {
+        opacity: 1;
+        visibility: visible;
+        /* <--- แสดงผลและอนุญาตให้คลิกได้ */
+    }
+
+    .dc-modal-content {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition-delay: 0.1s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        z-index: 10;
+        width: 100%;
+    }
+
+    .dc-fullscreen-modal.show .dc-modal-content {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    .dc-modal-icon-wrap {
+        position: relative;
+        width: 8rem;
+        height: 8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .dc-modal-bg-spin {
+        position: absolute;
+        inset: -1.5rem;
+        background-image: repeating-conic-gradient(from 0deg, transparent 0deg 15deg, color-mix(in srgb, var(--theme-primary) 15%, transparent) 15deg 30deg);
+        border-radius: 50%;
+        animation: dcSpin 15s linear infinite;
+        z-index: 0;
+    }
+
+    .dc-modal-icon-inner {
+        width: 6rem;
+        height: 6rem;
+        background-color: #ffffff;
+        border-radius: 50%;
+        padding: 0.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 5;
+        border: 1px solid #f1f5f9;
+    }
+
+    .dc-modal-icon-bg {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--theme-secondary) 15%, transparent), color-mix(in srgb, var(--theme-primary) 10%, transparent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dc-modal-icon-img {
+        width: 3rem;
+        height: 3rem;
+        object-fit: contain;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .dc-modal-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1e293b);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .dc-modal-desc {
+        font-size: 0.9rem;
+        color: var(--theme-text-muted, #64748b);
+        margin: 0 0 1.5rem 0;
+        font-weight: 500;
+    }
+
+    .dc-modal-reward-box {
+        background: linear-gradient(135deg, #f8fafc, #ffffff);
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+        min-width: 150px;
+    }
+
+    .dc-modal-reward-amount {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--theme-primary, #3b82f6);
+        line-height: 1;
+    }
+
+    .dc-modal-reward-unit {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--theme-text-muted, #64748b);
+        text-transform: uppercase;
+    }
+
+    .dc-modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 1rem 0.75rem;
+        background: transparent;
+        z-index: 20;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .confetti-piece {
+        position: absolute;
+        top: -20px;
+        border-radius: 2px;
+        animation: confettiFall linear forwards;
+        z-index: 1;
+    }
+
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(-10vh) rotate(0deg) scale(1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(110vh) rotate(720deg) scale(0.5);
+            opacity: 0;
+        }
+    }
+</style>
+
+<div class="dc-wrapper" id="dc-wrapper">
+
+    <!-- Header Image -->
+    <div class="dc-header-wrap">
+        <img id="dc-header-img" src="" alt="Daily Check-In Banner" class="dc-header-img"
+            onerror="this.style.display='none'">
+    </div>
+
+    <!-- Main Content -->
+    <div class="dc-content">
+
+        <!-- Stamina Box -->
+        <div class="dc-card">
+            <div class="dc-card-deco-1"></div>
+            <div class="dc-card-deco-2"></div>
+
+            <div class="dc-stamina-header">
+                <div>
+                    <h2 class="dc-stamina-title">
+                        <img id="dc-icon-stamina-title" src="" alt="stamina" class="dc-stamina-icon dc-hidden">
+                        <span data-i18n="staminaTitle">พลังงานสะสม</span>
+                    </h2>
+                    <p class="dc-stamina-desc" data-i18n="staminaDesc">สะสมครบรับแต้มพิเศษ</p>
+                </div>
+
+                <div class="dc-target-box">
+                    <img id="dc-icon-coin-target" src="" alt="coin" class="dc-hidden">
+                    <span class="dc-target-text" id="dc-target-point-text">+0</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="dc-progress-wrapper">
+                <div id="dc-stamina-fill" class="dc-progress-fill" style="width: 0%;"></div>
+                <div class="dc-progress-text" id="dc-stamina-text">0 / 100</div>
+            </div>
+        </div>
+
+        <!-- Daily Grid -->
+        <div class="dc-grid-container-wrap">
+            <div class="dc-grid-header">
+                <h3 class="dc-grid-title" data-i18n="gridTitle">รางวัลเช็คอิน</h3>
+                <div class="dc-grid-divider"></div>
+            </div>
+
+            <!-- Container for Grid Items -->
+            <div id="dc-daily-grid" class="dc-layout-row">
+                <!-- Items injected via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="dc-bottom-bar">
+        <!-- กลับมาใช้ onclick แบบตรงไปตรงมา -->
+        <button type="button" id="dc-btn-checkin" class="dc-btn-primary" onclick="DailyCheckInCtrl.handleCheckIn()"
+            disabled>
+            <i id="dc-btn-spinner" class="fa-solid fa-circle-notch dc-btn-spinner dc-hidden"></i>
+            <span id="dc-btn-text" data-i18n="btnCheckIn">เช็คอินวันนี้</span>
+        </button>
+    </div>
+
+    <!-- Fullscreen Success Modal -->
+    <div id="dc-modal" class="dc-fullscreen-modal">
+        <div id="confetti-canvas"></div>
+
+        <div class="dc-modal-content">
+            <div class="dc-modal-icon-wrap">
+                <div class="dc-modal-bg-spin"></div>
+                <div class="dc-modal-icon-inner">
+                    <div class="dc-modal-icon-bg">
+                        <img id="dc-modal-img" src="" alt="Reward" class="dc-modal-icon-img">
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="dc-modal-title" class="dc-modal-title">ยินดีด้วย!</h3>
+            <p id="dc-modal-desc" class="dc-modal-desc">คุณได้รับรางวัลจากการเช็คอิน</p>
+
+            <div class="dc-modal-reward-box">
+                <span id="dc-modal-amount" class="dc-modal-reward-amount">+0</span>
+                <span id="dc-modal-unit" class="dc-modal-reward-unit">พลังงาน</span>
+            </div>
+        </div>
+
+        <div class="dc-modal-footer">
+            <button type="button" id="dc-btn-close-modal" class="dc-btn-primary" onclick="DailyCheckInCtrl.closeModal()"
+                style="width: 100%;">
+                <span data-i18n="btnOk">ตกลง</span>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Template for Day Card -->
+<template id="tpl-day-card">
+    <div class="dc-day-card">
+        <div class="dc-day-label slot-day">Day 1</div>
+        <img src="" class="dc-day-icon slot-icon" alt="icon">
+        <div class="dc-day-reward slot-amount">+0</div>
+    </div>
+</template>
+
+<script>
+    window.DailyCheckInCtrl = (function () {
+        'use strict';
+
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            headerAssetKey: "dailycheckinHeader",
+            pointAssetKey: "pointIcon",
+            staminaAssetKey: "staminaIcon",
+            defaultIcons: {
+                stamina: "https://cdn-icons-png.flaticon.com/512/3003/3003280.png",
+                point: "https://cdn-icons-png.flaticon.com/512/2583/2583133.png"
+            }
+        };
+
+        const i18n = {
+            Th: {
+                staminaTitle: "พลังงานสะสม",
+                staminaDesc: "สะสมครบรับแต้มพิเศษ",
+                gridTitle: "รางวัลเช็คอิน",
+                btnCheckIn: "เช็คอินวันนี้",
+                btnChecked: "รับรางวัลแล้ว",
+                btnWait: "กำลังประมวลผล...",
+                dayPrefix: "วันที่ ",
+                modalTitleSuccess: "เช็คอินสำเร็จ!",
+                modalDescSuccess: "คุณได้รับพลังงานสำหรับวันนี้",
+                modalUnitStamina: "พลังงาน",
+                modalTitlePoint: "ยินดีด้วย!",
+                modalDescPoint: "พลังงานเต็มหลอดแล้ว! คุณได้รับโบนัสพิเศษ",
+                modalUnitPoint: "แต้ม",
+                btnOk: "ตกลง"
+            },
+            En: {
+                staminaTitle: "Stamina Bar",
+                staminaDesc: "Fill to get bonus points",
+                gridTitle: "Daily Rewards",
+                btnCheckIn: "Check-In Now",
+                btnChecked: "Claimed",
+                btnWait: "Processing...",
+                dayPrefix: "Day ",
+                modalTitleSuccess: "Success!",
+                modalDescSuccess: "You've received stamina for today.",
+                modalUnitStamina: "Stamina",
+                modalTitlePoint: "Congratulations!",
+                modalDescPoint: "Stamina bar is full! You received a bonus.",
+                modalUnitPoint: "Points",
+                btnOk: "OK"
+            }
+        };
+
+        // ==========================================
+        // 2. MOCK DATA FALLBACK
+        // ==========================================
+        const mockConfigData = {
+            result: {
+                code: 200, message: "OK",
+                data: {
+                    current: {
+                        canCheckIn: true,
+                        currentStreak: 2,
+                        currentStamina: 90,
+                        nextDayIndex: 3,
+                        nextReward: { type: "stamina", amount: 10 }
+                    },
+                    config: {
+                        grid: "4xN", // 1x1, 4xN, 5xN
+                        maxDaily: 14,
+                        restartAtCompleted: false,
+                        staminaReward: { requireStamina: 100, pointBonus: 50 },
+                        dailyReward: {
+                            "1": { type: "stamina", amount: 10 },
+                            "2": { type: "stamina", amount: 10 },
+                            "3": { type: "stamina", amount: 10 },
+                            "4": { type: "stamina", amount: 20 },
+                            "5": { type: "stamina", amount: 20 },
+                            "6": { type: "stamina", amount: 20 },
+                            "7": { type: "stamina", amount: 50 },
+                            "8": { type: "stamina", amount: 10 },
+                            "9": { type: "stamina", amount: 10 },
+                            "10": { type: "stamina", amount: 10 },
+                            "11": { type: "stamina", amount: 20 },
+                            "12": { type: "stamina", amount: 20 },
+                            "13": { type: "stamina", amount: 20 },
+                            "14": { type: "stamina", amount: 100 }
+                        }
+                    }
+                }
+            }
+        };
+
+        // ==========================================
+        // 3. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let responseRef = null;
+        let checkinSuccess = false;
+
+        let state = {
+            canCheckIn: false,
+            currentStamina: 0,
+            currentStreak: 0,
+            maxStamina: 100,
+            nextDayIndex: 1,
+            nextReward: null,
+            config: null,
+            isProcessing: false
+        };
+
+        let paths = {
+            stamina: pageSetting.defaultIcons.stamina,
+            point: pageSetting.defaultIcons.point
+        };
+
+        // ==========================================
+        // 4. CORE LOGIC
+        // ==========================================
+
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        function loadAssets() {
+            const headerImg = document.getElementById('dc-header-img');
+            if (headerImg) {
+                if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                    const hPath = Utility.getAssetPath(pageSetting.headerAssetKey);
+                    if (hPath) {
+                        headerImg.src = hPath;
+                        headerImg.style.display = 'block';
+                    }
+                } else if (window.appData && window.appData.customAssets && window.appData.customAssets[pageSetting.headerAssetKey]) {
+                    headerImg.src = window.appData.customAssets[pageSetting.headerAssetKey];
+                    headerImg.style.display = 'block';
+                }
+            }
+
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                const sIcon = Utility.getAssetPath(pageSetting.staminaAssetKey);
+                if (sIcon) paths.stamina = sIcon;
+
+                const pIcon = Utility.getAssetPath(pageSetting.pointAssetKey);
+                if (pIcon) paths.point = pIcon;
+            }
+
+            const iconStaminaHeader = document.getElementById('dc-icon-stamina-title');
+            if (iconStaminaHeader) {
+                iconStaminaHeader.src = paths.stamina;
+                iconStaminaHeader.classList.remove('dc-hidden');
+            }
+
+            const iconTargetCoin = document.getElementById('dc-icon-coin-target');
+            if (iconTargetCoin) {
+                iconTargetCoin.src = paths.point;
+                iconTargetCoin.classList.remove('dc-hidden');
+            }
+        }
+
+        async function fetchData() {
+            if (window.PageManager) PageManager.showLoading();
+
+            try {
+                let dataRes = null;
+                if (window.AppApi && typeof AppApi.callApiInternal === 'function') {
+                    console.log("DailyCheckIn Log: Calling Real API...");
+                    dataRes = await AppApi.callApiInternal("crm_getDailyCheckIn", {});
+                } else {
+                    console.log("DailyCheckIn Log: Using Mock Data");
+                    dataRes = await new Promise(resolve => {
+                        setTimeout(() => resolve(mockConfigData), 300);
+                    });
+                }
+
+                if (dataRes && dataRes.result && dataRes.result.code === 200) {
+                    const data = dataRes.result.data;
+                    state.config = data.config;
+                    state.maxStamina = data.config.staminaReward.requireStamina;
+                    updateState(data.current);
+                    renderAll();
+                } else {
+                    throw new Error("Invalid API Response");
+                }
+            } catch (error) {
+                console.error("Fetch CheckIn Error:", error);
+                if (window.PageManager) PageManager.showToast("Failed to load data", "❌");
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        function updateState(dailyData) {
+            state.canCheckIn = dailyData.canCheckIn;
+            state.currentStamina = dailyData.currentStamina;
+            state.currentStreak = dailyData.currentStreak || 0;
+            state.nextDayIndex = dailyData.nextDayIndex;
+            state.nextReward = dailyData.nextReward;
+        }
+
+        // ==========================================
+        // 5. RENDERING
+        // ==========================================
+        function renderAll() {
+            const grid = document.getElementById('dc-daily-grid');
+            if (!grid) return;
+
+            renderStaminaBar(state.currentStamina, state.maxStamina);
+            renderGrid();
+            updateButtonState();
+
+            const targetPoint = document.getElementById('dc-target-point-text');
+            if (targetPoint && state.config && state.config.staminaReward) {
+                targetPoint.innerText = `+${state.config.staminaReward.pointBonus || 0}`;
+            }
+        }
+
+        function renderStaminaBar(current, max) {
+            const percentage = Math.min((current / max) * 100, 100);
+            const fill = document.getElementById('dc-stamina-fill');
+            const text = document.getElementById('dc-stamina-text');
+
+            if (fill) fill.style.width = `${percentage}%`;
+            if (text) text.innerText = `${current} / ${max}`;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('dc-daily-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            const rewards = state.config.dailyReward;
+            const maxDays = state.config.maxDaily;
+            const gridType = state.config.grid || "1x1";
+
+            grid.className = '';
+            if (gridType === "4xN") grid.classList.add('dc-layout-grid-4');
+            else if (gridType === "5xN") grid.classList.add('dc-layout-grid-5');
+            else grid.classList.add('dc-layout-row');
+
+            let targetIndex = state.nextDayIndex;
+            if (!state.canCheckIn) {
+                let streakIndex = state.currentStreak || 1;
+                targetIndex = state.config.restartAtCompleted ? ((streakIndex - 1) % maxDays) + 1 : Math.min(streakIndex, maxDays);
+            }
+
+            for (let i = 1; i <= maxDays; i++) {
+                const rwData = rewards[i] || { amount: 0 };
+                let itemState = 'next';
+                let isTarget = false;
+
+                if (i < targetIndex) itemState = 'checked';
+                else if (i === targetIndex) {
+                    itemState = state.canCheckIn ? 'current' : 'claimed';
+                    isTarget = true;
+                }
+
+                const card = createDayCard(i, rwData, itemState, isTarget);
+                if (card) grid.appendChild(card);
+            }
+
+            scrollToTarget();
+        }
+
+        function createDayCard(dayNum, data, itemState, isTarget) {
+            const tpl = document.getElementById('tpl-day-card');
+            if (!tpl) return null;
+
+            const clone = tpl.content.cloneNode(true);
+            const rootCard = clone.querySelector('.dc-day-card');
+            const dict = i18n[currentLang];
+
+            clone.querySelector('.slot-day').innerText = `${dict.dayPrefix}${dayNum}`;
+            clone.querySelector('.slot-amount').innerText = `+${data.amount}`;
+
+            const iconEl = clone.querySelector('.slot-icon');
+            iconEl.src = paths.stamina;
+
+            if (isTarget) rootCard.classList.add('is-target');
+
+            if (itemState === 'checked') {
+                rootCard.classList.add('state-checked');
+                const badge = document.createElement('div');
+                badge.className = 'dc-check-mark';
+                badge.innerHTML = '<i class="fa-solid fa-check"></i>';
+                rootCard.appendChild(badge);
+            } else if (itemState === 'current') {
+                rootCard.classList.add('state-current');
+                const badge = document.createElement('div');
+                badge.className = 'dc-today-badge';
+                badge.innerText = 'วันนี้';
+                rootCard.appendChild(badge);
+            } else if (itemState === 'claimed') {
+                rootCard.classList.add('state-claimed');
+                const badge = document.createElement('div');
+                badge.className = 'dc-success-badge';
+                badge.innerText = 'สำเร็จ!';
+                rootCard.appendChild(badge);
+
+                const checkBadge = document.createElement('div');
+                checkBadge.className = 'dc-check-mark';
+                checkBadge.innerHTML = '<i class="fa-solid fa-check"></i>';
+                rootCard.appendChild(checkBadge);
+            }
+
+            return rootCard;
+        }
+
+        function scrollToTarget() {
+            setTimeout(() => {
+                const grid = document.getElementById('dc-daily-grid');
+                if (!grid) return;
+
+                const targetCard = grid.querySelector('.is-target');
+                if (targetCard) {
+                    if (grid.classList.contains('dc-layout-row')) {
+                        const scrollLeft = targetCard.offsetLeft - (grid.clientWidth / 2) + (targetCard.clientWidth / 2);
+                        grid.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                    } else {
+                        const scrollTop = targetCard.offsetTop - (grid.clientHeight / 2) + (targetCard.clientHeight / 2);
+                        grid.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                    }
+                }
+            }, 100);
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('dc-btn-checkin');
+            const txt = document.getElementById('dc-btn-text');
+            const spin = document.getElementById('dc-btn-spinner');
+
+            if (!btn || !txt || !spin) {
+                return;
+            }
+
+            const dict = i18n[currentLang];
+            if (state.isProcessing) {
+                btn.disabled = true;
+                txt.innerText = dict.btnWait;
+                spin.classList.remove('dc-hidden');
+            } else if (state.canCheckIn) {
+                btn.disabled = false;
+                txt.innerText = dict.btnCheckIn;
+                spin.classList.add('dc-hidden');
+            } else {
+                btn.disabled = true;
+                txt.innerText = dict.btnChecked;
+                spin.classList.add('dc-hidden');
+            }
+        }
+
+        // ==========================================
+        // 6. ACTIONS & MODAL
+        // ==========================================
+        async function handleCheckIn() {
+            console.log("DailyCheckIn Log: Action -> handleCheckIn executed.");
+
+            if (!state.canCheckIn || state.isProcessing) {
+                return;
+            }
+
+            state.isProcessing = true;
+            updateButtonState();
+
+            try {
+                let dataRes = null;
+                if (window.AppApi && typeof AppApi.callApiInternal === 'function') {
+                    dataRes = await AppApi.callApiInternal("crm_stampDailyCheckIn", {});
+                } else {
+                    dataRes = await new Promise(resolve => {
+                        setTimeout(() => {
+                            let granted = state.nextReward;
+                            let newStamina = state.currentStamina + granted.amount;
+                            let earnPoint = 0;
+
+                            if (newStamina >= state.maxStamina) {
+                                earnPoint = state.config.staminaReward.pointBonus;
+                                newStamina = newStamina - state.maxStamina;
+                            }
+
+                            resolve({
+                                result: {
+                                    code: 200, data: {
+                                        grantedReward: granted,
+                                        currentStamina: newStamina,
+                                        currentStreak: state.currentStreak + 1,
+                                        nextDayIndex: state.nextDayIndex + 1,
+                                        nextReward: granted,
+                                        earnPoint: earnPoint
+                                    }
+                                }
+                            });
+                        }, 800);
+                    });
+                }
+
+                if (dataRes && dataRes.result && dataRes.result.code === 200) {
+                    processCheckInResult(dataRes.result.data);
+                } else {
+                    throw new Error("Stamp Failed");
+                }
+            } catch (error) {
+                console.error("Stamp Error:", error);
+                state.isProcessing = false;
+                updateButtonState();
+                if (window.PageManager) PageManager.showToast("Failed to check in", "❌");
+            }
+        }
+
+        function processCheckInResult(data) {
+            const { grantedReward, currentStamina, currentStreak, nextDayIndex, nextReward, earnPoint } = data;
+
+            responseRef.success = true;
+            state.canCheckIn = false;
+            state.currentStreak = currentStreak;
+            state.nextDayIndex = nextDayIndex;
+            state.nextReward = nextReward;
+            checkinSuccess = true;
+
+            renderGrid();
+            updateButtonState();
+
+            if (earnPoint > 0) {
+                renderStaminaBar(state.maxStamina, state.maxStamina);
+                setTimeout(() => {
+                    showModal('point', earnPoint);
+                    const fill = document.getElementById('dc-stamina-fill');
+                    if (fill) {
+                        fill.style.transition = 'none';
+                        fill.style.width = '0%';
+                        void fill.offsetWidth;
+                        fill.style.transition = 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    }
+                    state.currentStamina = currentStamina;
+                    renderStaminaBar(state.currentStamina, state.maxStamina);
+                }, 700);
+            } else {
+                state.currentStamina = currentStamina;
+                renderStaminaBar(state.currentStamina, state.maxStamina);
+                setTimeout(() => { showModal('stamina', grantedReward.amount); }, 600);
+            }
+        }
+
+        function showModal(type, amount) {
+            const dict = i18n[currentLang];
+            const imgEl = document.getElementById('dc-modal-img');
+            const titleEl = document.getElementById('dc-modal-title');
+            const descEl = document.getElementById('dc-modal-desc');
+            const amountEl = document.getElementById('dc-modal-amount');
+            const unitEl = document.getElementById('dc-modal-unit');
+            const rewardBox = document.querySelector('.dc-modal-reward-box');
+            const modal = document.getElementById('dc-modal');
+
+            if (!imgEl || !titleEl || !modal) return;
+
+            if (type === 'point') {
+                imgEl.src = paths.point;
+                titleEl.innerText = dict.modalTitlePoint;
+                descEl.innerText = dict.modalDescPoint;
+                amountEl.innerText = `+${amount}`;
+                amountEl.style.color = '#f59e0b';
+                unitEl.innerText = dict.modalUnitPoint;
+                rewardBox.style.borderColor = '#fcd34d';
+                rewardBox.style.background = 'linear-gradient(135deg, #fffbeb, #ffffff)';
+            } else {
+                imgEl.src = paths.stamina;
+                titleEl.innerText = dict.modalTitleSuccess;
+                descEl.innerText = dict.modalDescSuccess;
+                amountEl.innerText = `+${amount}`;
+                amountEl.style.color = 'var(--theme-primary, #3b82f6)';
+                unitEl.innerText = dict.modalUnitStamina;
+                rewardBox.style.borderColor = '#e2e8f0';
+                rewardBox.style.background = 'linear-gradient(135deg, #f8fafc, #ffffff)';
+            }
+
+            spawnConfetti();
+            modal.classList.add('show');
+        }
+
+        function spawnConfetti() {
+            const container = document.getElementById('confetti-canvas');
+            if (!container) return;
+
+            container.innerHTML = '';
+            const colors = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'];
+
+            for (let i = 0; i < 40; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti-piece';
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDelay = Math.random() * 1.5 + 's';
+                conf.style.animationDuration = Math.random() * 2 + 2.5 + 's';
+
+                if (Math.random() > 0.5) {
+                    conf.style.width = '8px';
+                    conf.style.height = '8px';
+                    conf.style.borderRadius = '50%';
+                } else {
+                    conf.style.width = '6px';
+                    conf.style.height = '14px';
+                }
+                container.appendChild(conf);
+            }
+        }
+
+        function closeModal() {
+            console.log("DailyCheckIn Log: Action -> closeModal executed.");
+
+            const modal = document.getElementById('dc-modal');
+            if (modal) modal.classList.remove('show');
+            state.isProcessing = false;
+            updateButtonState();
+
+            if (responseRef && checkinSuccess) {
+                responseRef.success = true;
+            }
+
+            if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                setTimeout(() => { PageManager.closeModal(); }, 300);
+            }
+        }
+
+        // ==========================================
+        // EXPORT
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                console.log("DailyCheckIn Log: init() System started");
+                responseRef = response;
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+
+                applyLanguage();
+                loadAssets();
+                fetchData();
+            },
+            handleCheckIn: handleCheckIn,
+            closeModal: closeModal
+        };
+    })();
+
+    // ==========================================
+    // BIND SYSTEM CALL
+    // ==========================================
+    window.onInit = function (payload, response) {
+        window.DailyCheckInCtrl.init(payload, response);
+    };
+
+</script>

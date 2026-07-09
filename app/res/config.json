@@ -133,12 +133,16 @@
         "dailyCheckin": {
             "path": "page/sub/dailyCheckin.html",
             "anim": "fade-in",
-            "full": true
+            "full": false,
+            "x": 90,
+            "y": 80
         },
         "referralCode": {
             "path": "page/sub/referralCode.html",
             "anim": "fade-in",
-            "full": true
+            "full": false,
+            "x": 80,
+            "y": 65
         }
     },
     "iframe": {
@@ -165,6 +169,8 @@
         "qrhuntHeader": "page/assets/header/qrhunt.png",
         "referralHeader": "page/assets/header/referral.png",
         "topcolorHeader": "page/assets/header/topcolor.png",
+        "historyHeader": "page/assets/header/history.png",
+        "shippingHeader": "page/assets/header/shipping.png",
         "leaderboardTopSpendDefault": "page/assets/header/leaderboardTopSpendDefault.png",
         "leaderboardTopGameDefault": "page/assets/header/leaderboardTopGameDefault.png"
     }

@@ -1,0 +1,812 @@
+<style>
+    /* ==========================================
+       Shipping Status Page - Ultra Minimal & Compact
+       ========================================== */
+
+    .sh-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        background-color: var(--theme-bg-app, #f8fafc);
+        color: var(--theme-text-main, #1e293b);
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding: 1rem;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .sh-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sh-wrapper *,
+    .sh-wrapper *::before,
+    .sh-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    /* --- Utilities --- */
+    .sh-hidden {
+        display: none !important;
+    }
+
+    .sh-fade-in {
+        animation: shFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes shFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- Header Image --- */
+    .sh-header-img-container {
+        width: 100%;
+        max-width: 42rem;
+        margin: 0 auto 1.25rem auto;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        background-color: var(--theme-bg-app, #f8fafc);
+    }
+
+    .crm-tier-header-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+        min-height: 80px;
+    }
+
+    /* --- Top Bar (Header + Filter) --- */
+    .sh-top-bar {
+        max-width: 42rem;
+        margin: 0 auto 1.25rem auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+        .sh-top-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.75rem;
+        }
+
+        .sh-filter-container {
+            justify-content: flex-start !important;
+        }
+
+        .sh-filter-select {
+            width: 100%;
+        }
+    }
+
+    /* --- Header Text --- */
+    .sh-page-header {
+        text-align: left;
+    }
+
+    .sh-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0 0 0.2rem 0;
+        color: var(--theme-text-main, #0f172a);
+    }
+
+    .sh-subtitle {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #64748b);
+        margin: 0;
+    }
+
+    /* --- Filter Dropdown --- */
+    .sh-filter-container {
+        display: flex;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+
+    .sh-filter-select {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--theme-text-main, #1e293b);
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 0.5rem;
+        padding: 0.4rem 2rem 0.4rem 0.75rem;
+        appearance: none;
+        cursor: pointer;
+        outline: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1em;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s;
+    }
+
+    .sh-filter-select:focus {
+        border-color: var(--theme-primary, #2563eb);
+    }
+
+    /* --- Container --- */
+    .sh-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 42rem;
+        margin: 0 auto;
+    }
+
+    /* --- Empty State --- */
+    .sh-empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        background-color: var(--theme-bg-card, #ffffff);
+        border-radius: var(--theme-radius, 1rem);
+        border: 1px dashed var(--theme-border-color, #cbd5e1);
+    }
+
+    .sh-empty-state i {
+        font-size: 2rem;
+        color: var(--theme-text-muted, #cbd5e1);
+        margin-bottom: 0.75rem;
+    }
+
+    .sh-empty-state p {
+        color: var(--theme-text-main, #475569);
+        font-weight: 600;
+        margin: 0;
+        font-size: 0.85rem;
+    }
+
+    /* --- Card Component --- */
+    .sh-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 0.75rem;
+        padding: 0.875rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    /* Card Top: Date & Status */
+    .sh-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sh-order-date {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--theme-text-muted, #64748b);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    /* Status Badges */
+    .sh-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .badge-processing {
+        background-color: #fffbeb;
+        color: #92400e;
+    }
+
+    .badge-shipped {
+        background-color: #eff6ff;
+        color: #1e40af;
+    }
+
+    .badge-delivered {
+        background-color: #ecfdf5;
+        color: #065f46;
+    }
+
+    /* Items Section */
+    .sh-items-container {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .sh-items-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sh-item-single {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .sh-item-multi {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 3.5rem;
+        flex-shrink: 0;
+        gap: 0.25rem;
+    }
+
+    .sh-item-img-wrapper {
+        width: 3rem;
+        height: 3rem;
+        flex-shrink: 0;
+        border-radius: 0.375rem;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #f1f5f9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .sh-item-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .sh-item-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sh-item-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--theme-text-main, #1e293b);
+        margin: 0 0 0.1rem 0;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .sh-item-qty {
+        font-size: 0.7rem;
+        color: var(--theme-text-muted, #64748b);
+        font-weight: 500;
+    }
+
+    .sh-item-multi .sh-item-qty {
+        background-color: var(--theme-bg-app, #f1f5f9);
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.25rem;
+        font-size: 0.65rem;
+    }
+
+    /* Address Section (Always Visible) */
+    .sh-address-wrapper {
+        background-color: var(--theme-bg-app, #f8fafc);
+        padding: 0.6rem 0.75rem;
+        border-radius: 0.375rem;
+        margin-top: 0.25rem;
+    }
+
+    .sh-address-label {
+        font-size: 0.65rem;
+        color: var(--theme-text-muted, #64748b);
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .sh-address-text {
+        font-size: 0.7rem;
+        color: var(--theme-text-main, #475569);
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .sh-address-name {
+        font-weight: 700;
+        color: var(--theme-text-main, #0f172a);
+        display: block;
+    }
+
+    /* Tracking Section */
+    .sh-tracking-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border-radius: 0.375rem;
+        padding: 0.4rem 0.6rem;
+        margin-top: 0.25rem;
+    }
+
+    .sh-tracking-info {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        overflow: hidden;
+    }
+
+    .sh-tracking-info i {
+        font-size: 0.8rem;
+    }
+
+    .sh-tracking-value {
+        font-size: 0.75rem;
+        font-family: 'Courier New', Courier, monospace;
+        color: var(--theme-text-main, #1e293b);
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sh-tracking-empty {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--theme-text-muted, #64748b);
+    }
+
+    /* Copy Button (Minimal Grey Icon) */
+    .sh-btn-copy {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+
+    .sh-btn-copy:hover {
+        color: #475569;
+    }
+
+    /* Load More Button */
+    .sh-btn-load-more {
+        width: 100%;
+        max-width: 42rem;
+        margin: 1rem auto 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.4rem;
+        background-color: var(--theme-bg-card, #ffffff);
+        color: var(--theme-primary, #2563eb);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 0.5rem;
+        padding: 0.6rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+</style>
+
+<div class="sh-wrapper" id="sh-wrapper">
+    <!-- Header Image Section -->
+    <div class="sh-header-img-container sh-fade-in">
+        <img id="headerImage" src="" alt="Campaign Banner" class="crm-tier-header-img"
+            onerror="this.src='https://placehold.co/800x250/e2e8f0/64748b?text=Shipping+Status'">
+    </div>
+
+    <!-- Top Bar: Title Left, Filter Right -->
+    <div class="sh-top-bar sh-fade-in">
+        <div class="sh-page-header">
+            <h1 class="sh-title" data-i18n="pageTitle">สถานะการจัดส่ง</h1>
+            <p class="sh-subtitle" data-i18n="pageSub">ติดตามสถานะการจัดส่งของรางวัลของคุณ</p>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <div class="sh-filter-container">
+            <select id="sh-status-filter" class="sh-filter-select"
+                onchange="window.ShippingStatusCtr.onFilterChange(this.value)">
+                <option value="all" data-i18n="filter_all">ทั้งหมด</option>
+                <option value="processing" data-i18n="filter_processing">กำลังดำเนินการ</option>
+                <option value="shipped" data-i18n="filter_shipped">จัดส่งแล้ว</option>
+                <option value="delivered" data-i18n="filter_delivered">สำเร็จ</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="sh-list-container" id="shipping-list-container">
+        <!-- Cards will be injected here -->
+    </div>
+
+    <button id="btn-load-more" class="sh-btn-load-more sh-hidden" onclick="window.ShippingStatusCtr.loadMore()">
+        <span data-i18n="loadMore">โหลดเพิ่มเติม</span>
+    </button>
+</div>
+
+<!-- Template: Shipping Card -->
+<template id="tpl-shipping-card">
+    <div class="sh-card sh-fade-in">
+
+        <!-- Top: Date & Status -->
+        <div class="sh-card-top">
+            <span class="sh-order-date">
+                <i class="fa-regular fa-clock"></i>
+                <span class="slot-date"></span>
+            </span>
+            <div class="sh-badge slot-badge">
+                <span class="slot-badge-text">Status</span>
+            </div>
+        </div>
+
+        <!-- Items -->
+        <div class="sh-items-container slot-items"></div>
+
+        <!-- Address Section (Always open, styled) -->
+        <div class="slot-address-section sh-hidden">
+            <div class="sh-address-wrapper">
+                <div class="sh-address-label">
+                    <i class="fa-solid fa-location-dot"></i> <span data-i18n="addressTitle">ที่อยู่จัดส่ง</span>
+                </div>
+                <p class="sh-address-text slot-address-text"></p>
+            </div>
+        </div>
+
+        <!-- Tracking Section -->
+        <div class="sh-tracking-container">
+            <!-- State 1: Has Tracking (Truck Icon) -->
+            <div class="sh-tracking-info slot-tracking-active">
+                <i class="fa-solid fa-truck-fast" style="color: var(--theme-primary, #2563eb);"></i>
+                <span class="sh-tracking-value slot-tracking-number"></span>
+            </div>
+
+            <!-- State 2: Empty/Preparing (Box Icon) -->
+            <div class="sh-tracking-info slot-tracking-empty sh-hidden">
+                <i class="fa-solid fa-box-open" style="color: var(--theme-text-muted, #94a3b8);"></i>
+                <span class="sh-tracking-empty" data-i18n="preparing">กำลังเตรียมการจัดส่ง</span>
+            </div>
+
+            <!-- Copy Button (Minimal Grey Icon) -->
+            <button class="sh-btn-copy slot-btn-copy" onclick="">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+        </div>
+
+    </div>
+</template>
+
+<!-- Template: Single Item -->
+<template id="tpl-shipping-item-single">
+    <div class="sh-item-single">
+        <div class="sh-item-img-wrapper">
+            <img src="" alt="Item" class="sh-item-img slot-item-img"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIvPjxwYXRoIGQ9Ik0zMCAzMGg0MHY0MEgzMHoiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4='">
+        </div>
+        <div class="sh-item-details">
+            <h5 class="sh-item-name slot-item-name"></h5>
+            <span class="sh-item-qty">x<span class="slot-item-qty"></span></span>
+        </div>
+    </div>
+</template>
+
+<!-- Template: Multi Item -->
+<template id="tpl-shipping-item-multi">
+    <div class="sh-item-multi">
+        <div class="sh-item-img-wrapper">
+            <img src="" alt="Item" class="sh-item-img slot-item-img"
+                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIvPjxwYXRoIGQ9Ik0zMCAzMGg0MHY0MEgzMHoiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4='">
+        </div>
+        <span class="sh-item-qty">x<span class="slot-item-qty"></span></span>
+    </div>
+</template>
+
+<script>
+    window.ShippingStatusCtr = (function () {
+        'use strict';
+
+        const pageSetting = { limit: 20 };
+
+        // Added translation mapping for Filters
+        const i18n = {
+            Th: {
+                pageTitle: "สถานะการจัดส่ง",
+                pageSub: "ติดตามสถานะการจัดส่งของรางวัลของคุณ",
+                addressTitle: "ที่อยู่จัดส่ง",
+                preparing: "เตรียมการจัดส่ง...",
+                loadMore: "โหลดเพิ่มเติม",
+                emptyList: "ยังไม่มีรายการจัดส่งสินค้า",
+                emptyFilter: "ไม่มีรายการในสถานะนี้",
+                status_processing: "กำลังดำเนินการ",
+                status_shipped: "จัดส่งแล้ว",
+                status_delivered: "สำเร็จ",
+                toastCopy: "คัดลอกสำเร็จ",
+                errLoad: "ไม่สามารถโหลดข้อมูลได้",
+                filter_all: "ทั้งหมด",
+                filter_processing: "กำลังดำเนินการ",
+                filter_shipped: "จัดส่งแล้ว",
+                filter_delivered: "สำเร็จ"
+            },
+            En: {
+                pageTitle: "Shipping Status",
+                pageSub: "Track your shipments",
+                addressTitle: "Shipping Address",
+                preparing: "Preparing...",
+                loadMore: "Load More",
+                emptyList: "No shipping records",
+                emptyFilter: "No records for this status",
+                status_processing: "Processing",
+                status_shipped: "Shipped",
+                status_delivered: "Delivered",
+                toastCopy: "Copied",
+                errLoad: "Failed to load",
+                filter_all: "All",
+                filter_processing: "Processing",
+                filter_shipped: "Shipped",
+                filter_delivered: "Delivered"
+            }
+        };
+
+        let currentLang = 'Th';
+
+        // Added filter state and a local array to store all fetched items for client-side filtering
+        let state = { offset: 0, hasMore: true, isFetching: false, filter: 'all' };
+        let allOrdersList = [];
+
+        const els = {
+            container: document.getElementById('shipping-list-container'),
+            btnLoadMore: document.getElementById('btn-load-more'),
+            selectFilter: document.getElementById('sh-status-filter'),
+            tplCard: document.getElementById('tpl-shipping-card'),
+            tplSingle: document.getElementById('tpl-shipping-item-single'),
+            tplMulti: document.getElementById('tpl-shipping-item-multi')
+        };
+
+        function applyLanguage(container = document) {
+            const dict = i18n[currentLang];
+            container.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH', { year: '2-digit', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return dateStr; }
+        }
+
+        function formatAddress(addr) {
+            if (!addr) return '';
+            const fullAddress = [addr.addressLine1, addr.addressLine2, addr.subdistrict, addr.district, addr.province, addr.postalCode].filter(Boolean).join(' ');
+            const contact = `${addr.contactPerson || ''} ${addr.contactPhone ? `(${addr.contactPhone})` : ''}`.trim();
+            if (!fullAddress && !contact) return '';
+
+            return `${contact ? `<span class="sh-address-name">${contact}</span>` : ''}${fullAddress}`;
+        }
+
+        function getStatusInfo(statusStr) {
+            const s = (statusStr || 'processing').toLowerCase();
+            const dict = i18n[currentLang];
+            if (s === 'delivered') return { text: dict.status_delivered, class: 'badge-delivered' };
+            if (s === 'shipped') return { text: dict.status_shipped, class: 'badge-shipped' };
+            return { text: dict.status_processing, class: 'badge-processing' };
+        }
+
+        async function loadData(isLoadMore = false) {
+            if (state.isFetching || (!state.hasMore && isLoadMore)) return;
+            state.isFetching = true;
+            if (window.PageManager) PageManager.showLoading();
+
+            try {
+                if (!window.CrmApi) throw new Error("CrmApi not found");
+                const res = await CrmApi.getMyShippingRewards(pageSetting.limit, state.offset);
+
+                let newOrders = [];
+                let hasMore = false;
+
+                if (res && res.orders) {
+                    newOrders = res.orders;
+                    hasMore = res.pagination ? res.pagination.hasMore : false;
+                } else if (Array.isArray(res)) {
+                    newOrders = res;
+                    hasMore = newOrders.length >= pageSetting.limit;
+                }
+
+                if (!isLoadMore) {
+                    allOrdersList = [];
+                }
+
+                // Add to our master list
+                if (newOrders && newOrders.length > 0) {
+                    allOrdersList = allOrdersList.concat(newOrders);
+                }
+
+                state.offset += pageSetting.limit;
+                state.hasMore = hasMore;
+
+                // Re-render based on current filter state
+                renderFilteredOrders();
+
+            } catch (e) {
+                console.error("Load shipping error:", e);
+                if (window.PageManager) PageManager.showFailed("Error", i18n[currentLang].errLoad);
+            } finally {
+                state.isFetching = false;
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        function showEmptyState(message) {
+            els.container.innerHTML = `<div class="sh-empty-state sh-fade-in"><i class="fa-solid fa-box-open"></i><p>${message}</p></div>`;
+        }
+
+        // Apply Filter and render DOM
+        function renderFilteredOrders() {
+            els.container.innerHTML = '';
+
+            // Filter the master list
+            const filteredOrders = state.filter === 'all'
+                ? allOrdersList
+                : allOrdersList.filter(o => (o.status || 'processing').toLowerCase() === state.filter);
+
+            // Empty state check
+            if (filteredOrders.length === 0) {
+                const emptyMsg = allOrdersList.length === 0 ? i18n[currentLang].emptyList : i18n[currentLang].emptyFilter;
+                showEmptyState(emptyMsg);
+            } else {
+                buildOrderDOM(filteredOrders);
+            }
+
+            // Show load more if the backend still has more data (regardless of local filter matching)
+            els.btnLoadMore.classList.toggle('sh-hidden', !state.hasMore);
+        }
+
+        function buildOrderDOM(orders) {
+            orders.forEach(order => {
+                const clone = els.tplCard.content.cloneNode(true);
+
+                // Header
+                clone.querySelector('.slot-date').innerText = formatDate(order.createdAt);
+                const statusInfo = getStatusInfo(order.status);
+                const badge = clone.querySelector('.slot-badge');
+                badge.classList.add(statusInfo.class);
+                badge.querySelector('.slot-badge-text').innerText = statusInfo.text;
+
+                // Items
+                const itemsContainer = clone.querySelector('.slot-items');
+                if (order.items && order.items.length > 0) {
+                    const isMulti = order.items.length > 1;
+                    order.items.forEach(item => {
+                        const itemTpl = isMulti ? els.tplMulti : els.tplSingle;
+                        const itemClone = itemTpl.content.cloneNode(true);
+
+                        const imgEl = itemClone.querySelector('.slot-item-img');
+                        if (item.image) imgEl.src = item.image;
+                        itemClone.querySelector('.slot-item-qty').innerText = item.quantity || 1;
+
+                        if (!isMulti) itemClone.querySelector('.slot-item-name').innerText = item.name || 'Item';
+
+                        itemsContainer.appendChild(itemClone);
+                    });
+                } else {
+                    itemsContainer.innerHTML = '<span style="font-size:0.75rem; color:#9ca3af;">No items</span>';
+                }
+
+                // Address (Always visible if exists, no toggle needed)
+                const addressStr = formatAddress(order.shippingAddress);
+                const addrSection = clone.querySelector('.slot-address-section');
+                if (addressStr) {
+                    addrSection.classList.remove('sh-hidden');
+                    clone.querySelector('.slot-address-text').innerHTML = addressStr;
+                }
+
+                // Tracking Logic with proper state Icons
+                const trackActive = clone.querySelector('.slot-tracking-active');
+                const trackNum = clone.querySelector('.slot-tracking-number');
+                const trackEmpty = clone.querySelector('.slot-tracking-empty');
+                const btnCopy = clone.querySelector('.slot-btn-copy');
+
+                if (order.trackingNumber && order.trackingNumber.trim() !== '') {
+                    // State 1: Shipped with tracking
+                    trackNum.innerText = order.trackingNumber;
+                    btnCopy.onclick = () => copyTracking(order.trackingNumber);
+                    trackEmpty.classList.add('sh-hidden');
+                } else {
+                    // State 2: Processing (no tracking)
+                    trackActive.classList.add('sh-hidden');
+                    btnCopy.classList.add('sh-hidden');
+                    trackEmpty.classList.remove('sh-hidden');
+                }
+
+                applyLanguage(clone);
+                els.container.appendChild(clone);
+            });
+        }
+
+        function copyTracking(text) {
+            if (!text) return;
+            const copyAction = () => { if (window.PageManager) PageManager.showToast(i18n[currentLang].toastCopy, "📋"); };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(copyAction).catch(() => fallbackCopy(text, copyAction));
+            } else { fallbackCopy(text, copyAction); }
+        }
+
+        function fallbackCopy(text, callback) {
+            const temp = document.createElement("input");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try { document.execCommand('copy'); callback(); } catch (err) { }
+            document.body.removeChild(temp);
+        }
+
+        return {
+            init: function () {
+                if (window.crmData && window.crmData.language) currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                applyLanguage();
+
+                try {
+                    const headerImgEl = document.getElementById('headerImage');
+                    if (headerImgEl && window.Utility && typeof window.Utility.getAssetPath === 'function') {
+                        const bgPath = window.Utility.getAssetPath("shippingHeader");
+                        if (bgPath) headerImgEl.src = bgPath;
+                    }
+                } catch (e) {
+                    console.warn("Could not load header image", e);
+                }
+
+                // Reset State
+                els.container.innerHTML = '';
+                els.selectFilter.value = 'all';
+                state.offset = 0;
+                state.hasMore = true;
+                state.filter = 'all';
+                allOrdersList = [];
+
+                loadData(false);
+            },
+            loadMore: function () {
+                loadData(true);
+            },
+            onFilterChange: function (statusVal) {
+                state.filter = statusVal;
+                renderFilteredOrders();
+            }
+        };
+
+    })();
+
+    window.onInit = function (payload, response) {
+        window.ShippingStatusCtr.init();
+        if (response) response.status = "ok";
+    };
+</script>

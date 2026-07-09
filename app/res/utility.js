@@ -398,9 +398,9 @@
         },
 
         getTransactionName: function (deduect) {
-            if (deduect.metadata != null && deduect.metadata.reward_name.notnull())
+            if (deduect.metadata != null && deduect.metadata.reward_name)
                 return deduect.metadata.reward_name;
-            else if (deduect.reason.notnull())
+            else if (deduect.reason)
                 return deduect.reason;
             return deduect.reference_id;
         },

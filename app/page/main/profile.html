@@ -1130,8 +1130,7 @@
                 <span data-i18n="refTitle">Invite Friends</span>
             </h3>
             <p class="pf-ref-desc" data-i18n="refDesc">Get bonus points for every friend you invite!</p>
-            <button class="pf-btn-ref" onclick="PageManager.openModal('referralCode', { mode: 'me' })"
-                data-i18n="btnGetCode">
+            <button class="pf-btn-ref" onclick="handleReferralCode()" data-i18n="btnGetCode">
                 Get Your Code
             </button>
         </div>
@@ -1595,6 +1594,13 @@
                 console.log("Mock: Edit Address clicked");
             }
         }
+
+        window.handleReferralCode = function () {
+            if (window.PageManager) {
+                PageManager.openModal('referralCode', { mode: 'me' })
+            }
+        }
+
 
         window.updateProfile = async function () {
             if (window.PageManager) PageManager.showLoading("Updating...");

@@ -1,45 +1,685 @@
-<!-- 
-  Subpage Demo: หน้านี้จะถูก Cache ไว้ เปิดครั้งต่อไปจะไม่โหลดใหม่
--->
-<div class="p-4 h-full flex flex-col">
-    <h2 class="font-bold text-gray-800 text-xl mb-4">Transaction History</h2>
-    
-    <!-- พื้นที่ทดสอบ Scroll ยาวๆ -->
-    <div class="flex-grow space-y-3" id="history-list">
-        <!-- JS จะยัด Template ลงตรงนี้ -->
+<style>
+    /* ==========================================
+       History Page Styles (Pure CSS)
+       รองรับ Global Override Theme จาก style.css
+       ========================================== */
+    .hs-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        color: var(--theme-text-main, #1f2937);
+    }
+
+    .hs-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hs-wrapper *,
+    .hs-wrapper *::before,
+    .hs-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    .hs-hidden {
+        display: none !important;
+    }
+
+    .hs-fade-in {
+        animation: hsFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes hsFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- Header Image --- */
+    .hs-header-img-wrap {
+        width: 100%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: var(--theme-shadow, 0 2px 4px rgba(0, 0, 0, 0.05));
+        margin-bottom: 1rem;
+        border-bottom-left-radius: var(--theme-radius, 1rem);
+        border-bottom-right-radius: var(--theme-radius, 1rem);
+        overflow: hidden;
+    }
+
+    .hs-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* --- Container --- */
+    .hs-container {
+        padding: 0 1.25rem;
+        max-width: 48rem;
+        margin: 0 auto;
+    }
+
+    .hs-page-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .hs-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 0.25rem 0;
+        color: var(--theme-text-main, #111827);
+    }
+
+    .hs-subtitle {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+    }
+
+    /* --- Tabs --- */
+    .hs-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--theme-bg-card, #ffffff);
+        padding: 0.375rem;
+        border-radius: 9999px;
+        box-shadow: var(--theme-shadow, 0 2px 4px rgba(0, 0, 0, 0.02));
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        margin-bottom: 1.5rem;
+    }
+
+    .hs-tab-btn {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #6b7280);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        outline: none;
+    }
+
+    .hs-tab-btn.active {
+        background: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        box-shadow: 0 4px 10px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+    }
+
+    /* --- List Container --- */
+    .hs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* --- Card Item --- */
+    .hs-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.25rem);
+        padding: 1rem;
+        box-shadow: var(--theme-shadow, 0 2px 6px -1px rgba(0, 0, 0, 0.03));
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hs-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--theme-shadow-hover, 0 6px 12px -2px rgba(0, 0, 0, 0.08));
+    }
+
+    .hs-icon-wrap {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.25rem;
+    }
+
+    .hs-icon-wrap.earn {
+        background-color: #ecfdf5;
+        /* emerald-50 */
+        color: #10b981;
+        /* emerald-500 */
+    }
+
+    .hs-icon-wrap.deduct {
+        background-color: #fef2f2;
+        /* rose-50 */
+        color: #f43f5e;
+        /* rose-500 */
+    }
+
+    .hs-details {
+        flex-grow: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .hs-item-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .hs-item-sub {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .hs-item-date {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .hs-points-col {
+        text-align: right;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+    }
+
+    .hs-points-val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+    }
+
+    .hs-points-val.earn {
+        color: #059669;
+        /* emerald-600 */
+    }
+
+    .hs-points-val.deduct {
+        color: #e11d48;
+        /* rose-600 */
+    }
+
+    .hs-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .hs-badge.success {
+        background-color: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+
+    .hs-badge.pending {
+        background-color: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+    .hs-badge.failed {
+        background-color: #fef2f2;
+        color: #e11d48;
+        border: 1px solid #fecdd3;
+    }
+
+    /* --- Load More Button --- */
+    .hs-btn-load {
+        width: 100%;
+        background-color: transparent;
+        color: var(--theme-primary, #2563eb);
+        border: 1px solid var(--theme-primary, #2563eb);
+        padding: 0.85rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1.5rem;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .hs-btn-load:active {
+        transform: scale(0.98);
+    }
+
+    .hs-btn-load:hover {
+        background-color: var(--theme-primary-light, #eff6ff);
+    }
+
+    /* --- Empty State --- */
+    .hs-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        text-align: center;
+        background-color: var(--theme-bg-card, #ffffff);
+        border-radius: var(--theme-radius, 1.25rem);
+        border: 2px dashed var(--theme-border-color, #e5e7eb);
+        color: var(--theme-text-muted, #9ca3af);
+    }
+
+    .hs-empty i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .hs-empty-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--theme-text-main, #4b5563);
+        margin: 0;
+    }
+</style>
+
+<div class="hs-wrapper">
+    <!-- Header Image -->
+    <div class="hs-header-img-wrap">
+        <img id="hs-header-img" src="" alt="History Banner" class="hs-header-img" onerror="this.style.display='none'">
+    </div>
+
+    <div class="hs-container">
+        <!-- Titles -->
+        <div class="hs-page-header hs-fade-in">
+            <h1 class="hs-title" data-i18n="pageTitle">ประวัติคะแนน</h1>
+            <p class="hs-subtitle" data-i18n="pageSub">ตรวจสอบรายการได้รับและใช้จ่ายคะแนนสะสม</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="hs-tabs hs-fade-in">
+            <button id="hs-tab-earn" class="hs-tab-btn active" onclick="window.HistoryCtrl.switchTab('earn')"
+                data-i18n="tabEarn">ได้รับ</button>
+            <button id="hs-tab-deduct" class="hs-tab-btn" onclick="window.HistoryCtrl.switchTab('deduct')"
+                data-i18n="tabDeduct">ใช้จ่าย</button>
+        </div>
+
+        <!-- List Area -->
+        <div id="hs-list-container" class="hs-list hs-fade-in" style="animation-delay: 0.1s;">
+            <!-- Content injected here -->
+        </div>
+
+        <!-- Load More -->
+        <button id="hs-btn-load" class="hs-btn-load hs-hidden" onclick="window.HistoryCtrl.loadMore()">
+            <i class="fa-solid fa-chevron-down"></i> <span data-i18n="btnLoadMore">โหลดเพิ่มเติม</span>
+        </button>
     </div>
 </div>
 
-<template id="tpl-history-item">
-    <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-        <div>
-            <p class="text-sm font-bold text-gray-700 action-slot">Action</p>
-            <p class="text-[10px] text-gray-400 date-slot">Date</p>
+<!-- Template: Earned Item -->
+<template id="tpl-earn-item">
+    <div class="hs-card">
+        <div class="hs-icon-wrap earn">
+            <i class="fa-solid fa-arrow-trend-up"></i>
         </div>
-        <span class="text-sm font-bold point-slot">0</span>
+        <div class="hs-details">
+            <h3 class="hs-item-title slot-title">Order ID</h3>
+            <p class="hs-item-sub slot-sub">Channel</p>
+            <p class="hs-item-date"><i class="fa-regular fa-clock"></i> <span class="slot-date">Date</span></p>
+        </div>
+        <div class="hs-points-col">
+            <span class="hs-points-val earn">+<span class="slot-pts">0</span></span>
+            <span class="hs-badge slot-status">Status</span>
+        </div>
+    </div>
+</template>
+
+<!-- Template: Deduct Item -->
+<template id="tpl-deduct-item">
+    <div class="hs-card">
+        <div class="hs-icon-wrap deduct">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+        </div>
+        <div class="hs-details">
+            <h3 class="hs-item-title slot-title">Reward Name</h3>
+            <p class="hs-item-sub slot-sub">Ref ID</p>
+            <p class="hs-item-date"><i class="fa-regular fa-clock"></i> <span class="slot-date">Date</span></p>
+        </div>
+        <div class="hs-points-col">
+            <span class="hs-points-val deduct">-<span class="slot-pts">0</span></span>
+            <span class="hs-badge slot-status">Status</span>
+        </div>
     </div>
 </template>
 
 <script>
-    (() => {
-        const container = document.getElementById('history-list');
-        const template = document.getElementById('tpl-history-item');
+    window.HistoryCtrl = (function () {
+        'use strict';
 
-        // สร้างข้อมูล Mock 20 รายการเพื่อทดสอบ Scrollbar
-        for (let i = 1; i <= 20; i++) {
-            const clone = template.content.cloneNode(true);
-            const isEarn = Math.random() > 0.5;
-            
-            clone.querySelector('.action-slot').textContent = isEarn ? "Earned Points" : "Redeemed Reward";
-            clone.querySelector('.date-slot').textContent = `2026-06-${Math.floor(Math.random() * 30 + 1)}`;
-            
-            const pointEl = clone.querySelector('.point-slot');
-            pointEl.textContent = (isEarn ? "+" : "-") + Math.floor(Math.random() * 500);
-            pointEl.classList.add(isEarn ? 'text-green-600' : 'text-red-600');
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            limit: 20,
+            headerAssetKey: "historyHeader"
+        };
 
-            container.appendChild(clone);
+        const i18n = {
+            Th: {
+                pageTitle: "ประวัติคะแนน",
+                pageSub: "ตรวจสอบรายการได้รับและใช้จ่ายคะแนนสะสม",
+                tabEarn: "ได้รับ",
+                tabDeduct: "ใช้จ่าย",
+                btnLoadMore: "โหลดเพิ่มเติม",
+                emptyList: "ยังไม่มีประวัติในหมวดหมู่นี้",
+                errLoad: "ไม่สามารถโหลดข้อมูลได้",
+                status_pending: "รออนุมัติ",
+                status_approved: "สำเร็จ",
+                status_completed: "สำเร็จ",
+                status_failed: "ล้มเหลว",
+                unknown: "ไม่ระบุ"
+            },
+            En: {
+                pageTitle: "Points History",
+                pageSub: "Track your points earned and deducted",
+                tabEarn: "Earned",
+                tabDeduct: "Redeemed",
+                btnLoadMore: "Load More",
+                emptyList: "No history found in this category.",
+                errLoad: "Failed to load data.",
+                status_pending: "Pending",
+                status_approved: "Approved",
+                status_completed: "Completed",
+                status_failed: "Failed",
+                unknown: "Unknown"
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+
+        let state = {
+            tab: 'earn', // 'earn' | 'deduct'
+            dataEarn: [],
+            dataDeduct: [],
+            offsetEarn: 0,
+            offsetDeduct: 0,
+            hasMoreEarn: true,
+            hasMoreDeduct: true,
+            isFetching: false
+        };
+
+        const els = {
+            listContainer: document.getElementById('hs-list-container'),
+            btnLoad: document.getElementById('hs-btn-load'),
+            tabEarn: document.getElementById('hs-tab-earn'),
+            tabDeduct: document.getElementById('hs-tab-deduct'),
+            tplEarn: document.getElementById('tpl-earn-item'),
+            tplDeduct: document.getElementById('tpl-deduct-item')
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
         }
-        
-        console.log("[History] Rendered. This will be cached by PageManager!");
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                return d.toLocaleDateString(currentLang === 'En' ? 'en-GB' : 'th-TH', {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            } catch (e) { return dateStr; }
+        }
+
+        function getStatusInfo(statusStr) {
+            const s = (statusStr || '').toLowerCase();
+            const dict = i18n[currentLang];
+            if (s === 'approved' || s === 'completed' || s === 'success') return { text: dict.status_approved || s, class: 'success' };
+            if (s === 'pending') return { text: dict.status_pending || s, class: 'pending' };
+            if (s === 'failed' || s === 'rejected') return { text: dict.status_failed || s, class: 'failed' };
+            return { text: statusStr || dict.unknown, class: 'pending' };
+        }
+
+        async function loadData(isLoadMore = false) {
+            if (state.isFetching) return;
+
+            const isEarn = state.tab === 'earn';
+            const hasMore = isEarn ? state.hasMoreEarn : state.hasMoreDeduct;
+
+            if (!hasMore && isLoadMore) return;
+
+            state.isFetching = true;
+            if (window.PageManager) PageManager.showLoading();
+
+            // ซ่อนปุ่มโหลดชั่วคราว
+            els.btnLoad.classList.add('hs-hidden');
+
+            try {
+                if (!window.CrmApi) throw new Error("CrmApi is not available");
+
+                const limit = pageSetting.limit;
+                let newData = [];
+
+                if (isEarn) {
+                    const offset = state.offsetEarn;
+                    newData = await CrmApi.getEarnedPoints(limit, offset);
+
+                    if (newData && Array.isArray(newData)) {
+                        state.dataEarn = isLoadMore ? state.dataEarn.concat(newData) : newData;
+                        state.offsetEarn += limit;
+                        state.hasMoreEarn = newData.length >= limit;
+                    } else {
+                        state.hasMoreEarn = false;
+                    }
+                } else {
+                    const offset = state.offsetDeduct;
+                    newData = await CrmApi.getDeductPoints(limit, offset);
+
+                    if (newData && Array.isArray(newData)) {
+                        state.dataDeduct = isLoadMore ? state.dataDeduct.concat(newData) : newData;
+                        state.offsetDeduct += limit;
+                        state.hasMoreDeduct = newData.length >= limit;
+                    } else {
+                        state.hasMoreDeduct = false;
+                    }
+                }
+
+                renderList();
+
+            } catch (error) {
+                console.error("History Load Error:", error);
+                if (window.PageManager) PageManager.showToast(i18n[currentLang].errLoad, "❌");
+                if (!isLoadMore) showEmptyState();
+            } finally {
+                state.isFetching = false;
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        function showEmptyState() {
+            els.listContainer.innerHTML = `
+                <div class="hs-empty hs-fade-in">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <p class="hs-empty-text">${i18n[currentLang].emptyList}</p>
+                </div>
+            `;
+            els.btnLoad.classList.add('hs-hidden');
+        }
+
+        function renderList() {
+            els.listContainer.innerHTML = '';
+            const dict = i18n[currentLang];
+            const isEarn = state.tab === 'earn';
+            const dataList = isEarn ? state.dataEarn : state.dataDeduct;
+            const hasMore = isEarn ? state.hasMoreEarn : state.hasMoreDeduct;
+
+            if (!dataList || dataList.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            dataList.forEach(item => {
+                const template = isEarn ? els.tplEarn : els.tplDeduct;
+                const clone = template.content.cloneNode(true);
+
+                if (isEarn) {
+                    // EarnedPointsTransactionData
+                    clone.querySelector('.slot-title').innerText = item.orderId || dict.unknown;
+                    clone.querySelector('.slot-sub').innerText = (item.channel || '').toUpperCase() || dict.unknown;
+                    clone.querySelector('.slot-pts').innerText = (item.points || 0).toLocaleString();
+                } else {
+                    // DeductionHistoryTransactionData
+                    let titleName = item.reason || dict.unknown;
+                    if (window.Utility && typeof Utility.getTransactionName === 'function') {
+                        titleName = Utility.getTransactionName(item) || titleName;
+                    }
+
+                    clone.querySelector('.slot-title').innerText = titleName;
+                    clone.querySelector('.slot-sub').innerText = `Ref: ${item.reference_id || item.transaction_id || '-'}`;
+                    clone.querySelector('.slot-pts').innerText = (item.points_deducted || 0).toLocaleString();
+                }
+
+                // Date
+                const dateStr = item.createdAt || item.created_at || item.orderDate;
+                clone.querySelector('.slot-date').innerText = formatDate(dateStr);
+
+                // Status
+                const statusInfo = getStatusInfo(item.status);
+                const badge = clone.querySelector('.slot-status');
+                badge.innerText = statusInfo.text;
+                badge.classList.add(statusInfo.class);
+
+                els.listContainer.appendChild(clone);
+            });
+
+            // Handle Load More Button
+            if (hasMore) {
+                els.btnLoad.classList.remove('hs-hidden');
+            } else {
+                els.btnLoad.classList.add('hs-hidden');
+            }
+        }
+
+        // ==========================================
+        // 4. ACTIONS
+        // ==========================================
+        window.switchTab = function (tabName) {
+            if (state.tab === tabName) return;
+            state.tab = tabName;
+
+            // Update UI Tabs
+            els.tabEarn.classList.remove('active');
+            els.tabDeduct.classList.remove('active');
+
+            if (tabName === 'earn') els.tabEarn.classList.add('active');
+            else els.tabDeduct.classList.add('active');
+
+            // เปลี่ยนสีขอบ Tab ให้อิงตาม Theme Primary
+            const primaryColor = document.documentElement.style.getPropertyValue('--theme-primary') || '#2563eb';
+            const activeTab = document.querySelector('.hs-tab-btn.active');
+            if (activeTab) {
+                activeTab.style.backgroundColor = primaryColor;
+                activeTab.style.color = '#ffffff';
+            }
+
+            const inactiveTab = document.querySelector('.hs-tab-btn:not(.active)');
+            if (inactiveTab) {
+                inactiveTab.style.backgroundColor = 'transparent';
+                inactiveTab.style.color = '#6b7280';
+            }
+
+            // Check if data already exists, else load
+            const dataList = tabName === 'earn' ? state.dataEarn : state.dataDeduct;
+            if (dataList.length === 0) {
+                loadData(false);
+            } else {
+                renderList();
+            }
+        };
+
+        // ==========================================
+        // 5. INIT EXPORT
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+                applyLanguage();
+
+                // Load Header Image
+                const headerImgEl = document.getElementById('hs-header-img');
+                if (window.Utility && typeof window.Utility.getAssetPath === 'function') {
+                    const bgPath = Utility.getAssetPath(pageSetting.headerAssetKey);
+                    if (bgPath) {
+                        headerImgEl.src = bgPath;
+                        headerImgEl.style.display = 'block';
+                    }
+                } else if (window.appData && window.appData.customAssets && window.appData.customAssets[pageSetting.headerAssetKey]) {
+                    headerImgEl.src = window.appData.customAssets[pageSetting.headerAssetKey];
+                    headerImgEl.style.display = 'block';
+                }
+
+                // Initial Load (Earned)
+                loadData(false);
+
+                if (response) response.status = "ok";
+            },
+            switchTab: window.switchTab,
+            loadMore: () => loadData(true)
+        };
+
     })();
+
+    // Bind to parent window call
+    window.onInit = function (payload, response) {
+        window.HistoryCtrl.init(payload, response);
+    };
 </script>

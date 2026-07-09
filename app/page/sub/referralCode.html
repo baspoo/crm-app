@@ -1,0 +1,1011 @@
+<style>
+    /* ==========================================
+       Referral Program Page (Pure CSS)
+       รองรับ Global Theme จาก style.css
+       ========================================== */
+
+    .ref-wrapper {
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+        background-color: transparent;
+        color: var(--theme-text-main, #1f2937);
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 6rem;
+        box-sizing: border-box;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .ref-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ref-wrapper *,
+    .ref-wrapper *::before,
+    .ref-wrapper *::after {
+        box-sizing: border-box;
+    }
+
+    .ref-hidden {
+        display: none !important;
+    }
+
+    .ref-fade-in {
+        animation: refFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes refFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- Header Image --- */
+    .ref-header-img-wrap {
+        width: 100%;
+        background-color: var(--theme-bg-card, #ffffff);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .ref-header-img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* --- Container --- */
+    .ref-container {
+        padding: 0 1.25rem;
+        max-width: 32rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    /* --- Cards --- */
+    .ref-card {
+        background-color: var(--theme-bg-card, #ffffff);
+        border: var(--theme-border-width, 1px) solid var(--theme-border-color, #e5e7eb);
+        border-radius: var(--theme-radius, 1.5rem);
+        padding: 1.5rem;
+        box-shadow: var(--theme-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ref-card-deco {
+        position: absolute;
+        top: -2rem;
+        right: -2rem;
+        width: 6rem;
+        height: 6rem;
+        background-color: var(--theme-primary, #2563eb);
+        opacity: 0.05;
+        border-radius: 50%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .ref-mode-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    .ref-section-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--theme-text-muted, #6b7280);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 0.75rem 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- My Code Section --- */
+    .ref-code-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: 1rem;
+        padding: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ref-code-text {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--theme-text-main, #1f2937);
+        letter-spacing: 0.1em;
+        margin: 0;
+        font-family: monospace;
+    }
+
+    .ref-btn-copy {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.75rem;
+        background-color: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+    .ref-btn-copy:active {
+        transform: scale(0.9);
+    }
+
+    /* --- Points Info --- */
+    .ref-points-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ref-point-box {
+        background-color: var(--theme-primary-light, #eff6ff);
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+    }
+
+    .ref-point-label {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .ref-point-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--theme-primary, #2563eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        margin: 0;
+    }
+
+    .ref-point-icon {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+    }
+
+    /* --- Enter Code Panel (Countdown) --- */
+    .ref-enter-panel {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ref-enter-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .ref-enter-title i {
+        color: var(--theme-secondary, #f59e0b);
+    }
+
+    .ref-enter-desc {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 1rem 0;
+        line-height: 1.5;
+    }
+
+    .ref-countdown-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fecdd3;
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.25rem;
+        width: 100%;
+    }
+
+    .ref-countdown-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .ref-countdown-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        font-family: monospace;
+    }
+
+    /* --- Stats Section --- */
+    .ref-stat-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e5e7eb);
+        border-radius: 1rem;
+        padding: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ref-stat-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0;
+    }
+
+    .ref-stat-val {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--theme-primary, #2563eb);
+        margin: 0;
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+
+    .ref-stat-unit {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--theme-text-muted, #6b7280);
+    }
+
+    /* --- Buttons --- */
+    .ref-btn-primary {
+        width: 100%;
+        background-color: var(--theme-primary, #2563eb);
+        color: #ffffff;
+        border: none;
+        padding: 1rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--theme-primary) 50%, transparent);
+    }
+
+    .ref-btn-primary:active {
+        transform: scale(0.98);
+    }
+
+    .ref-btn-secondary {
+        width: 100%;
+        background-color: var(--theme-bg-app, #f1f5f9);
+        color: var(--theme-text-main, #475569);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        padding: 1rem;
+        border-radius: var(--theme-radius-btn, 1rem);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .ref-btn-secondary:active {
+        background-color: #e2e8f0;
+        transform: scale(0.98);
+    }
+
+    /* --- Input Area --- */
+    .ref-input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .ref-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 2px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        text-align: center;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: monospace;
+    }
+
+    .ref-input:focus {
+        background-color: var(--theme-bg-card, #ffffff);
+        border-color: var(--theme-primary, #3b82f6);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 15%, transparent);
+    }
+
+    .ref-input::placeholder {
+        color: #9ca3af;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: normal;
+        font-family: var(--theme-font, 'Prompt', sans-serif);
+    }
+
+    /* --- Profile Verify --- */
+    .ref-verify-profile {
+        background-color: var(--theme-bg-app, #f8fafc);
+        border: 1px solid var(--theme-border-color, #e2e8f0);
+        border-radius: 1rem;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ref-verify-img {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: #ffffff;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .ref-verify-info {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .ref-verify-label {
+        font-size: 0.75rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 0.125rem 0;
+    }
+
+    .ref-verify-name {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0;
+    }
+
+    /* --- Success State --- */
+    .ref-success-icon {
+        width: 5rem;
+        height: 5rem;
+        background-color: #ecfdf5;
+        color: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 1.25rem auto;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .ref-success-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--theme-text-main, #1f2937);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .ref-success-desc {
+        font-size: 0.875rem;
+        color: var(--theme-text-muted, #6b7280);
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+
+    .ref-success-val {
+        font-weight: 800;
+        color: var(--theme-primary, #2563eb);
+    }
+</style>
+
+<div class="ref-wrapper">
+    <!-- Header Image -->
+    <div class="ref-header-img-wrap">
+        <img id="ref-header-img" src="" class="ref-header-img" alt="Referral Banner"
+            onerror="this.style.display='none'">
+    </div>
+
+    <div class="ref-container">
+
+        <!-- ==========================================
+             MODE: ME (Owner View)
+             ========================================== -->
+        <div id="ref-mode-me" class="ref-mode-section ref-fade-in ref-hidden">
+
+            <!-- My Code Card -->
+            <div class="ref-card">
+                <div class="ref-card-deco"></div>
+                <h2 class="ref-section-title">
+                    <i class="fa-solid fa-ticket text-theme-primary"></i> <span
+                        data-i18n="yourCodeTitle">รหัสแนะนำของคุณ</span>
+                </h2>
+
+                <div class="ref-code-box">
+                    <p id="ref-my-code" class="ref-code-text">------</p>
+                    <button class="ref-btn-copy" onclick="window.ReferralCtrl.copyCode()">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="ref-points-grid">
+                    <div class="ref-point-box">
+                        <p class="ref-point-label" data-i18n="friendGets">เพื่อนได้รับ</p>
+                        <p class="ref-point-val">
+                            <span id="ref-pt-invitee">0</span>
+                            <img src="" class="ref-point-icon ui-pt-icon" alt="pt" onerror="this.style.display='none'">
+                        </p>
+                    </div>
+                    <div class="ref-point-box">
+                        <p class="ref-point-label" data-i18n="youGet">คุณได้รับ</p>
+                        <p class="ref-point-val">
+                            <span id="ref-pt-owner">0</span>
+                            <img src="" class="ref-point-icon ui-pt-icon" alt="pt" onerror="this.style.display='none'">
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enter Code Panel (Countdown) -->
+            <div id="ref-enter-panel" class="ref-card ref-hidden">
+                <div class="ref-enter-panel">
+                    <h3 class="ref-enter-title">
+                        <i class="fa-solid fa-gift"></i>
+                        <span data-i18n="enterCodeTitle">รับแต้มพิเศษ</span>
+                    </h3>
+                    <p class="ref-enter-desc" data-i18n="enterCodeDesc">
+                        กรอกรหัสแนะนำจากเพื่อนตอนนี้เพื่อรับแต้มฟรี! รีบหน่อยก่อนเวลาจะหมด
+                    </p>
+
+                    <div class="ref-countdown-box">
+                        <i class="fa-regular fa-clock"></i>
+                        <span class="ref-countdown-label" data-i18n="timeLeft">เวลาคงเหลือ:</span>
+                        <span id="ref-countdown-val" class="ref-countdown-val">--:--:--</span>
+                    </div>
+
+                    <button class="ref-btn-primary" onclick="window.ReferralCtrl.switchToInvite()">
+                        <i class="fa-solid fa-keyboard"></i>
+                        <span data-i18n="enterCodeBtn">กรอกรหัสแนะนำ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="ref-card">
+                <h3 class="ref-section-title">
+                    <i class="fa-solid fa-users text-theme-primary"></i> <span
+                        data-i18n="inviteCountTitle">เพื่อนที่ใช้รหัสของคุณ</span>
+                </h3>
+                <div class="ref-stat-box">
+                    <p class="ref-stat-label" data-i18n="totalInvited">จำนวนที่เชิญสำเร็จ</p>
+                    <p class="ref-stat-val">
+                        <span id="ref-stat-count">0</span>
+                        <span class="ref-stat-unit" data-i18n="peopleUnit">คน</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             MODE: INVITE (Enter Code View)
+             ========================================== -->
+        <div id="ref-mode-invite" class="ref-mode-section ref-hidden">
+
+            <div class="ref-card ref-fade-in">
+
+                <!-- Step 1: Input -->
+                <div id="ref-step-input">
+                    <h3 class="ref-enter-title" style="justify-content: flex-start;">
+                        <i class="fa-solid fa-user-plus text-theme-primary"></i>
+                        <span data-i18n="inputCodeTitle">กรอกรหัสแนะนำ</span>
+                    </h3>
+                    <p class="ref-enter-desc" style="text-align: left;" data-i18n="inputCodeDesc">
+                        กรุณากรอกรหัสแนะนำที่คุณได้รับจากเพื่อน เพื่อรับแต้มพิเศษ
+                    </p>
+
+                    <div class="ref-input-group">
+                        <input type="text" id="ref-input-code" class="ref-input" placeholder="Ex. CODE123"
+                            maxlength="15">
+                    </div>
+
+                    <button class="ref-btn-primary" onclick="window.ReferralCtrl.checkCode()">
+                        <span data-i18n="btnCheckCode">ตรวจสอบรหัส</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Step 2: Verify -->
+                <div id="ref-step-verify" class="ref-hidden">
+                    <h3 class="ref-enter-title" style="color: #10b981;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                        <span data-i18n="verifyTitle">พบข้อมูลเพื่อนของคุณ</span>
+                    </h3>
+
+                    <div class="ref-verify-profile">
+                        <img id="ref-verify-img" src="" alt="Profile" class="ref-verify-img">
+                        <div class="ref-verify-info">
+                            <p class="ref-verify-label" data-i18n="invitedByLabel">ผู้แนะนำของคุณ</p>
+                            <h4 id="ref-verify-name" class="ref-verify-name">Name</h4>
+                        </div>
+                    </div>
+
+                    <div class="ref-points-grid" style="margin-top: 0; margin-bottom: 1.5rem;">
+                        <div class="ref-point-box">
+                            <p class="ref-point-label" data-i18n="youWillGet">คุณจะได้รับ</p>
+                            <p class="ref-point-val">
+                                +<span id="ref-verify-pt-invitee">0</span>
+                                <img src="" class="ref-point-icon ui-pt-icon" alt="pt"
+                                    onerror="this.style.display='none'">
+                            </p>
+                        </div>
+                        <div class="ref-point-box">
+                            <p class="ref-point-label" data-i18n="friendWillGet">เพื่อนจะได้รับ</p>
+                            <p class="ref-point-val">
+                                +<span id="ref-verify-pt-owner">0</span>
+                                <img src="" class="ref-point-icon ui-pt-icon" alt="pt"
+                                    onerror="this.style.display='none'">
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <button class="ref-btn-primary" onclick="window.ReferralCtrl.confirmCode()">
+                            <span data-i18n="btnConfirm">ยืนยันรับสิทธิ์</span>
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button class="ref-btn-secondary" onclick="window.ReferralCtrl.backToInput()">
+                            <span data-i18n="btnCancel">ยกเลิก / กรอกใหม่</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Success -->
+                <div id="ref-step-success" class="ref-hidden" style="text-align: center;">
+                    <div class="ref-success-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h3 class="ref-success-title" data-i18n="successTitle">ยินดีด้วย! รับสิทธิ์สำเร็จ</h3>
+                    <p class="ref-success-desc">
+                        <span data-i18n="youEarned">คุณได้รับคะแนน</span>
+                        <span id="ref-success-pt" class="ref-success-val">+0</span>
+                        <img src="" class="ref-point-icon ui-pt-icon" alt="pt" onerror="this.style.display='none'">
+                    </p>
+
+                    <button class="ref-btn-primary" onclick="window.ReferralCtrl.close()">
+                        <span data-i18n="btnClose">ปิดหน้าต่าง</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    window.ReferralCtrl = (function () {
+        'use strict';
+
+        // ==========================================
+        // 1. SETTINGS & DICTIONARY
+        // ==========================================
+        const pageSetting = {
+            headerAssetKey: "referralHeader",
+            pointAssetKey: "pointIcon",
+            defaultAvatar: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NiZDVlMSI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg=="
+        };
+
+        const i18n = {
+            Th: {
+                yourCodeTitle: "รหัสแนะนำของคุณ",
+                friendGets: "เพื่อนได้รับ",
+                youGet: "คุณได้รับ",
+                enterCodeTitle: "รับแต้มพิเศษ",
+                enterCodeDesc: "กรอกรหัสแนะนำจากเพื่อนตอนนี้เพื่อรับแต้มฟรี! รีบหน่อยก่อนเวลาจะหมด",
+                timeLeft: "เวลาคงเหลือ:",
+                days: "วัน",
+                enterCodeBtn: "กรอกรหัสแนะนำ",
+                inviteCountTitle: "เพื่อนที่ใช้รหัสของคุณ",
+                totalInvited: "จำนวนที่เชิญสำเร็จ",
+                peopleUnit: "คน",
+                inputCodeTitle: "กรอกรหัสแนะนำ",
+                inputCodeDesc: "กรุณากรอกรหัสแนะนำที่คุณได้รับจากเพื่อน เพื่อรับแต้มพิเศษ",
+                btnCheckCode: "ตรวจสอบรหัส",
+                verifyTitle: "พบข้อมูลเพื่อนของคุณ",
+                invitedByLabel: "ผู้แนะนำของคุณ",
+                youWillGet: "คุณจะได้รับ",
+                friendWillGet: "เพื่อนจะได้รับ",
+                btnConfirm: "ยืนยันรับสิทธิ์",
+                btnCancel: "ยกเลิก / กรอกใหม่",
+                successTitle: "ยินดีด้วย! รับสิทธิ์สำเร็จ",
+                youEarned: "คุณได้รับคะแนน",
+                btnClose: "ปิดหน้าต่าง",
+                copySuccess: "คัดลอกรหัสเรียบร้อยแล้ว!",
+                errEmpty: "กรุณากรอกรหัสแนะนำ",
+                errNotFound: "ไม่พบข้อมูล หรือรหัสไม่ถูกต้อง",
+                errLoad: "ไม่สามารถโหลดข้อมูลได้"
+            },
+            En: {
+                yourCodeTitle: "Your Referral Code",
+                friendGets: "Friend gets",
+                youGet: "You get",
+                enterCodeTitle: "Get Special Points",
+                enterCodeDesc: "Enter a friend's code now to get free points! Hurry before time runs out.",
+                timeLeft: "Time left:",
+                days: "d",
+                enterCodeBtn: "Enter Referral Code",
+                inviteCountTitle: "Friends Invited",
+                totalInvited: "Total successful invites",
+                peopleUnit: "people",
+                inputCodeTitle: "Enter Referral Code",
+                inputCodeDesc: "Please enter the referral code from your friend to earn points.",
+                btnCheckCode: "Check Code",
+                verifyTitle: "Friend Found!",
+                invitedByLabel: "Invited by",
+                youWillGet: "You will get",
+                friendWillGet: "Friend will get",
+                btnConfirm: "Confirm",
+                btnCancel: "Cancel / Back",
+                successTitle: "Success! Points claimed.",
+                youEarned: "You earned",
+                btnClose: "Close Window",
+                copySuccess: "Code copied successfully!",
+                errEmpty: "Please enter a referral code.",
+                errNotFound: "Invalid code or not found.",
+                errLoad: "Failed to load data."
+            }
+        };
+
+        // ==========================================
+        // 2. STATE VARIABLES
+        // ==========================================
+        let currentLang = 'Th';
+        let currentMode = 'me'; // 'me' or 'inviteCode'
+        let myReferCode = '';
+        let targetFriendCode = '';
+        let countdownTimer = null;
+        let responseRef = null;
+        let isProcessing = false;
+
+        const els = {
+            modeMe: document.getElementById('ref-mode-me'),
+            modeInvite: document.getElementById('ref-mode-invite'),
+            enterPanel: document.getElementById('ref-enter-panel'),
+            countdownVal: document.getElementById('ref-countdown-val'),
+
+            stepInput: document.getElementById('ref-step-input'),
+            stepVerify: document.getElementById('ref-step-verify'),
+            stepSuccess: document.getElementById('ref-step-success'),
+
+            inputCode: document.getElementById('ref-input-code')
+        };
+
+        // ==========================================
+        // 3. CORE LOGIC
+        // ==========================================
+
+        function applyLanguage() {
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        }
+
+        function loadAssets() {
+            // Header Image
+            const headerImg = document.getElementById('ref-header-img');
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                const path = Utility.getAssetPath(pageSetting.headerAssetKey);
+                if (path) {
+                    headerImg.src = path;
+                    headerImg.style.display = 'block';
+                }
+            } else if (window.appData?.customAssets?.[pageSetting.headerAssetKey]) {
+                headerImg.src = window.appData.customAssets[pageSetting.headerAssetKey];
+                headerImg.style.display = 'block';
+            }
+
+            // Point Icons
+            let ptIconUrl = null;
+            if (window.Utility && typeof Utility.getAssetPath === 'function') {
+                ptIconUrl = Utility.getAssetPath(pageSetting.pointAssetKey);
+            }
+
+            if (ptIconUrl) {
+                document.querySelectorAll('.ui-pt-icon').forEach(img => {
+                    img.src = ptIconUrl;
+                    img.style.display = 'inline-block';
+                });
+            }
+        }
+
+        function startCountdown(seconds) {
+            clearInterval(countdownTimer);
+            let remaining = seconds;
+            const dict = i18n[currentLang];
+
+            const updateTimer = () => {
+                // เช็คว่า Modal ถูกปิดไปแล้วหรือยังผ่าน DOM
+                if (!document.getElementById('ref-countdown-val')) {
+                    clearInterval(countdownTimer);
+                    return;
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(countdownTimer);
+                    els.enterPanel.classList.add('ref-hidden');
+                    return;
+                }
+                const d = Math.floor(remaining / (3600 * 24));
+                const h = Math.floor((remaining % (3600 * 24)) / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                const s = Math.floor(remaining % 60);
+
+                let timeStr = "";
+                if (d > 0) timeStr += `${d} ${dict.days} `;
+                timeStr += `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+                els.countdownVal.innerText = timeStr;
+                remaining--;
+            };
+
+            updateTimer();
+            countdownTimer = setInterval(updateTimer, 1000);
+        }
+
+        // ==========================================
+        // 4. API & DATA FETCHING
+        // ==========================================
+
+        async function fetchMyData() {
+            if (window.PageManager) PageManager.showLoading();
+            try {
+                // Call API via AppApi directly
+                if (window.AppApi) {
+                    const res = await AppApi.callApiInternal("crm_getMyReferCode", {});
+                    if (res && res.result && res.result.code === 200 && res.result.data) {
+                        const data = res.result.data;
+
+                        myReferCode = data.referCode || "-";
+                        document.getElementById('ref-my-code').innerText = myReferCode;
+                        document.getElementById('ref-pt-invitee').innerText = data.invitee || 0;
+                        document.getElementById('ref-pt-owner').innerText = data.owner || 0;
+                        document.getElementById('ref-stat-count').innerText = data.inviteCount || 0;
+
+                        const remainingTime = data.remainingTime || 0;
+                        if (remainingTime > 0) {
+                            els.enterPanel.classList.remove('ref-hidden');
+                            startCountdown(remainingTime);
+                        } else {
+                            els.enterPanel.classList.add('ref-hidden');
+                        }
+
+                        els.modeMe.classList.remove('ref-hidden');
+                    } else {
+                        throw new Error("Invalid response");
+                    }
+                }
+            } catch (e) {
+                console.error("Fetch Referral Data Error:", e);
+                if (window.PageManager) PageManager.showToast(i18n[currentLang].errLoad, "❌");
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        async function verifyCode(code) {
+            if (window.PageManager) PageManager.showLoading();
+            try {
+                if (window.AppApi) {
+                    const res = await AppApi.callApiInternal("crm_getFriendByReferCode", { referCode: code });
+                    if (res && res.result && res.result.code === 200 && res.result.data && res.result.data.profile) {
+                        const data = res.result.data;
+                        const profile = data.profile;
+
+                        document.getElementById('ref-verify-name').innerText = profile.displayName || "Unknown";
+
+                        const imgEl = document.getElementById('ref-verify-img');
+                        imgEl.src = profile.pictureUrl || pageSetting.defaultAvatar;
+                        imgEl.onerror = () => { imgEl.src = pageSetting.defaultAvatar; };
+
+                        document.getElementById('ref-verify-pt-invitee').innerText = data.invitee || 0;
+                        document.getElementById('ref-verify-pt-owner').innerText = data.owner || 0;
+
+                        els.stepInput.classList.add('ref-hidden');
+                        els.stepVerify.classList.remove('ref-hidden');
+                    } else {
+                        if (window.PageManager) PageManager.showToast(i18n[currentLang].errNotFound, "⚠️");
+                    }
+                }
+            } catch (e) {
+                console.error("Verify Code Error:", e);
+                if (window.PageManager) PageManager.showToast(i18n[currentLang].errNotFound, "⚠️");
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        async function submitCode(code) {
+            if (window.PageManager) PageManager.showLoading();
+            try {
+                if (window.AppApi) {
+                    const res = await AppApi.callApiInternal("crm_claimReferCode", { referCode: code });
+                    if (res && res.result && res.result.code === 200) {
+
+                        let earned = 0;
+                        if (res.result.data && res.result.data.reward) {
+                            earned = res.result.data.reward.earnPoint || 0;
+                        }
+
+                        document.getElementById('ref-success-pt').innerText = `+${earned}`;
+
+                        els.stepVerify.classList.add('ref-hidden');
+                        els.stepSuccess.classList.remove('ref-hidden');
+
+                        if (responseRef) responseRef.success = true;
+                    } else {
+                        if (window.PageManager) PageManager.showToast(res.result.message || i18n[currentLang].errLoad, "⚠️");
+                    }
+                }
+            } catch (e) {
+                console.error("Submit Code Error:", e);
+                if (window.PageManager) PageManager.showToast(i18n[currentLang].errLoad, "⚠️");
+            } finally {
+                if (window.PageManager) PageManager.hideLoading();
+            }
+        }
+
+        // ==========================================
+        // 5. ACTIONS
+        // ==========================================
+
+        window.copyCode = function () {
+            if (!myReferCode || myReferCode === "-") return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(myReferCode).then(() => {
+                    if (window.PageManager) PageManager.showToast(i18n[currentLang].copySuccess, "📋");
+                });
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = myReferCode;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    if (window.PageManager) PageManager.showToast(i18n[currentLang].copySuccess, "📋");
+                } catch (err) { }
+                document.body.removeChild(textArea);
+            }
+        };
+
+        window.switchToInvite = function () {
+            currentMode = "inviteCode";
+            els.modeMe.classList.add('ref-hidden');
+            els.modeInvite.classList.remove('ref-hidden');
+            els.inputCode.focus();
+        };
+
+        window.checkCode = function () {
+            const code = els.inputCode.value.trim().toUpperCase();
+            if (!code) {
+                if (window.PageManager) PageManager.showToast(i18n[currentLang].errEmpty, "⚠️");
+                return;
+            }
+            targetFriendCode = code;
+            verifyCode(code);
+        };
+
+        window.confirmCode = function () {
+            if (!targetFriendCode) return;
+            submitCode(targetFriendCode);
+        };
+
+        window.backToInput = function () {
+            targetFriendCode = '';
+            els.inputCode.value = '';
+            els.stepVerify.classList.add('ref-hidden');
+            els.stepInput.classList.remove('ref-hidden');
+        };
+
+        window.closeModal = function () {
+            clearInterval(countdownTimer);
+            if (window.PageManager && typeof PageManager.closeModal === 'function') {
+                PageManager.closeModal();
+            }
+        };
+
+        // ==========================================
+        // 6. EXPORT INIT
+        // ==========================================
+        return {
+            init: function (payload, response) {
+                responseRef = response;
+
+                if (window.crmData && window.crmData.language) {
+                    currentLang = window.crmData.language === 'En' ? 'En' : 'Th';
+                }
+
+                currentMode = payload?.mode || 'me';
+
+                applyLanguage();
+                loadAssets();
+
+                if (currentMode === 'inviteCode') {
+                    els.modeMe.classList.add('ref-hidden');
+                    els.modeInvite.classList.remove('ref-hidden');
+                } else {
+                    fetchMyData();
+                }
+            },
+            copyCode: window.copyCode,
+            switchToInvite: window.switchToInvite,
+            checkCode: window.checkCode,
+            confirmCode: window.confirmCode,
+            backToInput: window.backToInput,
+            close: window.closeModal
+        };
+
+    })();
+
+    // Bind to PageManager logic
+    window.onInit = function (payload, response) {
+        window.ReferralCtrl.init(payload, response);
+    };
+</script>

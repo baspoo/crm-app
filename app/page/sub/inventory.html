@@ -1051,8 +1051,23 @@
                 const clone = tplCard.content.cloneNode(true);
                 const card = clone.querySelector('.inv-card');
 
+
+                const date = new Date(item.redeemedAt);
+                const locale = crmData.language.toLowerCase() === "th" ? 'th-TH' : 'en-US';
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                };
+                const messageDate = date.toLocaleDateString(locale, options);
+
+
+
                 clone.querySelector('.slot-name').innerText = item.rewardName || 'Item';
-                clone.querySelector('.slot-desc').innerText = item.rewardDescription || '';
+                clone.querySelector('.slot-desc').innerText = messageDate;
                 clone.querySelector('.slot-img').src = item.rewardImage || pageSetting.defaultImg;
 
                 // 1. ตรวจสอบสถานะ New (เช็ค 2 ชั้น: ยังไม่เคยดู + อายุไม่เกิน N วัน)
